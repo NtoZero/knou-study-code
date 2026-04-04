@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --color-lecture1: #3b82f6;
+  --color-lecture2: #10b981;
+  --color-lecture3: #f59e0b;
+  --color-lecture4: #8b5cf6;
+  --color-lecture5: #f43f5e;
+
+  --color-ai1: #6366f1;
+  --color-ai2: #06b6d4;
+  --color-ai3: #14b8a6;
+  --color-ai4: #d946ef;
+  --color-ai5: #f97316;
+
+  --font-sans: "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
