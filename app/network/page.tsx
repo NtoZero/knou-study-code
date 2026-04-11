@@ -11,7 +11,7 @@ export default function Home() {
         </div>
         <h1 className="text-3xl font-bold">정보통신망 인터랙티브 시각화</h1>
         <p className="mt-2 text-gray-500">
-          KNOU 정보통신망 1~5강 핵심 개념을 시각적으로 학습합니다
+          KNOU 정보통신망 1~10강 핵심 개념을 시각적으로 학습합니다
         </p>
       </div>
 

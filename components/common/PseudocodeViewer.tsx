@@ -13,19 +13,19 @@ interface Props {
 
 const accentStyles = {
   cyan: {
-    bg: "bg-cyan-100 dark:bg-cyan-900/30",
-    border: "border-l-cyan-500",
-    lineNum: "text-cyan-600 dark:text-cyan-400",
+    bg: "bg-cyan-950/80 dark:bg-cyan-950/80",
+    border: "border-l-cyan-400",
+    lineNum: "text-cyan-400 dark:text-cyan-400",
   },
   teal: {
-    bg: "bg-teal-100 dark:bg-teal-900/30",
-    border: "border-l-teal-500",
-    lineNum: "text-teal-600 dark:text-teal-400",
+    bg: "bg-teal-950/80 dark:bg-teal-950/80",
+    border: "border-l-teal-400",
+    lineNum: "text-teal-400 dark:text-teal-400",
   },
   fuchsia: {
-    bg: "bg-fuchsia-100 dark:bg-fuchsia-900/30",
-    border: "border-l-fuchsia-500",
-    lineNum: "text-fuchsia-600 dark:text-fuchsia-400",
+    bg: "bg-fuchsia-950/80 dark:bg-fuchsia-950/80",
+    border: "border-l-fuchsia-400",
+    lineNum: "text-fuchsia-400 dark:text-fuchsia-400",
   },
 };
 
@@ -37,23 +37,23 @@ export default function PseudocodeViewer({
   const accent = accentStyles[accentColor];
 
   return (
-    <div className="overflow-x-auto rounded-lg bg-gray-900 p-3 font-mono text-xs leading-relaxed dark:bg-gray-950">
+    <div className="overflow-x-auto rounded-lg bg-gray-900 p-3 font-mono text-sm leading-relaxed dark:bg-gray-950">
       {lines.map((line, i) => {
         const isActive = highlightedLines.includes(i);
         return (
           <div
             key={i}
-            className={`flex border-l-2 px-2 py-0.5 transition-colors duration-200 ${
+            className={`flex border-l-3 rounded-r px-2 py-0.5 transition-colors duration-200 ${
               isActive
-                ? `${accent.bg} ${accent.border}`
+                ? `${accent.bg} ${accent.border} font-medium`
                 : "border-l-transparent"
             }`}
           >
             <span
-              className={`mr-3 inline-block w-5 shrink-0 text-right ${
+              className={`mr-3 inline-block w-5 shrink-0 select-none text-right ${
                 isActive
                   ? accent.lineNum
-                  : "text-gray-600 dark:text-gray-700"
+                  : "text-gray-500 dark:text-gray-500"
               }`}
             >
               {i + 1}
@@ -61,14 +61,14 @@ export default function PseudocodeViewer({
             <span
               className={
                 isActive
-                  ? "text-gray-100"
-                  : "text-gray-500 dark:text-gray-600"
+                  ? "text-white"
+                  : "text-gray-300 dark:text-gray-300"
               }
             >
               {line.text}
             </span>
             {line.comment && (
-              <span className="ml-2 text-gray-500 dark:text-gray-600">
+              <span className="ml-2 text-gray-400 dark:text-gray-400 italic">
                 {"// "}
                 {line.comment}
               </span>

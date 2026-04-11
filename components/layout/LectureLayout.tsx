@@ -12,7 +12,7 @@ interface Props {
 export default function LectureLayout({ lectureId, children }: Props) {
   const lec = lectures[lectureId - 1];
   const prev = lectureId > 1 ? lectures[lectureId - 2] : null;
-  const next = lectureId < 5 ? lectures[lectureId] : null;
+  const next = lectureId < lectures.length ? lectures[lectureId] : null;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
