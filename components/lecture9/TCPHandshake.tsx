@@ -122,8 +122,8 @@ export default function TCPHandshake() {
           </div>
           <div className="rounded-lg bg-amber-50 p-3 dark:bg-amber-950/20">
             <div className="font-bold text-amber-700 dark:text-amber-300">서버 (FTP)</div>
-            <div className="font-mono">(211.110.34.15, 20)</div>
-            <div className="text-[10px] text-gray-500">포트 20 — well-known</div>
+            <div className="font-mono">(211.110.34.15, 21)</div>
+            <div className="text-[10px] text-gray-500">포트 21 — FTP 제어(well-known)</div>
           </div>
         </div>
 

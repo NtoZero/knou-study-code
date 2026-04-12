@@ -228,7 +228,7 @@ export default function IPFragmentation() {
             <li>• 단편당 데이터 크기는 <span className="font-mono">(MTU − 20) / 8 × 8</span> 의 배수</li>
             <li>• 모든 단편은 <strong>동일한 식별자</strong>를 가지며, 재조립은 <strong>목적지 호스트</strong>에서만 수행</li>
             <li>• MF=1: 뒤에 더 단편이 존재 · MF=0: 마지막 단편</li>
-            <li>• 단편 오프셋은 원본 데이터 내의 byte 위치</li>
+            <li>• 단편 오프셋: 원본 데이터 내의 시작 바이트 위치 (IP 헤더 필드값 = offset ÷ 8 로 저장, 13비트)</li>
           </ul>
         </div>
       </div>

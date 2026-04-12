@@ -300,7 +300,7 @@ export default function TCPReliability() {
                   </div>
                 </div>
                 <p className="text-[11px] text-gray-500">
-                  상세 동작은 <strong>5강 (오류제어/ARQ)</strong>을 참고.
+                  슬라이딩 윈도우: 수신자가 통보한 윈도우 크기만큼 ACK 없이 연속 전송 후, ACK 수신 시 윈도우를 오른쪽으로 슬라이드하여 전송 효율을 높인다.
                 </p>
               </motion.div>
             )}
