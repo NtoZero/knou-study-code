@@ -72,6 +72,13 @@ const steps: Step[] = [
     actor: "server",
     desc: "pre master secret key를 복호화한 후 master key로 승격. 이후 보안 파라미터를 적용 혹은 변경할 때 보내는 과정.",
   },
+  {
+    no: 9,
+    name: "Data",
+    dir: "c2s",
+    actor: "client",
+    desc: "세션(Session) 구간에서 실제 데이터를 대칭키로 암호화하여 전송. 핸드셰이크로 교환한 master key(대칭키)를 사용.",
+  },
 ];
 
 export default function HTTPSHandshake() {
@@ -121,7 +128,7 @@ export default function HTTPSHandshake() {
     <section>
       <SectionTitle
         title="HTTPS SSL/TLS 핸드셰이크"
-        subtitle="대칭키·공개키를 모두 사용하여 보안 채널을 수립하는 8단계"
+        subtitle="대칭키·공개키를 모두 사용하여 보안 채널을 수립하는 9단계"
       />
 
       <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
@@ -229,10 +236,10 @@ export default function HTTPSHandshake() {
           )}
         </AnimatePresence>
 
-        {/* 세션 데이터 표시 */}
+        {/* 세션 상태 표시 */}
         <div className="mt-3 rounded-lg bg-gray-900 p-3 text-center text-xs text-green-300">
           {step >= steps.length
-            ? "═══ 9. Data · 세션 구간에서 실제 데이터 전송 (대칭키 암호화) ═══"
+            ? "══ 핸드셰이크 완료 · 이후 데이터는 master key(대칭키)로 암호화 ══"
             : "── 핸드셰이크 진행 중 ──"}
         </div>
       </div>

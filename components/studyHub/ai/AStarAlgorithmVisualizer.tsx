@@ -76,7 +76,7 @@ const STEPS: Step[] = [
     open: [{ id: "S", g: 0, f: 11 }],
     closed: [],
     highlight: [0],
-    note: "1. 출발 S: g=0, h=11, f=g+h=11. OPEN에 삽입.",
+    note: "1. 출발 S: g=0, ĥ=11, f̂=g+ĥ=11. OPEN에 삽입.",
   },
   {
     active: "S",
@@ -86,7 +86,7 @@ const STEPS: Step[] = [
     ],
     closed: [{ id: "S", g: 0, f: 11 }],
     highlight: [1, 2, 3, 4],
-    note: "2. S 확장 → P(g=3, f=3+8=11), Q(g=5, f=5+9=14). OPEN을 f 오름차순 정렬.",
+    note: "2. S 확장 → P(g=3, f̂=3+8=11), Q(g=5, f̂=5+9=14). OPEN을 f̂ 오름차순 정렬.",
   },
   {
     active: "P",
@@ -99,7 +99,7 @@ const STEPS: Step[] = [
       { id: "P", g: 3, f: 11 },
     ],
     highlight: [2, 3, 4],
-    note: "3. P(f=11) 확장 → R(g=7, f=11), Q(g=4, f=13). 기존 Q(f=14)는 더 큰 f이므로 교체.",
+    note: "3. P(f̂=11) 확장 → R(g=7, f̂=11), Q(g=4, f̂=13). 기존 Q(f̂=14)는 더 큰 f̂이므로 교체.",
   },
   {
     active: "R",
@@ -114,7 +114,7 @@ const STEPS: Step[] = [
       { id: "R", g: 7, f: 11 },
     ],
     highlight: [2, 3, 4],
-    note: "4. R(f=11) 확장 → G(g=12, f=12), T(g=9, f=12). OPEN = {G:12, T:12, Q:13}.",
+    note: "4. R(f̂=11) 확장 → G(g=12, f̂=12), T(g=9, f̂=12). OPEN = {G:12, T:12, Q:13}.",
   },
   {
     active: "G",
@@ -129,16 +129,16 @@ const STEPS: Step[] = [
       { id: "G", g: 12, f: 12 },
     ],
     highlight: [2, 3],
-    note: "5. G(f=12)가 최소 f로 선택됨 → 목표! 허용적 h 에서 A*는 이 시점에서 최적경로 보장. 최단 경로 S→P→R→G, 비용 12.",
+    note: "5. G(f̂=12)가 최소 f̂로 선택됨 → 목표! ĥ가 h를 과대추정하지 않으면(허용적) 이 시점의 경로가 최적. 최단 경로 S→P→R→G, 비용 12.",
   },
 ];
 
 const PSEUDO = [
-  { text: "1. OPEN ← {S}, f(S) = g(S)+h(S)" },
+  { text: "1. OPEN ← {S}, f̂(S) = g(S)+ĥ(S)" },
   { text: "2. while OPEN is not empty do" },
-  { text: "3.   n ← OPEN 에서 f(n) 최소 노드 제거" },
+  { text: "3.   n ← OPEN 에서 f̂(n) 최소 노드 제거" },
   { text: "4.   if n == Goal then return path" },
-  { text: "5.   n 확장 → f(n') = g(n')+h(n')" },
+  { text: "5.   n 확장 → f̂(n') = g(n')+ĥ(n')" },
   { text: "6.   중복(OPEN/CLOSED) 처리 후 OPEN 삽입" },
 ];
 
@@ -180,7 +180,8 @@ export default function AStarAlgorithmVisualizer() {
       />
 
       <div className="mb-3 rounded-lg border border-indigo-300 bg-indigo-50 p-3 text-xs text-indigo-900 dark:border-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-100">
-        <b>f(n) = g(n) + h(n)</b> · g는 시작→n 실제 비용, h는 n→목표 추정 비용(허용적이면 과대평가 안함).
+        <b>f̂(n) = g(n) + ĥ(n)</b> (교재 식 3-3) · g(n): 출발→n 실제 비용, ĥ(n): n→목표 예측비용(허용적이면 h(n)을 과대추정하지 않음).
+        <span className="ml-2 text-slate-500">※ f(n) = g(n)+h(n)은 이론상 참값이나, h(n)은 탐색 전에 알 수 없어 ĥ(n)으로 근사함.</span>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
@@ -258,7 +259,7 @@ export default function AStarAlgorithmVisualizer() {
                     fontSize={8}
                     fill={textFill}
                   >
-                    h={n.h}
+                    ĥ={n.h}
                   </text>
                   {ns && (
                     <text
@@ -269,7 +270,7 @@ export default function AStarAlgorithmVisualizer() {
                       fontWeight={700}
                       fill={textFill}
                     >
-                      f={ns.f}
+                      f̂={ns.f}
                     </text>
                   )}
                 </motion.g>
@@ -300,7 +301,7 @@ export default function AStarAlgorithmVisualizer() {
         <div className="space-y-3">
           <div className="rounded-xl border border-purple-200 bg-white p-3 dark:border-purple-900/40 dark:bg-gray-900">
             <div className="mb-2 flex items-center gap-1.5 text-xs font-bold text-purple-600">
-              <Sparkles size={12} /> OPEN (f 오름차순)
+              <Sparkles size={12} /> OPEN (f̂ 오름차순)
             </div>
             {cur.open.length === 0 ? (
               <div className="text-[10px] italic text-gray-400">(비어있음)</div>
@@ -313,7 +314,7 @@ export default function AStarAlgorithmVisualizer() {
                   >
                     <span className="font-mono font-bold">{o.id}</span>
                     <span className="text-purple-600">
-                      g={o.g}, f={o.f}
+                      g={o.g}, f̂={o.f}
                     </span>
                   </li>
                 ))}
@@ -331,7 +332,7 @@ export default function AStarAlgorithmVisualizer() {
                     key={`closed-${c.id}`}
                     className="rounded bg-gray-100 px-1.5 py-0.5 font-mono dark:bg-gray-800"
                   >
-                    {c.id}(f={c.f})
+                    {c.id}(f̂={c.f})
                   </span>
                 ))}
               </div>

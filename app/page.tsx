@@ -7,6 +7,7 @@ import {
   Target,
   Radio,
   Layers,
+  Shield,
   ArrowRight,
   Sparkles,
 } from "lucide-react";
@@ -147,6 +148,16 @@ export default function Home() {
             <h2 className="text-xl font-semibold">알고리즘</h2>
             <p className="mt-2 text-sm text-gray-500">
               정렬, 탐색, 그래프 알고리즘 시각화
+            </p>
+          </Link>
+          <Link
+            href="/security"
+            className="group rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+          >
+            <Shield size={36} className="text-purple-600 mb-4" />
+            <h2 className="text-xl font-semibold">컴퓨터보안</h2>
+            <p className="mt-2 text-sm text-gray-500">
+              6~10강 인터랙티브 학습
             </p>
           </Link>
         </div>

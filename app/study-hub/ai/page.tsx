@@ -2,8 +2,16 @@ import StudyHeader from "@/components/studyHub/StudyHeader";
 import StudyStageTabs from "@/components/studyHub/StudyStageTabs";
 import { Target } from "lucide-react";
 
+import AIOverviewIntro from "@/components/studyHub/ai/AIOverviewIntro";
+import ProblemSolvingBasics from "@/components/studyHub/ai/ProblemSolvingBasics";
+import BlindSearchVisualizer from "@/components/studyHub/ai/BlindSearchVisualizer";
+import SearchMechanismBasics from "@/components/studyHub/ai/SearchMechanismBasics";
 import StateSpaceIntro from "@/components/studyHub/ai/StateSpaceIntro";
+import UCSIntro from "@/components/studyHub/ai/UCSIntro";
+import EvalFunctionIntro from "@/components/studyHub/ai/EvalFunctionIntro";
 import UCSAlgorithmVisualizer from "@/components/studyHub/ai/UCSAlgorithmVisualizer";
+import HeuristicSearchIntro from "@/components/studyHub/ai/HeuristicSearchIntro";
+import HillClimbingVisualizer from "@/components/studyHub/ai/HillClimbingVisualizer";
 import AStarAlgorithmVisualizer from "@/components/studyHub/ai/AStarAlgorithmVisualizer";
 import HeuristicProperties from "@/components/studyHub/ai/HeuristicProperties";
 import UCSTreeBuildingGuide from "@/components/studyHub/ai/UCSTreeBuildingGuide";
@@ -24,9 +32,9 @@ export default function AIStudyHub() {
       <StudyHeader
         icon={Target}
         subject="인공지능"
-        type="공통형 · 30점"
-        title="균일비용 탐색 · A* 알고리즘으로 최단 경로 탐색"
-        description="도로망 그래프에서 거리 기준 UCS·A*, 시간 기준 UCS·A*로 최적 경로를 찾고 일반화된 최적성 조건을 분석하는 과제. 교재·강의를 기반으로 원리부터 풀이법까지 다룸."
+        type="1~3강 · 기초부터 A* 까지"
+        title="인공지능 개요 · 문제풀이 · 탐색 알고리즘"
+        description="AI가 무엇인지부터 시작해, 문제를 상태공간으로 표현하는 법, DFS·BFS·UCS·A* 탐색 알고리즘까지 단계적으로 학습합니다. 처음 인공지능을 배우는 분도 이해할 수 있도록 기초 개념부터 구성했습니다."
         accent={{
           gradient: "from-indigo-500 to-purple-500",
           bgLight: "bg-indigo-50 dark:bg-indigo-950/40",
@@ -34,12 +42,13 @@ export default function AIStudyHub() {
           text: "text-indigo-600",
         }}
         objectives={[
-          "상태공간 그래프·탐색 트리의 관계 이해",
-          "균일비용 탐색(UCS) 알고리즘의 확장 순서 원리",
-          "A* 알고리즘의 평가함수 f(n) = g(n) + h(n) 이해",
-          "허용성(admissibility) · 일관성(consistency) 조건 분석",
-          "거리 기준 ↔ 시간 기준 비용·휴리스틱 변환",
-          "탐색 트리 작성 규약(경로비용·확장 순서 표기)",
+          "인공지능의 정의·역사·종류(약한/강한/생성형 AI) 이해",
+          "AI 구현 접근방법: 기호처리·통계·연결주의",
+          "상태·연산자·상태공간으로 문제를 표현하는 법",
+          "DFS(깊이우선)·BFS(너비우선) 맹목적 탐색 원리",
+          "균일비용 탐색(UCS) — 비용 기반 최적 경로 탐색",
+          "A* 알고리즘 — 휴리스틱으로 더 똑똑하게 탐색",
+          "허용성(admissibility) 조건과 최적성 보장",
         ]}
       />
       <StudyStageTabs
@@ -51,8 +60,16 @@ export default function AIStudyHub() {
         }}
         foundation={
           <>
+            <AIOverviewIntro />
+            <ProblemSolvingBasics />
+            <BlindSearchVisualizer />
+            <SearchMechanismBasics />
             <StateSpaceIntro />
+            <UCSIntro />
+            <EvalFunctionIntro />
             <UCSAlgorithmVisualizer />
+            <HeuristicSearchIntro />
+            <HillClimbingVisualizer />
             <AStarAlgorithmVisualizer />
             <HeuristicProperties />
           </>

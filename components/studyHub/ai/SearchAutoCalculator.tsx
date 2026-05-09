@@ -457,7 +457,7 @@ export default function SearchAutoCalculator() {
                 : "text-indigo-600"
             }`}
           >
-            <AITerm term="UCS" label="UCS" />
+            UCS
           </button>
           <button
             onClick={() => {
@@ -470,7 +470,7 @@ export default function SearchAutoCalculator() {
                 : "text-indigo-600"
             }`}
           >
-            <AITerm term="AStar" label="A*" />
+            A*
           </button>
         </div>
 

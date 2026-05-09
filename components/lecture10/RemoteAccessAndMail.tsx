@@ -163,6 +163,37 @@ export default function RemoteAccessAndMail() {
           </div>
         </div>
 
+        {/* SSH 동작 2단계 */}
+        <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-800 dark:bg-emerald-900/20">
+          <div className="mb-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+            SSH 동작 방식 (2단계)
+          </div>
+          <div className="space-y-2">
+            <div className="rounded-lg bg-white p-3 text-[11px] dark:bg-gray-800">
+              <div className="font-bold text-emerald-700 dark:text-emerald-300">
+                1단계: 키 교환 준비 및 서버 공개키 전송
+              </div>
+              <p className="mt-1 text-gray-700 dark:text-gray-300">
+                클라이언트와 서버가 지원하는 암호 알고리즘을 선택한 후{" "}
+                <strong>Diffie-Hellman 키 교환</strong>으로 세션 암호화에 필요한 공유키를 생성.
+                서버는 자신의 <strong>공개키</strong>를 클라이언트에 전송하며,
+                클라이언트는 공개키가 <strong>known_hosts</strong>에 없으면
+                지문 등록 여부를 사용자에게 확인.
+              </p>
+            </div>
+            <div className="rounded-lg bg-white p-3 text-[11px] dark:bg-gray-800">
+              <div className="font-bold text-emerald-700 dark:text-emerald-300">
+                2단계: 공개키 암호화 기반 인증
+              </div>
+              <p className="mt-1 text-gray-700 dark:text-gray-300">
+                클라이언트는 자신의 <strong>공개키를 서버에 전송</strong>.
+                서버는 <strong>authorized_keys</strong> 파일에 해당 공개키가 있는지 확인 후
+                인증 성공 시 원본 메시지를 전달하여 접속을 허용.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* TELNET 4-step animation */}
         <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
           <div className="mb-2 flex items-center justify-between">
