@@ -108,9 +108,29 @@ const TIMELINE: TimelineStage[] = [
   },
 ];
 
+const MIME_CONTENT_TYPES = [
+  { type: "Text", sub: "text/plain, text/html", desc: "일반 텍스트 또는 HTML 형식" },
+  { type: "Multipart", sub: "multipart/mixed, multipart/alternative", desc: "여러 파트로 구성된 복합 메시지" },
+  { type: "Message", sub: "message/rfc822", desc: "이메일 메시지 자체를 포함" },
+  { type: "Image", sub: "image/jpeg, image/png", desc: "이미지 파일 첨부" },
+  { type: "Video", sub: "video/mp4, video/mpeg", desc: "동영상 파일 첨부" },
+  { type: "Audio", sub: "audio/mpeg, audio/wav", desc: "오디오 파일 첨부" },
+  { type: "Application", sub: "application/pdf, application/zip", desc: "기타 이진 데이터 (문서, 압축파일 등)" },
+];
+
+const MIME_ENCODINGS = [
+  { enc: "7bit", desc: "7비트 ASCII 텍스트만 전송 가능. 기본값.", safe: true },
+  { enc: "8bit", desc: "8비트 데이터 전송. 일부 서버에서 지원.", safe: true },
+  { enc: "binary", desc: "원시 이진 데이터. 대부분 서버에서 처리 불가.", safe: false },
+  { enc: "quoted-printable", desc: "가독성 텍스트 + 일부 이진 문자 인코딩. 유럽어 문자에 적합.", safe: true },
+  { enc: "base64", desc: "이진 데이터를 64개 ASCII 문자로 인코딩. 범용적으로 사용.", safe: true },
+  { enc: "x-token", desc: "비표준 확장 인코딩. 구현별로 다름.", safe: false },
+];
+
 export default function EmailSecurityOverview() {
   const [openStage, setOpenStage] = useState<string | null>("smime");
   const [threatOpen, setThreatOpen] = useState(false);
+  const [showMimeDetail, setShowMimeDetail] = useState(false);
 
   return (
     <section>
@@ -256,6 +276,97 @@ export default function EmailSecurityOverview() {
           );
         })()}
       </AnimatePresence>
+
+      {/* MIME 헤더 상세 */}
+      <div className="mt-6 rounded-xl border border-blue-200 dark:border-blue-800 overflow-hidden">
+        <button
+          onClick={() => setShowMimeDetail((v) => !v)}
+          className="flex w-full items-center justify-between bg-blue-50 dark:bg-blue-900/20 px-5 py-4 text-left hover:bg-blue-100 dark:hover:bg-blue-900/30"
+        >
+          <span className="font-bold text-blue-800 dark:text-blue-200">
+            MIME 헤더 상세 — Content-Type 7종 · Content-Transfer-Encoding 6종
+          </span>
+          <motion.div animate={{ rotate: showMimeDetail ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown size={18} className="text-blue-400" />
+          </motion.div>
+        </button>
+        <AnimatePresence>
+          {showMimeDetail && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden"
+            >
+              <div className="bg-white dark:bg-gray-900 p-5 space-y-6">
+                {/* Content-Type 7종 */}
+                <div>
+                  <h4 className="mb-3 text-sm font-bold text-gray-800 dark:text-gray-100">
+                    Content-Type 7종
+                    <span className="ml-2 text-xs font-normal text-gray-500">— 메시지의 데이터 유형 지정</span>
+                  </h4>
+                  <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="bg-gray-50 dark:bg-gray-800">
+                          <th className="px-3 py-2 text-left font-bold text-gray-500 uppercase">타입</th>
+                          <th className="px-3 py-2 text-left font-bold text-gray-500 uppercase">예시 서브타입</th>
+                          <th className="px-3 py-2 text-left font-bold text-gray-500 uppercase hidden sm:table-cell">설명</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {MIME_CONTENT_TYPES.map((r, i) => (
+                          <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                            <td className="px-3 py-2 font-mono font-bold text-blue-700 dark:text-blue-300">{r.type}</td>
+                            <td className="px-3 py-2 font-mono text-gray-500 dark:text-gray-400">{r.sub}</td>
+                            <td className="px-3 py-2 text-gray-600 dark:text-gray-400 hidden sm:table-cell">{r.desc}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Content-Transfer-Encoding 6종 */}
+                <div>
+                  <h4 className="mb-3 text-sm font-bold text-gray-800 dark:text-gray-100">
+                    Content-Transfer-Encoding 6종
+                    <span className="ml-2 text-xs font-normal text-gray-500">— 전송 시 인코딩 방식 지정</span>
+                  </h4>
+                  <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="bg-gray-50 dark:bg-gray-800">
+                          <th className="px-3 py-2 text-left font-bold text-gray-500 uppercase">인코딩</th>
+                          <th className="px-3 py-2 text-left font-bold text-gray-500 uppercase">설명</th>
+                          <th className="px-3 py-2 text-center font-bold text-gray-500 uppercase">범용성</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {MIME_ENCODINGS.map((r, i) => (
+                          <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                            <td className="px-3 py-2 font-mono font-bold text-blue-700 dark:text-blue-300">{r.enc}</td>
+                            <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{r.desc}</td>
+                            <td className="px-3 py-2 text-center">
+                              <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${r.safe ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"}`}>
+                                {r.safe ? "범용" : "제한"}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="mt-2 text-xs text-gray-400 italic">
+                    * base64가 가장 범용적 — 이진 파일 첨부에 표준으로 사용. SMTP의 7비트 제약을 우회하기 위해 도입됨.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </section>
   );
 }

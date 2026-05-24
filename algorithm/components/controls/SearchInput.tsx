@@ -22,29 +22,29 @@ export function SearchInput({
         onChange={e => onArrayChange(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && onApply()}
         placeholder="배열 (예: 5, 3, 8, 1, 9)"
-        className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm text-slate-200 w-40 focus:outline-none focus:border-blue-500"
+        className="w-40 rounded-lg border border-cyan-300/30 bg-[#081827] px-2 py-1 text-sm font-medium text-cyan-50 placeholder-cyan-100/45 focus:border-cyan-300 focus:outline-none"
         disabled={disabled}
       />
       <div className="flex items-center gap-1">
-        <span className="text-xs text-slate-400">키:</span>
+        <span className="text-xs font-bold text-cyan-100">키:</span>
         <input
           type="number"
           value={searchKey}
           onChange={e => onSearchKeyChange(Number(e.target.value))}
-          className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm text-slate-200 w-16 focus:outline-none focus:border-blue-500"
+          className="w-16 rounded-lg border border-cyan-300/30 bg-[#081827] px-2 py-1 text-sm font-medium text-cyan-50 focus:border-cyan-300 focus:outline-none"
           disabled={disabled}
         />
       </div>
       <button
         onClick={onApply}
-        className="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-xs"
+        className="rounded-lg bg-emerald-300 px-2 py-1 text-xs font-bold text-slate-950 hover:bg-emerald-200"
         disabled={disabled}
       >
         적용
       </button>
       <button
         onClick={onRandomize}
-        className="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-xs"
+        className="rounded-lg bg-cyan-300/20 px-2 py-1 text-xs font-bold text-cyan-50 hover:bg-cyan-300/30"
         disabled={disabled}
       >
         랜덤

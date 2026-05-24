@@ -137,7 +137,7 @@ export default function Home() {
             <Brain size={36} className="text-indigo-500 mb-4" />
             <h2 className="text-xl font-semibold">인공지능</h2>
             <p className="mt-2 text-sm text-gray-500">
-              1~5강 인터랙티브 학습
+              1~15강 인터랙티브 학습
             </p>
           </Link>
           <Link
@@ -147,7 +147,7 @@ export default function Home() {
             <Code2 size={36} className="text-emerald-500 mb-4" />
             <h2 className="text-xl font-semibold">알고리즘</h2>
             <p className="mt-2 text-sm text-gray-500">
-              정렬, 탐색, 그래프 알고리즘 시각화
+              1~15강 기말 범위와 알고리즘 시각화
             </p>
           </Link>
           <Link

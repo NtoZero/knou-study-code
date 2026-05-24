@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Database, Cpu, Settings, Eye, Globe, Terminal, FileCheck, Search } from "lucide-react";
+import { ChevronDown, Cpu, Settings, Eye, Layers, Monitor, Crosshair, Globe, LayoutGrid, Clock, Zap, CheckCircle, XCircle } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
 
 interface Part {
@@ -30,21 +30,23 @@ const parts: Part[] = [
     border: "border-fuchsia-400",
     textColor: "text-fuchsia-700 dark:text-fuchsia-300",
     role: "데이터 수집",
-    detail: "컴퓨터 시스템과 네트워크에서 보안 관련 데이터를 수집하는 단계. 로그 파일, 네트워크 패킷, 시스템 콜 등 다양한 소스에서 원시 데이터를 획득함.",
-    items: ["시스템 로그 수집", "네트워크 패킷 캡처", "시스템 콜 감시", "파일 해시 수집", "취약점 스캐닝"],
+    detail:
+      "데이터 소스(호스트·네트워크 등)로부터 센서가 활동 데이터를 수집하는 단계. 수집된 데이터는 이벤트 형태로 분석기에 전달됨.",
+    items: ["데이터 소스에서 센서로 활동 전달", "응용·호스트·네트워크 등 다양한 소스", "수집 데이터를 이벤트로 변환하여 전달"],
   },
   {
     id: "analyze",
-    label: "분석조치부",
-    en: "Analysis",
+    label: "분석 및 조치부",
+    en: "Analysis & Action",
     icon: <Cpu size={20} />,
     color: "bg-purple-600",
     bgLight: "bg-purple-50 dark:bg-purple-900/20",
     border: "border-purple-400",
     textColor: "text-purple-700 dark:text-purple-300",
-    role: "침입 여부 판단",
-    detail: "수집된 데이터를 분석하여 침입·공격 여부를 판단하는 핵심 단계. 시그니처 비교, 통계적 이상탐지, 무결성 검사 등의 분석 기법을 적용함.",
-    items: ["시그니처 기반 분석", "통계적 이상탐지", "무결성 검사", "패턴 매칭", "행위 분석"],
+    role: "정보가공·침입탐지·보고·조치",
+    detail:
+      "분석기(Analyzer)가 이벤트를 수신하여 침입 여부를 분석하고, 판단기(Director)가 운영자에게 알림을 보내고 조치를 취하는 단계. 3단계 내부 흐름: 정보가공·축약 → 분석·침입탐지 → 보고·조치.",
+    items: ["분석기: 이벤트 수신 → 침입 여부 판단", "판단기: 알림 발생 → 조치 수행", "운영자: 경보 수신 → 대응"],
   },
   {
     id: "manage",
@@ -55,9 +57,10 @@ const parts: Part[] = [
     bgLight: "bg-violet-50 dark:bg-violet-900/20",
     border: "border-violet-400",
     textColor: "text-violet-700 dark:text-violet-300",
-    role: "정책·경보·대응",
-    detail: "침입 탐지 결과에 따라 보안 정책을 관리하고 경보를 발생시키며 대응 조치를 취하는 단계. 관리자에게 알림을 보내고 로그를 기록함.",
-    items: ["보안 정책 관리", "경보(Alert) 발생", "대응 조치 수행", "로그 기록·보관", "관리자 통보"],
+    role: "보안정책 제공·통제",
+    detail:
+      "관리자가 모니터링부와 분석 및 조치부에 보안정책을 제공하고, 두 부서를 통제·관리하는 단계. IDS 전체 동작의 정책 근거를 제공함.",
+    items: ["모니터링부·분석 및 조치부 전체 통제", "보안정책을 분석기·판단기에 제공", "IDS 설정·정책 변경 관리"],
   },
 ];
 
@@ -67,48 +70,60 @@ interface MonitorMethod {
   title: string;
   en: string;
   desc: string;
+  pros: string[];
+  cons: string[];
   color: string;
 }
 
 const monitorMethods: MonitorMethod[] = [
   {
-    id: "syslog",
-    icon: <Database size={16} />,
-    title: "시스템 로그 모니터링",
-    en: "System Log Monitoring",
-    desc: "OS 및 애플리케이션이 생성하는 로그 파일을 분석. 로그인 시도, 권한 변경, 오류 이벤트 등을 기록한 파일을 주기적으로 검사하여 이상 징후를 탐지함.",
+    id: "app",
+    icon: <Layers size={16} />,
+    title: "응용 기반",
+    en: "Application-based",
+    desc: "애플리케이션 계층에서 정보 수집. DB 관리 소프트웨어, 웹 서버, 방화벽 등에 의해 생성된 로그를 포함하여 분석.",
+    pros: ["시스템상의 미세한 침입행위 탐지 가능", "특정 응용 서비스에 대한 사용자 행위 모니터링"],
+    cons: ["애플리케이션 계층 취약성으로 탐지방법의 무결성 훼손 가능"],
     color: "fuchsia",
   },
   {
-    id: "nettraffic",
-    icon: <Globe size={16} />,
-    title: "네트워크 트래픽 모니터링",
-    en: "Network Traffic Monitoring",
-    desc: "네트워크를 흐르는 패킷을 캡처하여 패턴을 분석. 포트 스캔, DDoS, 비정상 프로토콜 사용 등의 공격 행위를 탐지함.",
+    id: "host",
+    icon: <Monitor size={16} />,
+    title: "호스트 기반",
+    en: "Host-based",
+    desc: "특정 시스템에서 발생하는 행위에 대한 정보 수집. 시스템 로그, 운영체제 프로세스에 의해 생성된 로그를 포함.",
+    pros: ["문제 행위를 지정된 사용자 ID에 매핑 가능", "오용 관련 행동변경 추적 가능", "암호화된 환경에서도 동작 가능"],
+    cons: ["네트워크 행위가 보이지 않음", "운영체제 취약성으로 에이전트와 분석도구 무결성 훼손 가능"],
     color: "purple",
   },
   {
-    id: "syscall",
-    icon: <Terminal size={16} />,
-    title: "시스템 콜 모니터링",
-    en: "System Call Monitoring",
-    desc: "운영체제 커널 수준에서 시스템 콜(read, write, exec 등)을 감시. 프로세스가 OS 자원에 접근하는 방식을 추적하여 악성 행위를 탐지함.",
+    id: "target",
+    icon: <Crosshair size={16} />,
+    title: "목표 기반",
+    en: "Target-based",
+    desc: "목표 객체(데이터, 프로세스)에 대한 무결성 분석. 공격 프로세스의 결과인 특정 파일과 시스템 객체 등을 모니터링.",
+    pros: ["다른 방법으로는 탐지 불가한 침입도 탐지", "시스템 변형 공격의 존재 유무를 신뢰성 있게 탐지", "복구 시 대체해야 할 파일을 결정하여 효율적으로 복구"],
+    cons: ["하위 단말 시스템의 프로세스에 많은 부하", "실시간 탐지 프로세스에는 부적합"],
     color: "violet",
   },
   {
-    id: "integrity",
-    icon: <FileCheck size={16} />,
-    title: "파일 무결성 모니터링",
-    en: "File Integrity Monitoring",
-    desc: "중요 시스템 파일의 해시값(MD5, SHA 등)을 사전에 저장해두고, 주기적으로 현재 해시값과 비교하여 변경 여부를 탐지함.",
+    id: "network",
+    icon: <Globe size={16} />,
+    title: "네트워크 기반",
+    en: "Network-based",
+    desc: "네트워크로부터 정보 수집. 무차별 모드(Promiscuous Mode)를 이용한 패킷 스니핑으로 데이터 수집.",
+    pros: ["감사나 로그 메커니즘을 위한 특별한 요구사항 필요 없음", "SYN flooding, 패킷 폭풍 같은 네트워크 공격 모니터링"],
+    cons: ["호스트상에서 수행되는 세부 행위 탐지 불가", "트래픽이 암호화되어 있으면 프로토콜·내용 스캔 불가", "고속 대규모 네트워크에서는 동작되지 않음"],
     color: "pink",
   },
   {
-    id: "vulnscan",
-    icon: <Search size={16} />,
-    title: "취약점 스캐닝",
-    en: "Vulnerability Scanning",
-    desc: "시스템과 네트워크에서 알려진 취약점이 존재하는지 정기적으로 검사. 패치되지 않은 소프트웨어, 잘못된 설정 등을 발견함.",
+    id: "integrated",
+    icon: <LayoutGrid size={16} />,
+    title: "통합방식",
+    en: "Integrated Approaches",
+    desc: "응용 기반, 호스트 기반, 네트워크 기반 센서들을 조합하여 모든 계층을 동시에 모니터링.",
+    pros: ["모든 레벨에서의 행위를 모니터링 가능", "시간이나 공간의 제약 없이 모니터링하기 용이", "사고분석과 합법적 처리(범죄고발 등) 수행에 도움"],
+    cons: ["구성요소 간 상호동작성을 위한 산업표준 부재로 요소 결합이 어려움", "통합된 시스템의 관리와 이행이 어려움"],
     color: "rose",
   },
 ];
@@ -121,22 +136,64 @@ const colorMap: Record<string, string> = {
   rose: "bg-rose-100 border-rose-300 text-rose-800 dark:bg-rose-900/30 dark:border-rose-700 dark:text-rose-200",
 };
 
+const TIMING_METHODS = [
+  {
+    id: "batch",
+    icon: <Clock size={20} />,
+    label: "일괄처리 방식",
+    en: "Batch Processing",
+    desc: "일정한 시간단위로 배치 방식에 의해 정보를 수집 및 분석.",
+    pros: [
+      "보안위협 수준이 낮고 단일공격에 의한 시스템 손상 가능성이 높을 경우 적합",
+      "실시간 방식보다 시스템에 대한 프로세스 부하가 적음",
+      "시스템과 인적 자원이 제한된 조직에 적합",
+    ],
+    cons: [
+      "사건발생에 대한 즉각적인 대응이 어려움",
+      "수집된 정보집합은 분석 시스템상의 디스크 저장공간을 많이 소비",
+    ],
+    color: "bg-amber-500",
+    bgLight: "bg-amber-50 dark:bg-amber-900/20",
+    border: "border-amber-400",
+    textColor: "text-amber-700 dark:text-amber-300",
+  },
+  {
+    id: "realtime",
+    icon: <Zap size={20} />,
+    label: "실시간 방식",
+    en: "Real-time Processing",
+    desc: "연속적인 정보수집과 분석, 보고기능 제공. 공격을 방해하기 위해 탐지 프로세스가 빠른 응답을 발생시킴. 이메일·SMS 등을 통한 오프사이트 경고 지원.",
+    pros: [
+      "관리자가 공격을 저지할 수 있도록 충분히 빠른 공격탐지 가능",
+      "관리자는 시스템 복구를 위한 사고처리를 빠르게 수행할 수 있음",
+    ],
+    cons: [
+      "많은 메모리와 프로세스 리소스 소비",
+      "설정값이 잘못되면 허위경고가 많이 발생할 수 있음",
+    ],
+    color: "bg-blue-600",
+    bgLight: "bg-blue-50 dark:bg-blue-900/20",
+    border: "border-blue-400",
+    textColor: "text-blue-700 dark:text-blue-300",
+  },
+];
+
 export default function IDSArchitectureDiagram() {
   const [activePart, setActivePart] = useState<string | null>(null);
   const [openMethod, setOpenMethod] = useState<string | null>(null);
+  const [activeTiming, setActiveTiming] = useState<string | null>(null);
 
   return (
     <section>
       <SectionTitle
         title="IDS 구성 3부"
-        subtitle="Intrusion Detection System — 침입탐지시스템의 3단계 구성 구조"
+        subtitle="Intrusion Detection System — 모니터링부 · 분석 및 조치부 · 관리부"
       />
 
       {/* Flow Diagram */}
       <div className="mb-4 flex flex-col items-center gap-0 sm:flex-row sm:items-stretch sm:justify-center">
         {parts.map((part, idx) => (
           <div key={part.id} className="flex flex-col items-center sm:flex-row sm:items-center">
-            {/* Part Box */}
             <motion.button
               onClick={() => setActivePart(activePart === part.id ? null : part.id)}
               whileHover={{ scale: 1.03 }}
@@ -155,15 +212,12 @@ export default function IDSArchitectureDiagram() {
               />
             </motion.button>
 
-            {/* Arrow between parts */}
             {idx < parts.length - 1 && (
               <div className="flex flex-col items-center sm:flex-row">
-                {/* vertical arrow (mobile) */}
                 <div className="flex h-8 flex-col items-center sm:hidden">
                   <div className="h-6 w-0.5 bg-gray-400 dark:bg-gray-600" />
                   <div className="border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-400 dark:border-t-gray-500" />
                 </div>
-                {/* horizontal arrow (sm+) */}
                 <div className="hidden sm:flex sm:flex-row sm:items-center">
                   <div className="h-0.5 w-6 bg-gray-400 dark:bg-gray-600" />
                   <div className="border-b-4 border-l-4 border-t-4 border-b-transparent border-l-gray-400 border-t-transparent dark:border-l-gray-500" />
@@ -206,8 +260,8 @@ export default function IDSArchitectureDiagram() {
       {/* Monitoring Methods */}
       <div className="mt-8">
         <h3 className="mb-4 text-base font-bold text-gray-800 dark:text-gray-100">
-          모니터링 방법 5종
-          <span className="ml-2 text-xs font-normal text-gray-500">모니터링부에서 사용하는 데이터 수집 방법</span>
+          IDS 모니터링 방법 5종
+          <span className="ml-2 text-xs font-normal text-gray-500">— 데이터를 어디서 수집하는가</span>
         </h3>
         <div className="space-y-2">
           {monitorMethods.map((m) => (
@@ -233,8 +287,88 @@ export default function IDSArchitectureDiagram() {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <div className="border-t border-current border-opacity-20 px-4 pb-3 pt-2">
+                    <div className="border-t border-current border-opacity-20 px-4 pb-4 pt-2 space-y-3">
                       <p className="text-sm leading-relaxed opacity-90">{m.desc}</p>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <div className="mb-1.5 flex items-center gap-1 text-xs font-bold text-green-700 dark:text-green-300">
+                            <CheckCircle size={12} /> 장점
+                          </div>
+                          {m.pros.map((p) => (
+                            <div key={p} className="text-xs text-gray-700 dark:text-gray-300">· {p}</div>
+                          ))}
+                        </div>
+                        <div>
+                          <div className="mb-1.5 flex items-center gap-1 text-xs font-bold text-red-600 dark:text-red-400">
+                            <XCircle size={12} /> 단점
+                          </div>
+                          {m.cons.map((c) => (
+                            <div key={c} className="text-xs text-gray-700 dark:text-gray-300">· {c}</div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 분석시기 */}
+      <div className="mt-8">
+        <h3 className="mb-4 text-base font-bold text-gray-800 dark:text-gray-100">
+          IDS 정보수집과 분석시기
+          <span className="ml-2 text-xs font-normal text-gray-500">— 언제 분석하는가</span>
+        </h3>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {TIMING_METHODS.map((t) => (
+            <div
+              key={t.id}
+              className={`rounded-xl border-2 ${t.border} ${t.bgLight} overflow-hidden cursor-pointer`}
+              onClick={() => setActiveTiming(activeTiming === t.id ? null : t.id)}
+            >
+              <div className="flex items-center gap-3 p-4">
+                <div className={`rounded-lg ${t.color} p-2 text-white shrink-0`}>{t.icon}</div>
+                <div className="flex-1">
+                  <div className={`text-sm font-bold ${t.textColor}`}>{t.label}</div>
+                  <div className="text-xs text-gray-400">{t.en}</div>
+                </div>
+                <ChevronDown
+                  size={14}
+                  className={`shrink-0 ${t.textColor} transition-transform ${activeTiming === t.id ? "rotate-180" : ""}`}
+                />
+              </div>
+              <AnimatePresence>
+                {activeTiming === t.id && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className={`border-t ${t.border} px-4 pb-4 pt-3 space-y-3`}>
+                      <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300">{t.desc}</p>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <div>
+                          <div className="mb-1 flex items-center gap-1 text-xs font-bold text-green-700 dark:text-green-300">
+                            <CheckCircle size={11} /> 장점
+                          </div>
+                          {t.pros.map((p) => (
+                            <div key={p} className="text-xs text-gray-600 dark:text-gray-400">· {p}</div>
+                          ))}
+                        </div>
+                        <div>
+                          <div className="mb-1 flex items-center gap-1 text-xs font-bold text-red-600 dark:text-red-400">
+                            <XCircle size={11} /> 단점
+                          </div>
+                          {t.cons.map((c) => (
+                            <div key={c} className="text-xs text-gray-600 dark:text-gray-400">· {c}</div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 )}

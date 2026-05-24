@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Brain, ChevronRight } from "lucide-react";
+import { Menu, X, Brain, ChevronRight, FileQuestion } from "lucide-react";
 import { aiLectures } from "@/lib/constants";
 
 export default function AINavigation() {
@@ -44,6 +44,27 @@ export default function AINavigation() {
         </Link>
 
         <nav className="p-3">
+          <Link
+            href="/ai/past-exam"
+            onClick={() => setOpen(false)}
+            className={`mb-3 flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors ${
+              pathname === "/ai/past-exam"
+                ? "bg-indigo-50 font-semibold text-indigo-600 dark:bg-indigo-950 dark:text-indigo-300"
+                : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            }`}
+          >
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gray-900 text-white dark:bg-white dark:text-gray-900">
+              <FileQuestion size={15} />
+            </span>
+            <div className="min-w-0">
+              <div className="truncate font-medium">기출분석</div>
+              <div className="truncate text-xs text-gray-400">2017-2019 기말</div>
+            </div>
+            {pathname === "/ai/past-exam" && (
+              <ChevronRight size={14} className="ml-auto shrink-0" />
+            )}
+          </Link>
+
           {aiLectures.map((lec) => {
             const active = pathname === `/ai/lecture/${lec.id}`;
             return (

@@ -57,21 +57,49 @@ const layers: LayerData[] = [
       { name: "TLS (Transport Layer Security)", desc: "SSL의 표준화 버전. HTTPS, FTPS, SMTPS 등에서 널리 사용." },
     ],
     detail: (
-      <div className="mt-4 rounded-xl border border-violet-200 bg-white p-4 dark:border-violet-800 dark:bg-gray-900">
-        <h5 className="mb-3 text-sm font-bold text-violet-700 dark:text-violet-300">
-          SSL/TLS 핵심 역할
-        </h5>
-        <div className="grid gap-2 text-xs sm:grid-cols-3">
-          {[
-            { label: "핸드셰이크", desc: "서버·클라이언트 인증, 암호 알고리즘 협상" },
-            { label: "세션 키 교환", desc: "공개키 암호로 대칭키를 안전하게 교환" },
-            { label: "데이터 암호화", desc: "대칭키로 데이터 기밀성·무결성 보장" },
-          ].map((item) => (
-            <div key={item.label} className="rounded-lg bg-violet-50 p-3 dark:bg-violet-900/30">
-              <div className="font-semibold text-violet-700 dark:text-violet-300">{item.label}</div>
-              <div className="mt-1 text-gray-500">{item.desc}</div>
-            </div>
-          ))}
+      <div className="mt-4 space-y-3">
+        {/* Handshake Protocol vs Record Protocol */}
+        <div className="rounded-xl border border-violet-200 dark:border-violet-800 overflow-hidden">
+          <div className="bg-violet-50 dark:bg-violet-900/30 px-4 py-2">
+            <span className="text-xs font-bold text-violet-700 dark:text-violet-300">SSL/TLS 핵심 하위 프로토콜</span>
+          </div>
+          <div className="grid gap-0 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-violet-100 dark:divide-violet-800">
+            {[
+              {
+                proto: "Handshake Protocol",
+                ko: "핸드셰이크 프로토콜",
+                items: [
+                  "서버·클라이언트 상호 인증",
+                  "암호화 알고리즘(Cipher Suite) 협상",
+                  "공개키로 세션 키(대칭키) 교환",
+                  "SSL/TLS 세션 수립",
+                ],
+              },
+              {
+                proto: "Record Protocol",
+                ko: "레코드 프로토콜",
+                items: [
+                  "실제 데이터(애플리케이션 메시지) 처리",
+                  "데이터 분할·압축·MAC 생성",
+                  "협상된 대칭키로 암호화",
+                  "데이터 기밀성·무결성 보장",
+                ],
+              },
+            ].map((p) => (
+              <div key={p.proto} className="bg-white dark:bg-gray-900 p-4">
+                <div className="mb-1 text-xs font-bold text-violet-700 dark:text-violet-300">{p.proto}</div>
+                <div className="mb-2 text-xs text-gray-400">{p.ko}</div>
+                <ul className="space-y-1">
+                  {p.items.map((item) => (
+                    <li key={item} className="flex items-start gap-1.5 text-xs text-gray-600 dark:text-gray-400">
+                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-violet-500" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     ),
@@ -196,6 +224,40 @@ function IPsecDetail() {
             </div>
             <div className="mt-3 rounded-lg bg-indigo-50 p-3 text-xs text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">
               <strong>핵심 차이:</strong> AH는 암호화(기밀성)를 제공하지 않음. ESP는 인증+무결성+기밀성을 모두 제공하며, 실무에서 더 널리 사용됨.
+            </div>
+
+            {/* 전송 모드 vs 터널 모드 */}
+            <div className="mt-3 rounded-xl border border-indigo-200 dark:border-indigo-800 overflow-hidden">
+              <div className="bg-indigo-50 dark:bg-indigo-900/30 px-4 py-2">
+                <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300">IPsec 운용 모드 — 전송 모드 vs 터널 모드</span>
+              </div>
+              <div className="grid gap-0 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-indigo-100 dark:divide-indigo-800">
+                {[
+                  {
+                    mode: "전송 모드",
+                    en: "Transport Mode",
+                    desc: "IP 페이로드(데이터)만 보호. 원본 IP 헤더 유지. 종단간(end-to-end) 통신에 사용.",
+                    use: "호스트 ↔ 호스트 직접 통신",
+                    point: "IP 헤더는 보호되지 않으므로 출발지·목적지 노출",
+                    bad: false,
+                  },
+                  {
+                    mode: "터널 모드",
+                    en: "Tunnel Mode",
+                    desc: "원본 IP 패킷 전체를 새 IP 헤더로 감싸서 보호. VPN 게이트웨이 간 통신에 사용.",
+                    use: "VPN 게이트웨이 ↔ 게이트웨이",
+                    point: "내부 IP 헤더까지 보호 — 더 강력한 보안",
+                    bad: false,
+                  },
+                ].map((m) => (
+                  <div key={m.mode} className="bg-white dark:bg-gray-900 p-4">
+                    <div className="mb-1 text-xs font-bold text-indigo-700 dark:text-indigo-300">{m.mode} <span className="font-normal text-gray-400">({m.en})</span></div>
+                    <p className="mb-2 text-xs text-gray-600 dark:text-gray-400">{m.desc}</p>
+                    <div className="text-xs"><span className="font-semibold text-gray-500">사용 환경: </span>{m.use}</div>
+                    <div className="mt-1 text-xs text-gray-500">{m.point}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}

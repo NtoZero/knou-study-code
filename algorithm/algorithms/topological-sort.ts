@@ -39,6 +39,7 @@ export const topologicalSort: SortGenerator = function* (arr: number[]) {
       edges: edgs,
       queue: [...queue],
       order: [...order],
+      orderLabel: '정렬 결과',
     };
   }
 

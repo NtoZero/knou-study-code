@@ -119,7 +119,7 @@ export const algorithmMetas: Record<string, AlgorithmMeta> = {
     id: 'bst', name: '이진 탐색 트리', nameEn: 'Binary Search Tree', group: '6강',
     timeComplexity: { best: 'O(log n)', average: 'O(log n)', worst: 'O(n)' },
     spaceComplexity: 'O(n)', stable: true,
-    description: '왼쪽 자식 < 부모 < 오른쪽 자식 규칙을 만족하는 이진 트리 기반 탐색.',
+    description: '왼쪽 자식 < 부모 < 오른쪽 자식 규칙을 만족하는 이진 트리 기반 탐색 구조. 삽입·탐색·삭제를 함께 다룬다.',
     category: 'search', inputType: 'tree',
   },
   'tree-234': {
@@ -147,7 +147,7 @@ export const algorithmMetas: Record<string, AlgorithmMeta> = {
     id: 'hash-table', name: '해시 테이블', nameEn: 'Hash Table', group: '7강',
     timeComplexity: { best: 'O(1)', average: 'O(1)', worst: 'O(n)' },
     spaceComplexity: 'O(n)', stable: true,
-    description: '해시 함수로 키를 테이블 인덱스로 변환하여 상수 시간 탐색을 목표로 하는 자료구조.',
+    description: '해시 함수로 키를 테이블 인덱스로 변환하여 상수 시간 탐색을 목표로 하는 자료구조. 충돌 해결과 삭제 시 tombstone을 함께 고려한다.',
     category: 'search', inputType: 'array',
   },
   dfs: {
@@ -177,6 +177,18 @@ export const algorithmMetas: Record<string, AlgorithmMeta> = {
     spaceComplexity: 'O(V)', stable: true,
     description: '그래프에서 서로 연결된 정점들의 그룹을 찾는 알고리즘.',
     category: 'graph', inputType: 'graph',
+  },
+  'strongly-connected-components': {
+    id: 'strongly-connected-components',
+    name: '강연결 성분',
+    nameEn: 'Strongly Connected Components',
+    group: '8강',
+    timeComplexity: { best: 'O(V+E)', average: 'O(V+E)', worst: 'O(V+E)' },
+    spaceComplexity: 'O(V)',
+    stable: true,
+    description: '방향 그래프에서 양방향 도달 가능성을 기준으로 정점을 묶는 DFS 기반 알고리즘.',
+    category: 'graph',
+    inputType: 'graph',
   },
   kruskal: {
     id: 'kruskal', name: '크루스칼', nameEn: 'Kruskal\'s Algorithm', group: '9강',

@@ -24,7 +24,7 @@ export function GraphInput({
       <select
         value={graphIndex}
         onChange={e => onGraphIndexChange(Number(e.target.value))}
-        className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm text-slate-200 focus:outline-none focus:border-blue-500"
+        className="rounded-lg border border-cyan-300/30 bg-[#081827] px-2 py-1 text-sm font-semibold text-cyan-50 focus:border-cyan-300 focus:outline-none"
         disabled={disabled}
       >
         {graphExamples.map((example, idx) => (
@@ -35,19 +35,19 @@ export function GraphInput({
       </select>
 
       <div className="flex items-center gap-1">
-        <span className="text-xs text-slate-400">시작 정점:</span>
+        <span className="text-xs font-bold text-cyan-100">시작 정점:</span>
         <input
           type="number"
           value={startVertex}
           onChange={e => onStartVertexChange(Number(e.target.value))}
           min={0}
           max={vertexCount - 1}
-          className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm text-slate-200 w-16 focus:outline-none focus:border-blue-500"
+          className="w-16 rounded-lg border border-cyan-300/30 bg-[#081827] px-2 py-1 text-sm font-medium text-cyan-50 focus:border-cyan-300 focus:outline-none"
           disabled={disabled}
         />
       </div>
 
-      <span className="text-xs text-slate-500">
+      <span className="rounded-full bg-cyan-300/15 px-2 py-1 text-xs font-bold text-cyan-100">
         V={vertexCount} E={edgeCount}
       </span>
     </div>

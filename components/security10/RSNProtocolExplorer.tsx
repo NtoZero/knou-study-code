@@ -27,8 +27,8 @@ const RSN_COMPONENTS: RSNComponent[] = [
     icon: <Key size={18} />,
     role: "RC4 기반 개선 암호화 (과도기)",
     detail:
-      "WEP의 정적 키 문제를 해결하기 위해 RC4 위에 키 믹싱(Key Mixing)과 시퀀스 번호(TSC)를 추가한 프로토콜. WEP 하드웨어에서 소프트웨어 업그레이드만으로 적용 가능. WPA2가 의무화된 이후 레거시로 분류됨.",
-    items: ["RC4 스트림 암호 기반", "128비트 임시 키 사용", "키 믹싱(Key Mixing) 적용", "64비트 MIC(Michael) 무결성 코드", "WEP 하드웨어 재활용 가능"],
+      "WEP의 정적 키 문제를 해결하기 위해 RC4 위에 키 믹싱(Key Mixing)과 시퀀스 번호(TSC)를 추가한 프로토콜. 256비트 임시 키를 사용하며, 기밀성용 128비트 + 송신 MIC 64비트 + 수신 MIC 64비트로 구성됨. WEP 하드웨어에서 소프트웨어 업그레이드만으로 적용 가능. WPA2가 의무화된 이후 레거시로 분류됨.",
+    items: ["RC4 스트림 암호 기반", "256비트 임시 키 = 기밀성 128비트 + MIC 64비트(송신) + MIC 64비트(수신)", "키 믹싱(Key Mixing) 적용", "64비트 MIC(Michael) 무결성 코드 — 양방향 독립 키", "WEP 하드웨어 재활용 가능"],
     color: "bg-amber-500",
     bgLight: "bg-amber-50 dark:bg-amber-900/20",
     border: "border-amber-400",

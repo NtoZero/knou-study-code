@@ -13,15 +13,15 @@ const categories: { id: AlgorithmCategory; label: string }[] = [
 
 export function CategorySelector({ selected, onSelect }: CategorySelectorProps) {
   return (
-    <div className="flex gap-1 bg-slate-800 rounded-lg p-0.5">
+    <div className="flex gap-1 rounded-xl border border-cyan-300/25 bg-[#081827] p-1">
       {categories.map(cat => (
         <button
           key={cat.id}
           onClick={() => onSelect(cat.id)}
-          className={`px-3 py-1 text-xs rounded-md transition-colors ${
+          className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
             selected === cat.id
-              ? 'bg-blue-600 text-white'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700'
+              ? 'bg-cyan-300 text-slate-950'
+              : 'text-cyan-100 hover:bg-cyan-300/15 hover:text-white'
           }`}
         >
           {cat.label}

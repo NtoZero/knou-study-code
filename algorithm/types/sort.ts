@@ -69,7 +69,9 @@ export interface GraphAux {
   queue?: number[];
   stack?: number[];
   order?: number[];
+  orderLabel?: string;
   sets?: number[][];
+  setsLabel?: string;
 }
 
 export type AuxiliaryData =

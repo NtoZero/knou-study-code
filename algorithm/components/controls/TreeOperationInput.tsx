@@ -29,19 +29,19 @@ export function TreeOperationInput({
         onChange={e => setText(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && handleApply()}
         placeholder="삽입할 값 (예: 50, 30, 70, 20)"
-        className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm text-slate-200 w-48 focus:outline-none focus:border-blue-500"
+        className="w-48 rounded-lg border border-cyan-300/30 bg-[#081827] px-2 py-1 text-sm font-medium text-cyan-50 placeholder-cyan-100/45 focus:border-cyan-300 focus:outline-none"
         disabled={disabled}
       />
       <button
         onClick={handleApply}
-        className="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-xs"
+        className="rounded-lg bg-emerald-300 px-2 py-1 text-xs font-bold text-slate-950 hover:bg-emerald-200"
         disabled={disabled}
       >
         적용
       </button>
       <button
         onClick={onRandomize}
-        className="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-xs"
+        className="rounded-lg bg-cyan-300/20 px-2 py-1 text-xs font-bold text-cyan-50 hover:bg-cyan-300/30"
         disabled={disabled}
       >
         랜덤

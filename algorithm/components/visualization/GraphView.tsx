@@ -9,7 +9,7 @@ type NodeState = keyof typeof graphNodeColors;
 type EdgeState = keyof typeof graphEdgeColors;
 
 export function GraphView({ data }: GraphViewProps) {
-  const { vertices, edges, distances, mstEdges, queue, stack, order, sets } = data;
+  const { vertices, edges, distances, mstEdges, queue, stack, order, orderLabel, sets, setsLabel } = data;
 
   if (vertices.length === 0) return null;
 
@@ -242,7 +242,7 @@ export function GraphView({ data }: GraphViewProps) {
         )}
         {order && order.length > 0 && (
           <p className="text-xs text-slate-300">
-            <span className="text-emerald-400">방문 순서:</span> [{order.map(o => {
+            <span className="text-emerald-400">{orderLabel ?? '방문 순서'}:</span> [{order.map(o => {
               const v = vertices.find(v => v.id === o);
               return v?.label ?? String(o);
             }).join(', ')}]
@@ -250,7 +250,7 @@ export function GraphView({ data }: GraphViewProps) {
         )}
         {sets && sets.length > 0 && (
           <p className="text-xs text-slate-300">
-            <span className="text-blue-400">연결 성분:</span>{' '}
+            <span className="text-blue-400">{setsLabel ?? '연결 성분'}:</span>{' '}
             {sets.map((set, i) => (
               <span key={i}>
                 {'{'}

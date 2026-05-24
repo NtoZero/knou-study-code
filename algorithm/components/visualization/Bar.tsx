@@ -17,12 +17,12 @@ export function Bar({ value, maxValue, color, width, index }: BarProps) {
       style={{ width: `${width}%` }}
     >
       <motion.div
-        className="rounded-t-sm relative"
-        style={{ backgroundColor: color, width: '80%' }}
+        className="relative rounded-t-md shadow-[0_0_18px_rgba(56,189,248,0.28)] ring-1 ring-white/25"
+        style={{ backgroundColor: color, width: '82%' }}
         animate={{ height: `${heightPercent}%` }}
         transition={{ duration: 0.15, ease: 'easeOut' }}
       />
-      <span className="text-[10px] text-slate-400 mt-1 select-none">
+      <span className="mt-1 select-none rounded bg-slate-950/70 px-1.5 py-0.5 text-[11px] font-bold text-cyan-100">
         {value}
       </span>
     </div>

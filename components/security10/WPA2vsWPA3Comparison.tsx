@@ -75,17 +75,17 @@ const WPA3_FEATURES: WPA3Feature[] = [
     textColor: "text-pink-700 dark:text-pink-300",
   },
   {
-    id: "pmf",
-    title: "PMF",
-    subtitle: "Protected Management Frames",
+    id: "owe",
+    title: "개별 데이터 암호화",
+    subtitle: "Individualized Data Encryption (OWE)",
     icon: <Shield size={18} />,
-    detail: "Wi-Fi 관리 프레임(Deauthentication, Disassociation 등)을 암호화·인증. WPA2에서는 관리 프레임이 평문으로 전송되어 공격자가 가짜 De-auth 프레임으로 연결을 강제 해제할 수 있었음.",
+    detail: "각 클라이언트와 AP 사이에 개별적인 암호화 세션을 수립하여, 같은 네트워크에 연결된 다른 사용자가 서로의 트래픽을 엿볼 수 없게 함. WPA2에서는 같은 PSK를 공유하는 단말이 서로의 트래픽을 복호화할 수 있었던 문제를 해결.",
     points: [
-      "관리 프레임 암호화 및 인증",
-      "무선 재밍(Deauth 공격) 방어",
-      "세션 하이재킹 방어",
-      "WPA3에서 필수(Mandatory) 적용",
-      "WPA2에서도 선택적(Optional)으로 지원",
+      "클라이언트마다 독립된 암호화 키 할당",
+      "동일 네트워크 내 사용자 간 도청 방지",
+      "공개 Wi-Fi에서도 암호화 적용 가능(OWE)",
+      "WPA2-Personal의 공유 키 문제 해결",
+      "기업·공공 Wi-Fi 보안 수준 향상",
     ],
     color: "bg-violet-600",
     bgLight: "bg-violet-50 dark:bg-violet-900/20",
@@ -217,7 +217,7 @@ export default function WPA2vsWPA3Comparison() {
         <div className="flex flex-wrap items-center gap-3">
           {[
             { from: "PSK", to: "SAE(Dragonfly)", desc: "오프라인 사전 공격 방어" },
-            { from: "관리 프레임 평문", to: "PMF 필수", desc: "De-auth 공격 방어" },
+            { from: "공유 PSK 암호화", to: "개별 데이터 암호화", desc: "사용자 간 도청 방지" },
             { from: "128비트 최대", to: "192비트 모드", desc: "고보안 환경" },
             { from: "수동 IoT 설정", to: "Easy Connect", desc: "QR 코드 자동화" },
           ].map((item, i) => (

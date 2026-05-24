@@ -17,7 +17,7 @@ export function ArrayInput({ inputText, onInputChange, onApply, onRandomize, dis
         onChange={(e) => onInputChange(e.target.value)}
         placeholder="예: 38, 27, 43, 3, 9, 82, 10"
         disabled={disabled}
-        className="flex-1 bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 disabled:opacity-50"
+        className="flex-1 rounded-lg border border-cyan-300/30 bg-[#081827] px-3 py-1.5 text-sm font-medium text-cyan-50 placeholder-cyan-100/45 focus:border-cyan-300 focus:outline-none disabled:opacity-50"
         onKeyDown={(e) => {
           if (e.key === 'Enter') onApply();
         }}
@@ -25,7 +25,7 @@ export function ArrayInput({ inputText, onInputChange, onApply, onRandomize, dis
       <button
         onClick={onApply}
         disabled={disabled || !inputText.trim()}
-        className="p-1.5 rounded bg-emerald-600 hover:bg-emerald-500 disabled:opacity-30 text-white"
+        className="rounded-lg bg-emerald-300 p-1.5 text-slate-950 hover:bg-emerald-200 disabled:opacity-30"
         title="적용"
       >
         <Check size={16} />
@@ -33,7 +33,7 @@ export function ArrayInput({ inputText, onInputChange, onApply, onRandomize, dis
       <button
         onClick={onRandomize}
         disabled={disabled}
-        className="p-1.5 rounded bg-slate-600 hover:bg-slate-500 disabled:opacity-30 text-white"
+        className="rounded-lg bg-cyan-300/20 p-1.5 text-cyan-50 hover:bg-cyan-300/30 disabled:opacity-30"
         title="랜덤 생성"
       >
         <Shuffle size={16} />

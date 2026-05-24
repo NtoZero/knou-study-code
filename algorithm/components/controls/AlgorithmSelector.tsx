@@ -18,7 +18,7 @@ export function AlgorithmSelector({
         <select
           value={selected}
           onChange={(e) => onSelect(e.target.value)}
-          className="flex-1 bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"
+          className="flex-1 rounded-lg border border-cyan-300/30 bg-[#081827] px-3 py-1.5 text-sm font-semibold text-cyan-50 focus:border-cyan-300 focus:outline-none"
         >
           {algorithmGroups.map(group => (
             <optgroup key={group.label} label={group.label}>
@@ -31,8 +31,8 @@ export function AlgorithmSelector({
 
         <button
           onClick={onToggleCompare}
-          className={`px-3 py-1.5 text-xs rounded ${
-            compareMode ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+          className={`rounded-lg px-3 py-1.5 text-xs font-bold ${
+            compareMode ? 'bg-fuchsia-400 text-slate-950' : 'bg-cyan-300/15 text-cyan-100 hover:bg-cyan-300/25'
           }`}
         >
           비교
@@ -43,7 +43,7 @@ export function AlgorithmSelector({
         <select
           value={compareId}
           onChange={(e) => onCompareSelect?.(e.target.value)}
-          className="w-full bg-slate-800 border border-violet-500/50 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500"
+          className="w-full rounded-lg border border-fuchsia-300/50 bg-[#081827] px-3 py-1.5 text-sm font-semibold text-fuchsia-50 focus:border-fuchsia-300 focus:outline-none"
         >
           {algorithmGroups.map(group => (
             <optgroup key={group.label} label={group.label}>

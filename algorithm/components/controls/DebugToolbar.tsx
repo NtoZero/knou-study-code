@@ -26,7 +26,7 @@ export function DebugToolbar({
       <button
         onClick={onStepBackward}
         disabled={isAtStart}
-        className="p-1.5 rounded hover:bg-slate-600 disabled:opacity-30 text-slate-300"
+        className="rounded-lg p-1.5 text-cyan-100 hover:bg-cyan-300/20 disabled:opacity-30"
         title="Step Back (F9 / ←)"
       >
         <StepBack size={16} />
@@ -34,18 +34,18 @@ export function DebugToolbar({
       <button
         onClick={onStepForward}
         disabled={isAtEnd}
-        className="p-1.5 rounded hover:bg-slate-600 disabled:opacity-30 text-slate-300"
+        className="rounded-lg p-1.5 text-cyan-100 hover:bg-cyan-300/20 disabled:opacity-30"
         title="Step Over (F10 / → / Space)"
       >
         <StepForward size={16} />
       </button>
 
-      <div className="w-px h-4 bg-slate-600 mx-1" />
+      <div className="w-px h-4 bg-cyan-300/30 mx-1" />
 
       {isPlaying ? (
         <button
           onClick={onPause}
-          className="p-1.5 rounded hover:bg-slate-600 text-amber-400"
+          className="rounded-lg p-1.5 text-amber-200 hover:bg-amber-300/20"
           title="Pause"
         >
           <Square size={14} />
@@ -54,7 +54,7 @@ export function DebugToolbar({
         <button
           onClick={onPlay}
           disabled={isAtEnd}
-          className="p-1.5 rounded hover:bg-slate-600 disabled:opacity-30 text-emerald-400"
+          className="rounded-lg p-1.5 text-emerald-200 hover:bg-emerald-300/20 disabled:opacity-30"
           title="Run to End (F5)"
         >
           <Play size={14} />
@@ -64,15 +64,15 @@ export function DebugToolbar({
       <button
         onClick={onReset}
         disabled={isAtStart}
-        className="p-1.5 rounded hover:bg-slate-600 disabled:opacity-30 text-slate-300"
+        className="rounded-lg p-1.5 text-cyan-100 hover:bg-cyan-300/20 disabled:opacity-30"
         title="Reset (Shift+F5)"
       >
         <RotateCcw size={14} />
       </button>
 
-      <div className="w-px h-4 bg-slate-600 mx-1" />
+      <div className="w-px h-4 bg-cyan-300/30 mx-1" />
 
-      <span className="text-xs text-slate-400 font-mono tabular-nums">
+      <span className="font-mono text-xs font-bold tabular-nums text-cyan-100">
         Step {currentIndex} / {Math.max(totalSteps - 1, 0)}
       </span>
     </div>

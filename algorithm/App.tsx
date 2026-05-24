@@ -98,6 +98,7 @@ export default function App() {
       const defaultGraphIndices: Record<string, number> = {
         dfs: 0, bfs: 0,
         'topological-sort': 2, 'connected-components': 1,
+        'strongly-connected-components': 3,
         kruskal: 4, prim: 4, dijkstra: 5,
         'bellman-ford': 7, 'floyd-warshall': 9, 'ford-fulkerson': 10,
       };
@@ -107,6 +108,16 @@ export default function App() {
       setStartVertex(0);
     }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('algorithm');
+    const meta = id ? algorithms[id]?.meta : null;
+    if (!id || !meta) return;
+
+    if (meta.category) setCategory(meta.category);
+    handleAlgorithmChange(id);
+  }, []);
 
   const handleApplyInput = () => {
     return arrayInput.applyInput();
@@ -221,20 +232,24 @@ export default function App() {
   // Determine if we should show BarChart (only for array-based sort/search)
   const showBarChart = inputType === 'array';
 
-  const left = player.currentStep && (
+  const left = (
     <>
-      {showBarChart && <BarChart step={player.currentStep} />}
+      {player.currentStep && (
+        <>
+          {showBarChart && <BarChart step={player.currentStep} />}
 
-      {player.currentStep.auxiliaryData?.kind === 'heap' && (
-        <HeapTree step={player.currentStep} heapAux={player.currentStep.auxiliaryData} />
+          {player.currentStep.auxiliaryData?.kind === 'heap' && (
+            <HeapTree step={player.currentStep} heapAux={player.currentStep.auxiliaryData} />
+          )}
+          {player.currentStep.auxiliaryData && player.currentStep.auxiliaryData.kind !== 'heap' && (
+            <AuxiliaryView data={player.currentStep.auxiliaryData} />
+          )}
+
+          <AlgorithmGuidePanel algorithmId={algorithmId} />
+
+          <ExplanationPanel step={player.currentStep} />
+        </>
       )}
-      {player.currentStep.auxiliaryData && player.currentStep.auxiliaryData.kind !== 'heap' && (
-        <AuxiliaryView data={player.currentStep.auxiliaryData} />
-      )}
-
-      <AlgorithmGuidePanel algorithmId={algorithmId} />
-
-      <ExplanationPanel step={player.currentStep} />
     </>
   );
 

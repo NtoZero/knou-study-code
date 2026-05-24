@@ -397,6 +397,91 @@ export default function PGPServiceAnimator() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* PGP 메시지 형식 3계층 */}
+      <div className="mt-8 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-gray-50 dark:bg-gray-800 px-5 py-4">
+          <h3 className="font-bold text-gray-800 dark:text-gray-100">PGP 메시지 형식 — 3계층 구조</h3>
+          <p className="mt-1 text-xs text-gray-500">PGP 메시지는 세션키 구성요소 · 서명 부분 · 메시지 3계층으로 구성되며 각각 선택적으로 포함됨</p>
+        </div>
+        <div className="bg-white dark:bg-gray-900 p-5">
+          {/* 계층 다이어그램 */}
+          <div className="space-y-2">
+            {[
+              {
+                layer: "세션키 구성요소",
+                en: "Session Key Component (선택적)",
+                color: "bg-orange-500",
+                bgLight: "bg-orange-50 dark:bg-orange-900/20",
+                border: "border-orange-400",
+                textColor: "text-orange-700 dark:text-orange-300",
+                contents: [
+                  "수신자의 공개키 ID",
+                  "수신자 공개키로 암호화된 세션키",
+                  "기밀성 서비스 제공 시 포함",
+                ],
+                note: "기밀성 서비스를 사용할 경우에만 포함",
+              },
+              {
+                layer: "서명 부분",
+                en: "Signature Component (선택적)",
+                color: "bg-rose-500",
+                bgLight: "bg-rose-50 dark:bg-rose-900/20",
+                border: "border-rose-400",
+                textColor: "text-rose-700 dark:text-rose-300",
+                contents: [
+                  "서명자의 공개키 ID",
+                  "서명 생성 타임스탬프",
+                  "메시지 다이제스트의 앞 2바이트 (검증용)",
+                  "발신자 개인키로 암호화된 메시지 다이제스트 (서명)",
+                ],
+                note: "인증 서비스를 사용할 경우에만 포함",
+              },
+              {
+                layer: "메시지",
+                en: "Message (필수)",
+                color: "bg-blue-600",
+                bgLight: "bg-blue-50 dark:bg-blue-900/20",
+                border: "border-blue-400",
+                textColor: "text-blue-700 dark:text-blue-300",
+                contents: [
+                  "파일명 (원본 파일 식별)",
+                  "생성 타임스탬프",
+                  "실제 메시지 데이터 (압축 및 암호화 적용 가능)",
+                ],
+                note: "항상 포함되는 필수 구성요소",
+              },
+            ].map((layer, i) => (
+              <div key={i} className={`rounded-xl border-2 ${layer.border} ${layer.bgLight} p-4`}>
+                <div className="mb-2 flex items-center gap-3">
+                  <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${layer.color} text-xs font-bold text-white`}>
+                    {i + 1}
+                  </div>
+                  <div>
+                    <div className={`text-sm font-bold ${layer.textColor}`}>{layer.layer}</div>
+                    <div className="text-xs text-gray-400">{layer.en}</div>
+                  </div>
+                </div>
+                <ul className="mb-2 space-y-1 pl-10">
+                  {layer.contents.map((c) => (
+                    <li key={c} className="flex items-start gap-1.5 text-xs text-gray-700 dark:text-gray-300">
+                      <span className={`mt-1.5 h-1 w-1 shrink-0 rounded-full ${layer.color}`} />
+                      {c}
+                    </li>
+                  ))}
+                </ul>
+                <div className={`ml-10 rounded px-2 py-1 text-xs font-medium ${layer.textColor} bg-white/60 dark:bg-gray-900/40 border ${layer.border}`}>
+                  {layer.note}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-xs text-gray-400 italic">
+            * 전체 메시지는 이 3계층을 조합 후 Radix-64(Base64) 인코딩하여 MIME 이메일로 전송됨.
+            기밀성만 적용 시: 세션키+메시지, 인증만 적용 시: 서명+메시지, 둘 다 적용 시: 세 계층 모두 포함.
+          </p>
+        </div>
+      </div>
     </section>
   );
 }

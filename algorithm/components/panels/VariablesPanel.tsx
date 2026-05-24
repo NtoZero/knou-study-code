@@ -13,7 +13,7 @@ function TreeNode({ label, defaultOpen = true, children }: { label: string; defa
     <div>
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-1 text-xs text-slate-300 hover:text-slate-100 w-full py-0.5"
+        className="flex items-center gap-1 text-xs text-cyan-100 hover:text-white w-full py-0.5"
       >
         {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         <span className="font-semibold">{label}</span>
@@ -26,8 +26,8 @@ function TreeNode({ label, defaultOpen = true, children }: { label: string; defa
 function VarLine({ name, value, color }: { name: string; value: React.ReactNode; color?: string }) {
   return (
     <div className="flex items-center gap-1.5 py-px text-xs font-mono">
-      <span className="text-slate-500">{name}:</span>
-      <span className={color || 'text-slate-200'}>{value}</span>
+      <span className="text-cyan-200/80">{name}:</span>
+      <span className={color || 'text-slate-100'}>{value}</span>
     </div>
   );
 }
@@ -37,8 +37,8 @@ export function VariablesPanel({ step }: VariablesPanelProps) {
   step.highlights.forEach(h => highlightMap.set(h.index, h.type));
 
   return (
-    <div className="bg-slate-800/50 rounded-lg p-3 overflow-y-auto">
-      <h4 className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Variables</h4>
+    <div className="overflow-y-auto rounded-2xl border border-cyan-300/20 bg-[#081827] p-3">
+      <h4 className="mb-2 text-xs font-black uppercase tracking-wider text-cyan-200">Variables</h4>
 
       <div className="space-y-1">
         <TreeNode label="array">
@@ -51,12 +51,12 @@ export function VariablesPanel({ step }: VariablesPanelProps) {
                   className="flex flex-col items-center"
                 >
                   <span
-                    className="w-7 h-6 rounded text-[10px] flex items-center justify-center text-white font-mono"
-                    style={{ backgroundColor: ht ? highlightColors[ht] : '#374151' }}
+                    className="w-7 h-6 rounded-md text-[10px] flex items-center justify-center text-slate-950 font-black font-mono ring-1 ring-white/25"
+                    style={{ backgroundColor: ht ? highlightColors[ht] : '#38bdf8' }}
                   >
                     {v}
                   </span>
-                  <span className="text-[9px] text-slate-600">{i}</span>
+                  <span className="text-[9px] font-bold text-cyan-200/70">{i}</span>
                 </div>
               );
             })}
@@ -65,14 +65,14 @@ export function VariablesPanel({ step }: VariablesPanelProps) {
 
         <TreeNode label="highlights">
           {step.highlights.length === 0 ? (
-            <span className="text-xs text-slate-600 italic">none</span>
+            <span className="text-xs text-slate-400 italic">none</span>
           ) : (
             <div className="flex flex-wrap gap-1 py-0.5">
               {step.highlights.map((h, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-1 text-[10px] rounded px-1.5 py-0.5 text-white"
-                  style={{ backgroundColor: highlightColors[h.type] + '80' }}
+                  className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold text-slate-950"
+                  style={{ backgroundColor: highlightColors[h.type] }}
                 >
                   [{h.index}] {highlightLabels[h.type]}
                 </span>
@@ -82,26 +82,26 @@ export function VariablesPanel({ step }: VariablesPanelProps) {
         </TreeNode>
 
         <TreeNode label="stats">
-          <VarLine name="comparisons" value={step.stats.comparisons} color="text-amber-400" />
-          <VarLine name="swaps" value={step.stats.swaps} color="text-red-400" />
+          <VarLine name="comparisons" value={step.stats.comparisons} color="text-amber-200" />
+          <VarLine name="swaps" value={step.stats.swaps} color="text-rose-200" />
         </TreeNode>
 
-        <VarLine name="codeLine" value={step.codeLine} color="text-blue-400" />
+        <VarLine name="codeLine" value={step.codeLine} color="text-cyan-200" />
 
         {step.auxiliaryData && (
           <TreeNode label="auxiliaryData" defaultOpen={false}>
-            <VarLine name="kind" value={step.auxiliaryData.kind} color="text-violet-400" />
+            <VarLine name="kind" value={step.auxiliaryData.kind} color="text-fuchsia-200" />
             {step.auxiliaryData.kind === 'heap' && (
-              <VarLine name="heapSize" value={step.auxiliaryData.heapSize} color="text-cyan-400" />
+              <VarLine name="heapSize" value={step.auxiliaryData.heapSize} color="text-cyan-200" />
             )}
             {step.auxiliaryData.kind === 'counting' && (
               <>
-                <VarLine name="phase" value={step.auxiliaryData.phase} color="text-cyan-400" />
+                <VarLine name="phase" value={step.auxiliaryData.phase} color="text-cyan-200" />
                 <VarLine name="counts" value={`[${step.auxiliaryData.counts.join(', ')}]`} />
               </>
             )}
             {step.auxiliaryData.kind === 'radix' && (
-              <VarLine name="currentDigit" value={step.auxiliaryData.currentDigit} color="text-cyan-400" />
+              <VarLine name="currentDigit" value={step.auxiliaryData.currentDigit} color="text-cyan-200" />
             )}
             {step.auxiliaryData.kind === 'bucket' && (
               <VarLine name="buckets" value={`${step.auxiliaryData.buckets.length} buckets`} />

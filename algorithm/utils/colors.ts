@@ -1,27 +1,27 @@
 import { HighlightType } from '../types/sort';
 
 export const highlightColors: Record<HighlightType, string> = {
-  compare: '#f59e0b',
-  swap: '#ef4444',
-  sorted: '#10b981',
-  pivot: '#8b5cf6',
-  min: '#f97316',
-  insert: '#3b82f6',
-  current: '#06b6d4',
-  found: '#22c55e',
-  'search-range': '#a78bfa',
-  target: '#f43f5e',
-  visited: '#10b981',
-  'active-edge': '#3b82f6',
-  'tree-edge': '#ef4444',
-  relaxed: '#f59e0b',
-  'in-queue': '#fbbf24',
+  compare: '#facc15',
+  swap: '#fb3d5a',
+  sorted: '#00e676',
+  pivot: '#c084fc',
+  min: '#fb923c',
+  insert: '#38bdf8',
+  current: '#22d3ee',
+  found: '#00e676',
+  'search-range': '#93c5fd',
+  target: '#ff4d8d',
+  visited: '#00e676',
+  'active-edge': '#38bdf8',
+  'tree-edge': '#fb3d5a',
+  relaxed: '#facc15',
+  'in-queue': '#fde047',
   'in-stack': '#fb923c',
-  'node-red': '#ef4444',
-  'node-black': '#1e293b',
+  'node-red': '#fb3d5a',
+  'node-black': '#0f172a',
 };
 
-export const defaultColor = '#6b7280';
+export const defaultColor = '#38bdf8';
 
 export function getBarColor(index: number, highlights: { index: number; type: HighlightType }[]): string {
   const h = highlights.find(h => h.index === index);
@@ -50,21 +50,21 @@ export const highlightLabels: Record<HighlightType, string> = {
 };
 
 export const graphNodeColors = {
-  unvisited: '#6b7280',
-  'in-queue': '#fbbf24',
+  unvisited: '#60a5fa',
+  'in-queue': '#fde047',
   'in-stack': '#fb923c',
-  visiting: '#f59e0b',
-  visited: '#10b981',
-  current: '#06b6d4',
-  start: '#3b82f6',
+  visiting: '#facc15',
+  visited: '#00e676',
+  current: '#22d3ee',
+  start: '#38bdf8',
 };
 
 export const graphEdgeColors = {
-  default: '#475569',
-  active: '#3b82f6',
-  'tree-edge': '#ef4444',
-  mst: '#22c55e',
-  relaxed: '#f59e0b',
-  augmenting: '#06b6d4',
-  back: '#8b5cf6',
+  default: '#7dd3fc',
+  active: '#38bdf8',
+  'tree-edge': '#fb3d5a',
+  mst: '#00e676',
+  relaxed: '#facc15',
+  augmenting: '#22d3ee',
+  back: '#c084fc',
 };

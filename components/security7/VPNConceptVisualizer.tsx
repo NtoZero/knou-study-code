@@ -456,6 +456,87 @@ export default function VPNConceptVisualizer() {
         </AnimatePresence>
       </div>
 
+      {/* ── VPN 구현 방식 4종 (교재 기준) ── */}
+      <div className="mt-8">
+        <h3 className="mb-3 text-sm font-bold text-gray-800 dark:text-gray-200">
+          VPN 구현 방식 4종
+          <span className="ml-2 text-xs font-normal text-gray-400">— 어떤 장비로 VPN을 구성하는가</span>
+        </h3>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {[
+            {
+              name: "전용 VPN",
+              en: "Dedicated VPN",
+              desc: "VPN 전용 하드웨어 장비를 사용하여 구성. 성능·보안성이 높으나 비용이 큼.",
+              pros: ["전용 하드웨어로 높은 성능", "안정적·전문화된 VPN 기능"],
+              cons: ["도입 비용 높음", "별도 장비 관리 필요"],
+              color: "bg-violet-500",
+              bgLight: "bg-violet-50 dark:bg-violet-950/30",
+              border: "border-violet-300 dark:border-violet-700",
+              textColor: "text-violet-700 dark:text-violet-300",
+            },
+            {
+              name: "방화벽 기반 VPN",
+              en: "Firewall-based VPN",
+              desc: "방화벽 장비에 VPN 기능을 추가하여 구성. 방화벽과 VPN을 한 장비에서 처리.",
+              pros: ["방화벽과 통합 관리 가능", "추가 장비 불필요"],
+              cons: ["방화벽 부하 증가", "전용 장비보다 성능 낮을 수 있음"],
+              color: "bg-blue-500",
+              bgLight: "bg-blue-50 dark:bg-blue-950/30",
+              border: "border-blue-300 dark:border-blue-700",
+              textColor: "text-blue-700 dark:text-blue-300",
+            },
+            {
+              name: "라우터 기반 VPN",
+              en: "Router-based VPN",
+              desc: "라우터 장비에 VPN 소프트웨어를 탑재하여 구성. 기존 라우터 인프라 활용 가능.",
+              pros: ["기존 라우터 재활용", "네트워크 장비와 통합"],
+              cons: ["라우터 처리 부하 증가", "기능 제한 가능"],
+              color: "bg-emerald-500",
+              bgLight: "bg-emerald-50 dark:bg-emerald-950/30",
+              border: "border-emerald-300 dark:border-emerald-700",
+              textColor: "text-emerald-700 dark:text-emerald-300",
+            },
+            {
+              name: "소프트웨어 VPN",
+              en: "Software-based VPN",
+              desc: "범용 서버나 PC에 VPN 소프트웨어를 설치하여 구성. 비용이 낮고 유연하나 성능에 한계.",
+              pros: ["낮은 초기 비용", "유연한 설치·확장"],
+              cons: ["소프트웨어 처리로 성능 한계", "운영체제 의존성"],
+              color: "bg-amber-500",
+              bgLight: "bg-amber-50 dark:bg-amber-950/30",
+              border: "border-amber-300 dark:border-amber-700",
+              textColor: "text-amber-700 dark:text-amber-300",
+            },
+          ].map((item, i) => (
+            <div key={i} className={`rounded-xl border ${item.border} ${item.bgLight} p-4`}>
+              <div className={`mb-1 flex items-center gap-2 ${item.textColor}`}>
+                <span className={`flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold text-white ${item.color}`}>
+                  {i + 1}
+                </span>
+                <span className="text-sm font-bold">{item.name}</span>
+              </div>
+              <div className="mb-2 text-xs text-gray-400">{item.en}</div>
+              <p className="mb-3 text-xs leading-relaxed text-gray-600 dark:text-gray-400">{item.desc}</p>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <div className="mb-1 text-xs font-bold text-green-600 dark:text-green-400">장점</div>
+                  {item.pros.map((p) => (
+                    <div key={p} className="text-xs text-gray-600 dark:text-gray-400">· {p}</div>
+                  ))}
+                </div>
+                <div>
+                  <div className="mb-1 text-xs font-bold text-red-500 dark:text-red-400">단점</div>
+                  {item.cons.map((c) => (
+                    <div key={c} className="text-xs text-gray-600 dark:text-gray-400">· {c}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* ── NAC 개요 ── */}
       <div className="mt-8 rounded-xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-800/50">
         <h3 className="mb-4 text-sm font-bold text-gray-800 dark:text-gray-200">

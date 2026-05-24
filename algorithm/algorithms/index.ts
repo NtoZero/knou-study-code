@@ -22,6 +22,7 @@ import { dfs } from './dfs';
 import { bfs } from './bfs';
 import { topologicalSort } from './topological-sort';
 import { connectedComponents } from './connected-components';
+import { stronglyConnectedComponents } from './strongly-connected-components';
 import { kruskal } from './kruskal';
 import { prim } from './prim';
 import { dijkstra } from './dijkstra';
@@ -51,6 +52,11 @@ export const algorithms: Record<string, AlgorithmEntry> = {
   bfs: { meta: algorithmMetas.bfs, generator: bfs, pseudocode: pseudocodes.bfs },
   'topological-sort': { meta: algorithmMetas['topological-sort'], generator: topologicalSort, pseudocode: pseudocodes['topological-sort'] },
   'connected-components': { meta: algorithmMetas['connected-components'], generator: connectedComponents, pseudocode: pseudocodes['connected-components'] },
+  'strongly-connected-components': {
+    meta: algorithmMetas['strongly-connected-components'],
+    generator: stronglyConnectedComponents,
+    pseudocode: pseudocodes['strongly-connected-components'],
+  },
   kruskal: { meta: algorithmMetas.kruskal, generator: kruskal, pseudocode: pseudocodes.kruskal },
   prim: { meta: algorithmMetas.prim, generator: prim, pseudocode: pseudocodes.prim },
   dijkstra: { meta: algorithmMetas.dijkstra, generator: dijkstra, pseudocode: pseudocodes.dijkstra },
@@ -65,7 +71,7 @@ export const algorithmGroups = [
   { label: '5강: 특수 정렬', ids: ['counting', 'radix', 'bucket'] },
   { label: '6강: 탐색 기본', ids: ['sequential-search', 'binary-search', 'bst', 'tree-234'] },
   { label: '7강: 균형 트리·해시', ids: ['red-black-tree', 'b-tree', 'hash-table'] },
-  { label: '8강: 그래프 순회', ids: ['dfs', 'bfs', 'topological-sort', 'connected-components'] },
+  { label: '8강: 그래프 순회·SCC', ids: ['dfs', 'bfs', 'topological-sort', 'connected-components', 'strongly-connected-components'] },
   { label: '9강: MST·최단경로', ids: ['kruskal', 'prim', 'dijkstra'] },
   { label: '10강: 고급 그래프', ids: ['bellman-ford', 'floyd-warshall', 'ford-fulkerson'] },
 ];
