@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BarChart3, BookOpenCheck, Filter, RotateCcw } from "lucide-react";
+import { algorithmChapterWeights, type AlgorithmChapterId } from "@/lib/algorithmCourse";
 import { algorithmPastExamQuestions, algorithmPastExamYears } from "./data";
 import PastExamQuestionCard from "./PastExamQuestionCard";
 import type { ChoiceKey } from "./types";
@@ -10,26 +11,50 @@ type StatusFilter = "all" | "unanswered" | "revealed" | "correct" | "wrong";
 
 export default function AlgorithmPastExamWorkbook() {
   const [year, setYear] = useState<2017 | 2018 | 2019>(2019);
+  const [chapterId, setChapterId] = useState<AlgorithmChapterId | "all">("all");
   const [lectureId, setLectureId] = useState<number | "all">("all");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [selected, setSelected] = useState<Record<string, ChoiceKey>>({});
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get("chapter");
+    const parsed = Number(param);
+    if ([1, 2, 3, 4, 5, 6, 7].includes(parsed)) {
+      setChapterId(parsed as AlgorithmChapterId);
+      setLectureId("all");
+    }
+  }, []);
 
   const yearQuestions = useMemo(
     () => algorithmPastExamQuestions.filter((question) => question.year === year),
     [year],
   );
 
+  const chapterLectureMap = useMemo(() => {
+    return new Map(algorithmChapterWeights.map((chapter) => [chapter.chapter, new Set<number>(chapter.lectures)]));
+  }, []);
+
   const lectureOptions = useMemo(() => {
     const ids = new Set<number>();
     yearQuestions.forEach((question) => {
       question.lectureRefs.forEach((ref) => ids.add(ref.lectureId));
     });
-    return Array.from(ids).sort((a, b) => a - b);
-  }, [yearQuestions]);
+    const allIds = Array.from(ids).sort((a, b) => a - b);
+    if (chapterId === "all") return allIds;
+    const chapterLectureIds = chapterLectureMap.get(chapterId);
+    return allIds.filter((id) => chapterLectureIds?.has(id));
+  }, [chapterId, chapterLectureMap, yearQuestions]);
 
   const filteredQuestions = useMemo(() => {
     return yearQuestions.filter((question) => {
+      if (chapterId !== "all") {
+        const chapterLectureIds = chapterLectureMap.get(chapterId);
+        if (!question.lectureRefs.some((ref) => chapterLectureIds?.has(ref.lectureId))) {
+          return false;
+        }
+      }
+
       if (lectureId !== "all" && !question.lectureRefs.some((ref) => ref.lectureId === lectureId)) {
         return false;
       }
@@ -44,7 +69,7 @@ export default function AlgorithmPastExamWorkbook() {
       if (status === "wrong") return isRevealed && Boolean(chosen) && !isCorrect;
       return true;
     });
-  }, [yearQuestions, lectureId, status, selected, revealed]);
+  }, [chapterId, chapterLectureMap, yearQuestions, lectureId, status, selected, revealed]);
 
   const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
   const revealedCount = yearQuestions.filter((question) => revealed[question.id]).length;
@@ -72,7 +97,7 @@ export default function AlgorithmPastExamWorkbook() {
           <div>
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-cyan-100 px-3 py-1 text-xs font-bold text-cyan-800 dark:bg-cyan-950 dark:text-cyan-100">
               <BookOpenCheck size={14} />
-              2017-2019 1학기 기말
+              2017-2019 기말
             </div>
             <h1 className="text-2xl font-bold sm:text-3xl">알고리즘 기출분석</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
@@ -94,7 +119,7 @@ export default function AlgorithmPastExamWorkbook() {
           <Filter size={16} />
           필터
         </div>
-        <div className="grid gap-3 lg:grid-cols-[1.2fr_1fr_1fr_auto]">
+        <div className="grid gap-3 lg:grid-cols-[1.2fr_1fr_1fr_1fr_auto]">
           <div className="flex flex-wrap gap-2">
             {algorithmPastExamYears.map((item) => (
               <button
@@ -111,6 +136,22 @@ export default function AlgorithmPastExamWorkbook() {
               </button>
             ))}
           </div>
+
+          <select
+            value={chapterId}
+            onChange={(event) => {
+              setChapterId(event.target.value === "all" ? "all" : Number(event.target.value) as AlgorithmChapterId);
+              setLectureId("all");
+            }}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          >
+            <option value="all">전체 장</option>
+            {algorithmChapterWeights.map((chapter) => (
+              <option key={chapter.chapter} value={chapter.chapter}>
+                {chapter.chapter}장 {chapter.title}
+              </option>
+            ))}
+          </select>
 
           <select
             value={lectureId}
@@ -150,11 +191,11 @@ export default function AlgorithmPastExamWorkbook() {
 
       <section className="mb-8 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950">
         <div className="mb-3">
-          <h2 className="text-lg font-bold">{year}학년도 1학기 {filteredQuestions.length}문항</h2>
+          <h2 className="text-lg font-bold">{year}학년도 기말 {filteredQuestions.length}문항</h2>
           <p className="mt-1 text-sm text-slate-500">정답 공개 전에는 정오답을 표시하지 않습니다.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {yearQuestions.map((question) => (
+          {filteredQuestions.map((question) => (
             <a
               key={`jump-${question.id}`}
               href={`#${question.id}`}
@@ -176,16 +217,35 @@ export default function AlgorithmPastExamWorkbook() {
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-5">
-          {filteredQuestions.map((question) => (
-            <PastExamQuestionCard
-              key={question.id}
-              question={question}
-              selected={selected[question.id]}
-              revealed={Boolean(revealed[question.id])}
-              onSelect={selectChoice}
-              onReveal={toggleReveal}
-            />
-          ))}
+          {filteredQuestions.length > 0 ? (
+            filteredQuestions.map((question) => (
+              <PastExamQuestionCard
+                key={question.id}
+                question={question}
+                selected={selected[question.id]}
+                revealed={Boolean(revealed[question.id])}
+                onSelect={selectChoice}
+                onReveal={toggleReveal}
+              />
+            ))
+          ) : (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
+              <div className="font-bold">조건에 맞는 문항이 없습니다.</div>
+              <p className="mt-1">장, 강의, 풀이 상태 필터를 넓히면 문항 목록이 다시 표시됩니다.</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setChapterId("all");
+                  setLectureId("all");
+                  setStatus("all");
+                }}
+                className="mt-3 inline-flex items-center gap-2 rounded-lg bg-amber-900 px-3 py-2 font-semibold text-white transition-colors hover:bg-amber-800 dark:bg-amber-200 dark:text-amber-950 dark:hover:bg-amber-100"
+              >
+                <RotateCcw size={15} />
+                필터 초기화
+              </button>
+            </div>
+          )}
         </div>
 
         <aside className="h-fit rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950 lg:sticky lg:top-16">

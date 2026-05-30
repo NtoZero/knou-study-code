@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, Circle, ClipboardCheck, ExternalLink, Layers3, ListChecks, ScanSearch, Table2, XCircle } from "lucide-react";
 import type { AlgorithmLecture as AlgorithmLectureData } from "@/lib/algorithmCourse";
 import { getAlgorithmLectureAddendum } from "@/lib/algorithmCourse";
+import { AlgorithmConceptLadder, AlgorithmUnitLab } from "./AlgorithmUnitLabs";
 import {
   BinPackingDemo,
   BoyerMooreDemo,
@@ -68,6 +69,29 @@ function AdvancedDemoBlock({ lectureId }: { lectureId: number }) {
   return null;
 }
 
+function toLearnerStatus(status: string) {
+  if (status.includes("강의 실습")) return "단계 실습";
+  if (status.includes("인터랙티브")) return "직접 확인";
+  if (status.includes("표") && status.includes("드릴")) return "비교·연습";
+  if (status.includes("표")) return "비교 정리";
+  if (status.includes("드릴")) return "손풀이 연습";
+  if (status.includes("세부 범위")) return "세부 기준";
+  if (status.includes("절차")) return "절차 확인";
+  return "학습 연결";
+}
+
+function toLearnerDetail(detail: string) {
+  return detail
+    .replace(/Claude 검토에서 직접 누락 후보로 지적된\s*/g, "")
+    .replace(/Claude 검토의 직접 누락 후보\.\s*/g, "")
+    .replace(/Claude 검토의 누락 후보\.\s*/g, "")
+    .replace(/별도 애니메이션은 후속 대상\./g, "관련 절차를 앞의 전용 랩과 손풀이로 이어서 확인한다.")
+    .replace(/기존\s*/g, "")
+    .replace(/시각화 링크 유지\./g, "시각화에서 단계 변화를 이어서 확인한다.")
+    .replace(/보강/g, "정리")
+    .replace(/추가/g, "확인");
+}
+
 export function AlgorithmLecture({ lecture }: { lecture: AlgorithmLectureData }) {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const hasAdvancedDemo = lecture.id >= 11;
@@ -119,6 +143,10 @@ export function AlgorithmLecture({ lecture }: { lecture: AlgorithmLectureData })
         </div>
       </section>
 
+      <AlgorithmConceptLadder lecture={lecture} />
+
+      <AlgorithmUnitLab lectureId={lecture.id} />
+
       <section className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
         <h2 className="mb-4 text-lg font-bold">개념 압축 정리</h2>
         <div className="grid gap-3 md:grid-cols-2">
@@ -146,7 +174,7 @@ export function AlgorithmLecture({ lecture }: { lecture: AlgorithmLectureData })
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="flex items-center gap-2 text-lg font-bold">
               <ScanSearch size={19} className={lecture.textClass} />
-              교재·강의록 누락 재점검
+              핵심 개념 확장
             </h2>
             <div className="flex flex-wrap gap-2">
               {addendum.sourceCheck.map((source) => (
@@ -279,17 +307,17 @@ export function AlgorithmLecture({ lecture }: { lecture: AlgorithmLectureData })
           </div>
 
           <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-            <h2 className="mb-4 text-lg font-bold">시각화/드릴 연결 감사</h2>
+            <h2 className="mb-4 text-lg font-bold">단계별 연습 연결</h2>
             <div className="space-y-3">
               {addendum.visualAudit.map((item) => (
                 <div key={item.topic} className="rounded-lg bg-gray-50 p-3 dark:bg-gray-950">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-semibold">{item.topic}</span>
                     <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${lecture.bgLightClass} ${lecture.textClass}`}>
-                      {item.status}
+                      {toLearnerStatus(item.status)}
                     </span>
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300">{item.detail}</p>
+                  <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300">{toLearnerDetail(item.detail)}</p>
                 </div>
               ))}
             </div>
@@ -317,6 +345,7 @@ export function AlgorithmLecture({ lecture }: { lecture: AlgorithmLectureData })
 
       {hasAdvancedDemo && (
         <section className="rounded-lg border border-gray-200 bg-gray-950 p-5 text-slate-100 dark:border-gray-800">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">단원별 전용 랩</p>
           <h2 className="mb-4 text-lg font-bold">단계 추적 실습</h2>
           <AdvancedDemoBlock lectureId={lecture.id} />
         </section>

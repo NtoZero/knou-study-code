@@ -3,7 +3,7 @@ import EmailSecurityOverview from "@/components/security9/EmailSecurityOverview"
 import PGPServiceAnimator from "@/components/security9/PGPServiceAnimator";
 import PGPKeyRingExplorer from "@/components/security9/PGPKeyRingExplorer";
 import SMIMEFeaturesExplorer from "@/components/security9/SMIMEFeaturesExplorer";
-import Lecture9Quiz from "@/components/security9/Lecture9Quiz";
+import SecurityExamQuiz from "@/components/securityShared/SecurityExamQuiz";
 
 export default function Lecture9() {
   return (
@@ -12,7 +12,7 @@ export default function Lecture9() {
       <PGPServiceAnimator />
       <PGPKeyRingExplorer />
       <SMIMEFeaturesExplorer />
-      <Lecture9Quiz />
+      <SecurityExamQuiz lectureId={9} />
     </SecurityLectureLayout>
   );
 }

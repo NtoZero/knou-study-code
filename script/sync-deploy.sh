@@ -4,7 +4,7 @@
 # 빌드 산출물·의존성·환경파일 등을 제외하고 rsync로 복사
 #
 # Usage: ./sync-deploy.sh /absolute/path/to/dest
-#
+# ./sync-deploy.sh /Users/st/code-space/knou/knou-study-code
 
 set -euo pipefail
 

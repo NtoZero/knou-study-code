@@ -15,6 +15,7 @@ import {
 import SectionTitle from "@/components/common/SectionTitle";
 import { AIAdvancedLecture } from "./AIAdvancedLecture";
 import { AIVisualizationLab } from "./AIVisualizationLabs";
+import { buildAIChoiceExplanation } from "@/lib/aiChoiceExplanations";
 
 type Topic = {
   name: string;
@@ -1818,7 +1819,7 @@ function AI6ExamPractice() {
                 <Target size={16} className="mt-1 shrink-0 text-indigo-500" />
                 {questionIndex + 1}. {question.q}
               </div>
-              <div className="grid gap-2 md:grid-cols-2">
+              <div className="space-y-2">
                 {question.choices.map((choice, choiceIndex) => (
                   <button
                     key={choice}
@@ -1851,10 +1852,13 @@ function AI6ExamPractice() {
                       정답: {question.answer + 1}번 {question.choices[question.answer]}
                     </span>
                   </div>
-                  <div>
-                    <span className="font-bold">해설: </span>
-                    {question.explain}
-                  </div>
+                  <LectureChoiceFeedback
+                    correct={chosen === question.answer}
+                    choiceText={question.choices[chosen]}
+                    correctChoiceText={question.choices[question.answer]}
+                    basisText={question.explain}
+                    wrongRule="선택한 보기의 논리식 변환·표준형·추론 규칙이 강의의 정의와 맞는지 판별한다."
+                  />
                 </div>
               )}
             </div>
@@ -1918,6 +1922,48 @@ function AI6DeepDive() {
 function sourceEvidence(text: string) {
   if (text.startsWith("강의") || text.startsWith("교재")) return text;
   return `강의·교재의 정의와 공식에 따라, ${text}`;
+}
+
+function LectureChoiceFeedback({
+  correct,
+  choiceText,
+  correctChoiceText,
+  basisText,
+  wrongRule,
+  tone = "indigo",
+}: {
+  correct: boolean;
+  choiceText: string;
+  correctChoiceText: string;
+  basisText: string;
+  wrongRule?: string;
+  tone?: "indigo" | "rose";
+}) {
+  const explanation = buildAIChoiceExplanation({
+    choiceText,
+    correctChoiceText,
+    isCorrect: correct,
+    topicConcept: correctChoiceText,
+    topicBasis: sourceEvidence(basisText),
+    topicWrongRule: wrongRule,
+    textbook: "인공지능 강의·교재",
+  });
+  const accent = tone === "rose" ? "text-rose-700 dark:text-rose-300" : "text-indigo-700 dark:text-indigo-300";
+
+  return (
+    <div className="mt-1 space-y-1">
+      <div>
+        <span className={`font-bold ${accent}`}>{correct ? "정답 근거: " : "선택지 판별: "}</span>
+        {explanation.reason.replace(/^정답 근거:\s*/, "").replace(/^오답 근거:\s*/, "")}
+      </div>
+      {wrongRule && (
+        <div>
+          <span className={`font-bold ${accent}`}>전체 판별 기준: </span>
+          {wrongRule}
+        </div>
+      )}
+    </div>
+  );
 }
 
 const lectureEnhancements: Record<number, LectureEnhancement> = {
@@ -2440,7 +2486,7 @@ function LectureEnhancementLab({ lectureId }: { lectureId: number }) {
               <div key={drill.title} className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950">
                 <div className="mb-2 text-sm font-bold text-rose-700 dark:text-rose-300">{drill.title}</div>
                 <p className="mb-3 text-sm leading-6">{drill.prompt}</p>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="space-y-2">
                   {drill.choices.map((choice, choiceIndex) => (
                     <button
                       key={choice}
@@ -2461,14 +2507,14 @@ function LectureEnhancementLab({ lectureId }: { lectureId: number }) {
                 {selected !== undefined && (
                   <div className="mt-3 rounded-md bg-white p-3 text-xs leading-5 text-gray-600 dark:bg-gray-900 dark:text-gray-300">
                     <div className="font-bold">{selected === drill.answer ? "정답입니다." : "오답입니다."}</div>
-                    <div className="mt-1">
-                      <span className="font-bold text-rose-700 dark:text-rose-300">근거: </span>
-                      {sourceEvidence(drill.explain)}
-                    </div>
-                    <div className="mt-1">
-                      <span className="font-bold text-rose-700 dark:text-rose-300">오답 기준: </span>
-                      정답 선택지 &quot;{drill.choices[drill.answer]}&quot;이 충족하는 정의·공식·절차의 핵심 조건과 맞지 않으면 제외.
-                    </div>
+                    <LectureChoiceFeedback
+                      correct={selected === drill.answer}
+                      choiceText={drill.choices[selected]}
+                      correctChoiceText={drill.choices[drill.answer]}
+                      basisText={drill.explain}
+                      wrongRule="선택한 보기의 개념이 문제에서 요구한 정의·공식·절차 조건을 충족하는지 판별한다."
+                      tone="rose"
+                    />
                   </div>
                 )}
               </div>
@@ -2613,7 +2659,7 @@ export function AIExamLecture({ lectureId }: { lectureId: number }) {
                   <Target size={16} className="mt-0.5 shrink-0 text-indigo-500" />
                   {quiz.q}
                 </div>
-                <div className="grid gap-2 md:grid-cols-3">
+                <div className="space-y-2">
                   {quiz.choices.map((choice, choiceIndex) => (
                     <button
                       key={choice}
@@ -2641,14 +2687,13 @@ export function AIExamLecture({ lectureId }: { lectureId: number }) {
                           정답: {quiz.choices[quiz.answer]}
                         </span>
                       </div>
-                      <div className="mt-1">
-                        <span className="font-bold text-indigo-700 dark:text-indigo-300">근거: </span>
-                        {sourceEvidence(quiz.explain)}
-                      </div>
-                      <div className="mt-1">
-                        <span className="font-bold text-indigo-700 dark:text-indigo-300">오답 기준: </span>
-                        정답 선택지 &quot;{quiz.choices[quiz.answer]}&quot;이 충족하는 강의의 정의, 공식, 절차, 예외 조건과 맞지 않는 선택지는 제외.
-                      </div>
+                      <LectureChoiceFeedback
+                        correct={selected === quiz.answer}
+                        choiceText={quiz.choices[selected]}
+                        correctChoiceText={quiz.choices[quiz.answer]}
+                        basisText={quiz.explain}
+                        wrongRule="선택한 보기의 개념이 강의의 정의·공식·절차·예외 조건과 맞는지 판별한다."
+                      />
                     </div>
                   </div>
                 )}

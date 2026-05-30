@@ -84,7 +84,7 @@ export default function PastExamQuestionCard({ question, selected, revealed, onS
 
         <div>
           <div className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">답 선택</div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="space-y-2">
             {question.choices.map((choice) => {
               const state = getChoiceState(question, selected, choice.key, revealed);
               return (
@@ -92,10 +92,13 @@ export default function PastExamQuestionCard({ question, selected, revealed, onS
                   key={choice.key}
                   type="button"
                   onClick={() => onSelect(question.id, choice.key)}
-                  className={`flex min-h-11 items-center justify-center rounded-lg border px-3 text-sm font-semibold transition-colors ${choiceStyle[state]}`}
+                  className={`flex w-full items-start gap-3 rounded-lg border px-3 py-3 text-left text-sm transition-colors ${choiceStyle[state]}`}
                   aria-pressed={selected === choice.key}
                 >
-                  {choice.label}
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-xs font-bold text-gray-700 ring-1 ring-gray-200 dark:bg-gray-950 dark:text-gray-100 dark:ring-gray-700">
+                    {choice.label}
+                  </span>
+                  <span className="min-w-0 whitespace-pre-wrap break-keep leading-6">{choice.text}</span>
                 </button>
               );
             })}
@@ -137,21 +140,51 @@ export default function PastExamQuestionCard({ question, selected, revealed, onS
               <div className="space-y-4 rounded-lg border border-indigo-100 bg-indigo-50/70 p-4 dark:border-indigo-900 dark:bg-indigo-950/30">
                 <div>
                   <div className="text-sm font-bold text-indigo-800 dark:text-indigo-200">
-                    정답: {question.correctChoice}번
+                    정답: {question.choices.find((choice) => choice.key === question.correctChoice)?.label}
                   </div>
                   <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-gray-200">
-                    정답 해설: 이 문항은 <strong>{question.lectureRefs[0].concept}</strong>을 묻습니다.
-                    {question.basis}
+                    <strong>{question.lectureRefs[0].concept}</strong> 근거: {question.basis}
                   </p>
                 </div>
 
                 <div className="rounded-md bg-white p-3 text-sm leading-6 text-gray-700 dark:bg-gray-900 dark:text-gray-200">
-                  <div className="font-semibold text-gray-900 dark:text-white">오답 기준</div>
-                  <p className="mt-1">
-                    {selectedChoice && selectedChoice.key !== question.correctChoice
-                      ? `${selectedChoice.label} 선택은 ${question.wrongRule}`
-                      : question.wrongRule}
-                  </p>
+                  <div className="font-semibold text-gray-900 dark:text-white">선택지별 해설</div>
+                  <div className="mt-3 space-y-2">
+                    {question.choices.map((choice) => {
+                      const isAnswer = choice.key === question.correctChoice;
+                      const isSelected = selectedChoice?.key === choice.key;
+                      return (
+                        <div
+                          key={`${question.id}-explanation-${choice.key}`}
+                          className={`rounded-lg border p-3 ${
+                            isAnswer
+                              ? "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/30"
+                              : isSelected
+                                ? "border-rose-200 bg-rose-50 dark:border-rose-900 dark:bg-rose-950/30"
+                                : "border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950"
+                          }`}
+                        >
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-bold">{choice.label}</span>
+                            <span className="whitespace-pre-wrap break-keep">{choice.text}</span>
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-xs font-bold ${
+                                isAnswer
+                                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-100"
+                                  : "bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-100"
+                              }`}
+                            >
+                              {isAnswer ? "정답" : "오답"}
+                            </span>
+                          </div>
+                          <p className="mt-2 text-sm leading-6">{choice.explanation.reason}</p>
+                          <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
+                            {choice.explanation.conceptBasis}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <div className="rounded-md bg-white p-3 text-sm leading-6 text-gray-700 dark:bg-gray-900 dark:text-gray-200">

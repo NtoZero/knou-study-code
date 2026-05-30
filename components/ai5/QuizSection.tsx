@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SectionTitle from "@/components/common/SectionTitle";
 import { CheckCircle, XCircle, RotateCcw } from "lucide-react";
+import QuizChoiceExplanation from "@/components/aiReview/QuizChoiceExplanation";
 
 interface QuizQuestion {
   question: string;
@@ -257,9 +258,16 @@ export default function QuizSection() {
                       >
                         {isCorrect ? "정답!" : "오답"}
                       </p>
-                      <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
-                        {q.explanation}
-                      </p>
+                      <div className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                        <QuizChoiceExplanation
+                          correct={isCorrect}
+                          choiceText={q.options[answers[qIdx] ?? q.answerIndex]}
+                          correctChoiceText={q.options[q.answerIndex]}
+                          basisText={q.explanation}
+                          wrongRule={`정답 선택지 "${q.options[q.answerIndex]}"이 따르는 지식표현·추론기관·전문가 시스템 기준과 선택한 보기를 비교한다.`}
+                          accentClass="text-orange-700 dark:text-orange-300"
+                        />
+                      </div>
                     </div>
                   </motion.div>
                 )}

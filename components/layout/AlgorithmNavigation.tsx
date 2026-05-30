@@ -52,7 +52,7 @@ export default function AlgorithmNavigation() {
             }`}
           >
             <FileText size={18} />
-            <span>기말 요약</span>
+            <span>기말분석</span>
           </Link>
 
           <Link
@@ -80,7 +80,7 @@ export default function AlgorithmNavigation() {
             <BookOpenCheck size={18} />
             <div>
               <div>기출분석</div>
-              <div className="text-xs opacity-70">2017-2019 1학기</div>
+              <div className="text-xs opacity-70">2017-2019 기말</div>
             </div>
           </Link>
 

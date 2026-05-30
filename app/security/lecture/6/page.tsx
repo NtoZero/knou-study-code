@@ -4,7 +4,7 @@ import SecurityGoalsExplorer from "@/components/security6/SecurityGoalsExplorer"
 import OSISecurityLayerMap from "@/components/security6/OSISecurityLayerMap";
 import SecurityMechanismExplorer from "@/components/security6/SecurityMechanismExplorer";
 import TCPIPSecurityProtocols from "@/components/security6/TCPIPSecurityProtocols";
-import Lecture6Quiz from "@/components/security6/Lecture6Quiz";
+import SecurityExamQuiz from "@/components/securityShared/SecurityExamQuiz";
 
 export default function Lecture6() {
   return (
@@ -14,7 +14,7 @@ export default function Lecture6() {
       <OSISecurityLayerMap />
       <SecurityMechanismExplorer />
       <TCPIPSecurityProtocols />
-      <Lecture6Quiz />
+      <SecurityExamQuiz lectureId={6} />
     </SecurityLectureLayout>
   );
 }

@@ -21,12 +21,12 @@ export default function AlgorithmHome() {
           className="group rounded-xl border border-emerald-200 bg-emerald-50 p-5 transition-all hover:-translate-y-1 hover:shadow-md dark:border-emerald-900/60 dark:bg-emerald-950/30"
         >
           <FileText size={28} className="text-emerald-600 dark:text-emerald-400" />
-          <h2 className="mt-3 text-lg font-bold">기말 요약 페이지</h2>
+          <h2 className="mt-3 text-lg font-bold">기말분석 페이지</h2>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-            장별 문항 수, 강의별 키워드, 시험 직전 우선순위를 한 화면에서 확인합니다.
+            장별 문항 수, 취약도 진단, 체크리스트, 실전 연습 순서를 한 화면에서 확인합니다.
           </p>
           <div className="mt-4 flex items-center gap-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-            요약 보기
+            분석 보기
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
           </div>
         </Link>

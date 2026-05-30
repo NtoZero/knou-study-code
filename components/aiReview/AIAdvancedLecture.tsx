@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { AIVisualizationLab } from "./AIVisualizationLabs";
+import { buildAIChoiceExplanation } from "@/lib/aiChoiceExplanations";
 
 type ConceptBlock = {
   title: string;
@@ -130,7 +131,7 @@ const advancedLectures: Record<number, AdvancedLectureData> = {
       { title: "연산 선택", prompt: "대표 퍼지 연산에서 A∪B를 구할 때 사용하는 기준은?", choices: ["min", "max", "1-μ", "항상 평균"], answer: 1, basis: "근거: 대표 연산에서 합집합은 두 소속도 중 최댓값을 취한다.", wrongRule: "오답 기준: min은 교집합, 1-μ는 보수이며 평균은 강의의 대표 합집합 연산이 아니다.", examSkill: "공식 선택", internalSource: "7강 퍼지집합 연산" },
       { title: "법칙 예외", prompt: "퍼지집합에서 일반적으로 성립하지 않는 고전집합 법칙은?", choices: ["보수 소속도는 1-μA", "A∩B는 min으로 계산 가능", "A∩A보수는 항상 공집합", "A∪B는 max로 계산 가능"], answer: 2, basis: "근거: 퍼지집합에서는 A와 A보수가 동시에 0이 아닌 소속도를 가질 수 있다.", wrongRule: "오답 기준: 대표 연산 자체를 묻는 선택지는 강의 기준에서 성립한다.", examSkill: "예외 판별", internalSource: "7강 퍼지집합 연산자의 특성" },
       { title: "퍼지규칙 구조", prompt: "퍼지규칙의 기본 표현으로 알맞은 것은?", choices: ["IF 조건부 THEN 결론부", "WHILE 조건 DO 삭제", "정답 레이블만 나열", "거리측정자만 계산"], answer: 0, basis: "근거: 퍼지규칙은 조건부가 만족되는 정도에 따라 결론부 퍼지집합을 활성화한다.", wrongRule: "오답 기준: 반복문, 레이블, 거리 계산은 퍼지규칙의 기본 구조가 아니다.", examSkill: "절차 구조", internalSource: "7강 퍼지추론" },
-      { title: "퍼지제어 흐름", prompt: "퍼지제어기의 처리 순서로 가장 자연스러운 것은?", choices: ["비퍼지화 → 퍼지화 → 추론", "퍼지화 → 추론부 → 비퍼지화", "추론부 → 정규화 → RGB", "정답표 → 보상 → 전이학습"], answer: 1, basis: "근거: 입력을 퍼지화한 뒤 규칙 기반 추론을 하고 마지막에 수치 출력으로 비퍼지화한다.", wrongRule: "오답 기준: 마지막 단계인 비퍼지화를 앞에 두거나 다른 강의의 영상·학습 용어를 섞으면 절차가 맞지 않는다.", examSkill: "단계 배열", internalSource: "7강 퍼지제어" },
+      { title: "퍼지제어 흐름", prompt: "퍼지제어기의 처리 순서로 가장 자연스러운 것은?", choices: ["비퍼지화 → 퍼지화 → 추론", "퍼지화 → 추론부 → 비퍼지화", "추론부 → 정규화 → RGB", "표본화 → 양자화 → 소벨"], answer: 1, basis: "근거: 입력을 퍼지화한 뒤 규칙 기반 추론을 하고 마지막에 수치 출력으로 비퍼지화한다.", wrongRule: "오답 기준: 마지막 단계인 비퍼지화를 앞에 두거나 다른 강의의 영상·학습 용어를 섞으면 절차가 맞지 않는다.", examSkill: "단계 배열", internalSource: "7강 퍼지제어" },
     ],
   },
   8: {
@@ -516,7 +517,7 @@ const advancedLectures: Record<number, AdvancedLectureData> = {
     ],
     pitfalls: ["순전파와 역전파 방향을 바꾸기", "모멘텀을 단순 학습률로 보기", "RBM의 층 내부 연결 제한을 빼먹기", "SOM과 LVQ의 지도 여부를 혼동하기"],
     quizzes: [
-      { title: "다층 퍼셉트론", prompt: "다층 퍼셉트론에서 은닉층의 핵심 역할은?", choices: ["비선형 결정경계 표현", "픽셀 양자화", "퍼지 보수 계산", "정답표 저장"], answer: 0, basis: "근거: 은닉층은 단층 퍼셉트론의 선형 분리 한계를 넘는 중간 표현을 만든다.", wrongRule: "오답 기준: 영상 입력 처리나 퍼지 연산은 은닉층 역할이 아니다.", examSkill: "구조 목적", internalSource: "13강 비선형 결정경계" },
+      { title: "다층 퍼셉트론", prompt: "다층 퍼셉트론에서 은닉층의 핵심 역할은?", choices: ["비선형 결정경계 표현", "픽셀 양자화", "퍼지 보수 계산", "픽셀 연결성 판별"], answer: 0, basis: "근거: 은닉층은 단층 퍼셉트론의 선형 분리 한계를 넘는 중간 표현을 만든다.", wrongRule: "오답 기준: 영상 입력 처리나 퍼지 연산은 은닉층 역할이 아니다.", examSkill: "구조 목적", internalSource: "13강 비선형 결정경계" },
       { title: "역전파 전제", prompt: "오차역전파에서 미분 가능한 활성함수가 중요한 이유는?", choices: ["기울기를 계산해야 하기 때문에", "픽셀 연결성을 정해야 하기 때문에", "항상 레이블을 지우기 때문에", "퍼지집합을 만들기 때문에"], answer: 0, basis: "근거: 가중치 갱신에 필요한 손실 기울기를 체인 룰로 계산하려면 미분 가능성이 필요하다.", wrongRule: "오답 기준: 연결성, 레이블 삭제, 퍼지집합은 역전파 미분 조건이 아니다.", examSkill: "전제 조건", internalSource: "13강 BP 모델" },
       { title: "모멘텀", prompt: "모멘텀 항 αΔw(n-1)이 의미하는 것은?", choices: ["이전 가중치 변화량 일부 반영", "현재 입력 삭제", "층 내부 연결 추가", "표본화 단계 증가"], answer: 0, basis: "근거: 모멘텀은 이전 갱신 방향을 현재 갱신에 반영한다.", wrongRule: "오답 기준: 입력 삭제나 구조 변경은 모멘텀의 역할이 아니다.", examSkill: "갱신식 의미", internalSource: "13강 모멘텀" },
       { title: "RBM", prompt: "RBM을 여러 층 쌓을 때 한 층의 은닉 유닛 출력은 다음 층에서 무엇으로 쓰이는가?", choices: ["가시 유닛 입력", "거리측정자", "임계값", "보상"], answer: 0, basis: "근거: 한 RBM의 은닉 출력이 다음 RBM층의 가시 유닛 입력이 되어 학습된다.", wrongRule: "오답 기준: 거리, 임계값, 보상은 RBM 층쌓기 흐름이 아니다.", examSkill: "구조 흐름", internalSource: "13강 RBM/DBN" },
@@ -1584,20 +1585,34 @@ function AnswerFeedback({
   correct,
   basis,
   wrongRule,
+  choiceText,
+  correctChoiceText,
 }: {
   correct: boolean;
   basis: string;
   wrongRule: string;
+  choiceText: string;
+  correctChoiceText: string;
 }) {
+  const explanation = buildAIChoiceExplanation({
+    choiceText,
+    correctChoiceText,
+    isCorrect: correct,
+    topicConcept: correctChoiceText,
+    topicBasis: basis.replace(/^근거:\s*/, ""),
+    topicWrongRule: wrongRule,
+    textbook: "인공지능 강의·교재",
+  });
+
   return (
     <div className="mt-3 rounded-md bg-white p-3 text-xs leading-5 text-gray-600 dark:bg-gray-900 dark:text-gray-300">
       <div className="font-bold">{correct ? "정답입니다." : "오답입니다."}</div>
       <div className="mt-1">
-        <span className="font-bold text-indigo-700 dark:text-indigo-300">근거: </span>
-        {basis.replace(/^근거:\s*/, "")}
+        <span className="font-bold text-indigo-700 dark:text-indigo-300">{correct ? "정답 근거: " : "선택지 판별: "}</span>
+        {explanation.reason.replace(/^정답 근거:\s*/, "").replace(/^오답 근거:\s*/, "")}
       </div>
       <div className="mt-1">
-        <span className="font-bold text-indigo-700 dark:text-indigo-300">오답 기준: </span>
+        <span className="font-bold text-indigo-700 dark:text-indigo-300">전체 판별 기준: </span>
         {wrongRule.replace(/^오답 기준:\s*/, "")}
       </div>
     </div>
@@ -1769,7 +1784,7 @@ function DrillSection({ lecture }: { lecture: AdvancedLectureData }) {
                 {drill.title}
               </div>
               <p className="mb-3 text-sm leading-6">{drill.prompt}</p>
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="space-y-2">
                 {drill.choices.map((choice, choiceIndex) => (
                   <button
                     key={choice}
@@ -1785,7 +1800,13 @@ function DrillSection({ lecture }: { lecture: AdvancedLectureData }) {
                 ))}
               </div>
               {selected !== undefined && (
-                <AnswerFeedback correct={selected === drill.answer} basis={drill.basis} wrongRule={drill.wrongRule} />
+                <AnswerFeedback
+                  correct={selected === drill.answer}
+                  basis={drill.basis}
+                  wrongRule={drill.wrongRule}
+                  choiceText={drill.choices[selected]}
+                  correctChoiceText={drill.choices[drill.answer]}
+                />
               )}
             </div>
           );
@@ -1835,7 +1856,7 @@ function ExamSection({ lecture }: { lecture: AdvancedLectureData }) {
                 <span className="text-sm font-bold">{quiz.title}</span>
               </div>
               <p className="mb-3 text-sm leading-6">{quiz.prompt}</p>
-              <div className="grid gap-2 md:grid-cols-2">
+              <div className="space-y-2">
                 {quiz.choices.map((choice, choiceIndex) => (
                   <button
                     key={choice}
@@ -1856,7 +1877,13 @@ function ExamSection({ lecture }: { lecture: AdvancedLectureData }) {
                     {selected === quiz.answer ? "정답입니다." : "오답입니다."}
                     <span className="ml-2">정답: {quiz.choices[quiz.answer]}</span>
                   </div>
-                  <AnswerFeedback correct={selected === quiz.answer} basis={quiz.basis} wrongRule={quiz.wrongRule} />
+                  <AnswerFeedback
+                    correct={selected === quiz.answer}
+                    basis={quiz.basis}
+                    wrongRule={quiz.wrongRule}
+                    choiceText={quiz.choices[selected]}
+                    correctChoiceText={quiz.choices[quiz.answer]}
+                  />
                 </div>
               )}
             </div>

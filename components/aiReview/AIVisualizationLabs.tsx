@@ -37,6 +37,13 @@ function sigmoid(x: number) {
   return 1 / (1 + Math.exp(-x));
 }
 
+function softmax(values: number[]) {
+  const max = Math.max(...values);
+  const expValues = values.map((value) => Math.exp(value - max));
+  const expSum = expValues.reduce((sum, value) => sum + value, 0);
+  return expValues.map((value) => value / expSum);
+}
+
 function LabFrame({
   title,
   subtitle,
@@ -298,8 +305,11 @@ function Vision8Lab() {
 function Vision9Lab() {
   const [qx, setQx] = useState(4);
   const [qy, setQy] = useState(3);
-  const [metric, setMetric] = useState<"euclidean" | "city" | "bayes">("euclidean");
+  const [metric, setMetric] = useState<"euclidean" | "city" | "mahalanobis" | "bayes">("euclidean");
   const [k, setK] = useState(3);
+  const [sigmaX, setSigmaX] = useState(2);
+  const [sigmaY, setSigmaY] = useState(1.3);
+  const [rho, setRho] = useState(0.35);
   const classA = { x: 2, y: 2, prior: 0.6, likelihood: 0.7 };
   const classB = { x: 7, y: 5, prior: 0.4, likelihood: 0.9 };
   const samples = [
@@ -317,8 +327,16 @@ function Vision9Lab() {
   const cityB = Math.abs(qx - classB.x) + Math.abs(qy - classB.y);
   const bayesA = classA.prior * classA.likelihood;
   const bayesB = classB.prior * classB.likelihood;
-  const scoreA = metric === "euclidean" ? euA : metric === "city" ? cityA : -bayesA;
-  const scoreB = metric === "euclidean" ? euB : metric === "city" ? cityB : -bayesB;
+  const mahalanobis = (center: { x: number; y: number }) => {
+    const dx = (qx - center.x) / sigmaX;
+    const dy = (qy - center.y) / sigmaY;
+    const denom = Math.max(0.05, 1 - rho * rho);
+    return Math.sqrt(Math.max(0, (dx * dx - 2 * rho * dx * dy + dy * dy) / denom));
+  };
+  const mahaA = mahalanobis(classA);
+  const mahaB = mahalanobis(classB);
+  const scoreA = metric === "euclidean" ? euA : metric === "city" ? cityA : metric === "mahalanobis" ? mahaA : -bayesA;
+  const scoreB = metric === "euclidean" ? euB : metric === "city" ? cityB : metric === "mahalanobis" ? mahaB : -bayesB;
   const nearest = samples
     .map((sample) => ({ ...sample, distance: Math.hypot(qx - sample.x, qy - sample.y) }))
     .sort((a, b) => a.distance - b.distance)
@@ -359,23 +377,28 @@ function Vision9Lab() {
           <div className="mb-3 flex flex-wrap gap-2">
             <Toggle active={metric === "euclidean"} onClick={() => setMetric("euclidean")}>유클리드</Toggle>
             <Toggle active={metric === "city"} onClick={() => setMetric("city")}>도시블록</Toggle>
+            <Toggle active={metric === "mahalanobis"} onClick={() => setMetric("mahalanobis")}>마할라노비스</Toggle>
             <Toggle active={metric === "bayes"} onClick={() => setMetric("bayes")}>베이즈</Toggle>
           </div>
           <Slider label="k-NN의 k" value={k} min={1} max={5} step={2} onChange={setK} />
           <div className="space-y-2">
-            <Stat label="A 거리/점수" value={metric === "euclidean" ? euA : metric === "city" ? cityA : bayesA} />
-            <Stat label="B 거리/점수" value={metric === "euclidean" ? euB : metric === "city" ? cityB : bayesB} />
+            <Stat label="A 거리/점수" value={metric === "euclidean" ? euA : metric === "city" ? cityA : metric === "mahalanobis" ? mahaA : bayesA} />
+            <Stat label="B 거리/점수" value={metric === "euclidean" ? euB : metric === "city" ? cityB : metric === "mahalanobis" ? mahaB : bayesB} />
             <Stat label="판정" value={scoreA <= scoreB ? "A" : "B"} />
             <Stat label="k-NN 투표" value={voteA >= voteB ? `A ${voteA}:${voteB}` : `B ${voteB}:${voteA}`} />
           </div>
         </Panel>
         <Panel title="개념 검산">
+          <Slider label="마할라노비스 σx" value={sigmaX} min={0.8} max={4} step={0.1} onChange={setSigmaX} />
+          <Slider label="마할라노비스 σy" value={sigmaY} min={0.8} max={4} step={0.1} onChange={setSigmaY} />
+          <Slider label="상관 ρ" value={rho} min={-0.8} max={0.8} step={0.05} onChange={setRho} />
           <StepList
-            active={2}
+            active={3}
             steps={[
               "정규화로 크기·위치 차이 완화",
               "특징벡터를 특징공간의 점으로 표현",
               "거리측정자 또는 사후확률 기준 적용",
+              "마할라노비스 거리는 분산·공분산으로 축의 성격을 반영",
               "가장 가까운 클래스 또는 큰 확률 선택",
             ]}
           />
@@ -390,6 +413,33 @@ function Vision9Lab() {
   );
 }
 
+const inductiveSamples = [
+  { score: 0.96, positive: true },
+  { score: 0.9, positive: true },
+  { score: 0.86, positive: false },
+  { score: 0.82, positive: true },
+  { score: 0.79, positive: false },
+  { score: 0.75, positive: true },
+  { score: 0.7, positive: true },
+  { score: 0.66, positive: false },
+  { score: 0.62, positive: true },
+  { score: 0.59, positive: true },
+  { score: 0.55, positive: false },
+  { score: 0.52, positive: true },
+  { score: 0.48, positive: false },
+  { score: 0.45, positive: true },
+  { score: 0.41, positive: false },
+  { score: 0.38, positive: true },
+  { score: 0.34, positive: true },
+  { score: 0.31, positive: false },
+  { score: 0.27, positive: true },
+  { score: 0.24, positive: false },
+  { score: 0.21, positive: true },
+  { score: 0.18, positive: false },
+  { score: 0.15, positive: false },
+  { score: 0.12, positive: true },
+];
+
 function ML10Lab() {
   const [tp, setTp] = useState(18);
   const [fp, setFp] = useState(1);
@@ -397,6 +447,7 @@ function ML10Lab() {
   const [tn, setTn] = useState(9);
   const [focus, setFocus] = useState<"tp" | "fp" | "fn" | "tn">("tp");
   const [metricFocus, setMetricFocus] = useState<"precision" | "recall" | "f1" | "accuracy" | "specificity">("precision");
+  const [hypothesisThreshold, setHypothesisThreshold] = useState(0.5);
   const precision = tp + fp === 0 ? 0 : tp / (tp + fp);
   const recall = tp + fn === 0 ? 0 : tp / (tp + fn);
   const f1 = 2 * tp + fp + fn === 0 ? 0 : (2 * tp) / (2 * tp + fp + fn);
@@ -422,10 +473,25 @@ function ML10Lab() {
     fn: "실제 양성을 음성으로 놓친 경우",
     tn: "실제 음성을 음성으로 맞힌 경우",
   }[focus];
+  const hypothesisCounts = inductiveSamples.reduce(
+    (counts, sample) => {
+      const predictedPositive = sample.score >= hypothesisThreshold;
+      if (sample.positive && predictedPositive) counts.tp += 1;
+      if (!sample.positive && predictedPositive) counts.fp += 1;
+      if (sample.positive && !predictedPositive) counts.fn += 1;
+      if (!sample.positive && !predictedPositive) counts.tn += 1;
+      return counts;
+    },
+    { tp: 0, fp: 0, fn: 0, tn: 0 },
+  );
+  const hypothesisPrecision =
+    hypothesisCounts.tp + hypothesisCounts.fp === 0 ? 0 : hypothesisCounts.tp / (hypothesisCounts.tp + hypothesisCounts.fp);
+  const hypothesisRecall =
+    hypothesisCounts.tp + hypothesisCounts.fn === 0 ? 0 : hypothesisCounts.tp / (hypothesisCounts.tp + hypothesisCounts.fn);
 
   return (
     <LabFrame title="분할표와 학습 유형 판별" subtitle="TP/FN/FP/TN 값을 바꿔 정밀도·재현율·F1·정확도를 검산" icon={<GitBranch size={18} />}>
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-4">
         <Panel title="학습 유형 조건">
           <StepList active={3} steps={["레이블 있음: 지도학습", "입력만 있음: 비지도학습", "보상 있음: 강화학습", "기존 모델 미세조정: 전이학습"]} />
         </Panel>
@@ -486,6 +552,39 @@ function ML10Lab() {
             </div>
           </div>
         </Panel>
+        <Panel title="귀납 가설 경계">
+          <Slider label="판정 임계치" value={hypothesisThreshold} min={0.15} max={0.9} step={0.05} onChange={setHypothesisThreshold} />
+          <div className="mb-3 grid grid-cols-6 gap-1">
+            {inductiveSamples.map((sample, index) => {
+              const predictedPositive = sample.score >= hypothesisThreshold;
+              const state = sample.positive && predictedPositive ? "TP" : !sample.positive && predictedPositive ? "FP" : sample.positive ? "FN" : "TN";
+              return (
+                <div
+                  key={`${sample.score}-${index}`}
+                  title={`${state} score=${fmt(sample.score)}`}
+                  className={`aspect-square rounded ${
+                    state === "TP"
+                      ? "bg-emerald-500"
+                      : state === "FP"
+                        ? "bg-amber-400"
+                        : state === "FN"
+                          ? "bg-rose-500"
+                          : "bg-gray-300 dark:bg-gray-800"
+                  }`}
+                />
+              );
+            })}
+          </div>
+          <div className="space-y-2">
+            <Stat label="TP / FP" value={`${hypothesisCounts.tp} / ${hypothesisCounts.fp}`} />
+            <Stat label="FN / TN" value={`${hypothesisCounts.fn} / ${hypothesisCounts.tn}`} />
+            <Bar label="정밀도" value={hypothesisPrecision} tone="emerald" />
+            <Bar label="재현율" value={hypothesisRecall} tone="rose" />
+          </div>
+          <p className="mt-2 text-xs leading-5 text-gray-500 dark:text-gray-400">
+            임계치를 높이면 가설이 엄격해져 양성 판정이 줄고, 보통 거짓 양성은 줄지만 거짓 음성이 늘 수 있음.
+          </p>
+        </Panel>
       </div>
     </LabFrame>
   );
@@ -502,6 +601,9 @@ function ML11Lab() {
   const [w1, setW1] = useState(0.5);
   const [eta, setEta] = useState(0.1);
   const [traceStep, setTraceStep] = useState(4);
+  const [z1, setZ1] = useState(1.2);
+  const [z2, setZ2] = useState(0.4);
+  const [z3, setZ3] = useState(-0.6);
   const errors = regressionSamples.map((sample) => w0 + w1 * sample.x - sample.y);
   const mse = errors.reduce((sum, error) => sum + error * error, 0) / regressionSamples.length;
   const grad0 = (2 / regressionSamples.length) * errors.reduce((sum, error) => sum + error, 0);
@@ -534,10 +636,15 @@ function ML11Lab() {
   const traceMax = Math.max(...trace.map((step) => step.mse), 0.001);
   const selectedTrace = trace[traceStep];
   const unstable = eta > 0.22 && trace[trace.length - 1].mse > trace[0].mse;
+  const logits = [z1, z2, z3];
+  const maxLogit = Math.max(...logits);
+  const expValues = logits.map((value) => Math.exp(value - maxLogit));
+  const expSum = expValues.reduce((sum, value) => sum + value, 0);
+  const probabilities = softmax(logits);
 
   return (
     <LabFrame title="선형회귀와 경사하강 갱신" subtitle="가중치와 학습률을 바꿔 MSE와 다음 업데이트 값을 계산" icon={<Sigma size={18} />}>
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-4">
         <Panel title="선형가설">
           <Slider label="w0" value={w0} min={-1} max={3} step={0.1} onChange={setW0} />
           <Slider label="w1" value={w1} min={-1} max={3} step={0.1} onChange={setW1} />
@@ -583,6 +690,22 @@ function ML11Lab() {
         </Panel>
         <Panel title="k-means 한 단계">
           <StepList active={2} steps={["초기 중심 C1=2, C2=8", "표본을 가까운 중심에 할당", "각 군집 평균으로 중심 갱신", "중심 변화가 작을 때까지 반복"]} />
+        </Panel>
+        <Panel title="다항 로지스틱 소프트맥스">
+          <Slider label="z1" value={z1} min={-3} max={3} step={0.1} onChange={setZ1} />
+          <Slider label="z2" value={z2} min={-3} max={3} step={0.1} onChange={setZ2} />
+          <Slider label="z3" value={z3} min={-3} max={3} step={0.1} onChange={setZ3} />
+          {probabilities.map((value, index) => (
+            <Bar key={index} label={`P(class ${index + 1})`} value={value} tone={index === 0 ? "violet" : index === 1 ? "cyan" : "amber"} />
+          ))}
+          <div className="space-y-2">
+            <Stat label="exp 합" value={expSum} />
+            <Stat label="확률 합" value={probabilities.reduce((sum, value) => sum + value, 0)} />
+            <Stat label="판정" value={`class ${probabilities.indexOf(Math.max(...probabilities)) + 1}`} />
+          </div>
+          <p className="mt-2 text-xs leading-5 text-gray-500 dark:text-gray-400">
+            소프트맥스는 클래스별 선형 점수를 확률분포로 바꿔 전체 합이 1이 되게 함.
+          </p>
         </Panel>
       </div>
     </LabFrame>

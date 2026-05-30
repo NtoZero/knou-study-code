@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { securityLectures } from "@/lib/constants";
-
-const START_ID = 6;
+import SecurityPastExamCoverage from "@/components/securityShared/SecurityPastExamCoverage";
 
 interface Props {
   lectureId: number;
@@ -12,13 +11,13 @@ interface Props {
 }
 
 export default function SecurityLectureLayout({ lectureId, children }: Props) {
-  const idx = lectureId - START_ID;
+  const idx = securityLectures.findIndex((item) => item.id === lectureId);
   const lec = securityLectures[idx];
   const prev = idx > 0 ? securityLectures[idx - 1] : null;
   const next = idx < securityLectures.length - 1 ? securityLectures[idx + 1] : null;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-6xl px-4 py-8 max-sm:pl-16">
       <div className="mb-6 flex items-center gap-2 text-sm text-gray-500">
         <Link href="/security" className="hover:text-gray-900 dark:hover:text-gray-200">
           컴퓨터보안
@@ -36,7 +35,10 @@ export default function SecurityLectureLayout({ lectureId, children }: Props) {
         <p className="mt-1 text-gray-500">{lec.subtitle}</p>
       </div>
 
-      <div className="space-y-12">{children}</div>
+      <div className="space-y-12">
+        <SecurityPastExamCoverage lectureId={lectureId} />
+        {children}
+      </div>
 
       <div className="mt-16 flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-800">
         {prev ? (

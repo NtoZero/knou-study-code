@@ -23,6 +23,7 @@ export type LectureRef = {
 export type PastExamChoice = {
   key: ChoiceKey;
   label: string;
+  text: string;
   explanation: {
     verdict: "correct" | "wrong";
     reason: string;

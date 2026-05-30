@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SectionTitle from "@/components/common/SectionTitle";
+import QuizChoiceExplanation from "@/components/aiReview/QuizChoiceExplanation";
 
 interface QuizQuestion {
   id: number;
@@ -447,7 +448,16 @@ export default function QuizSection() {
                       <p className="font-semibold">
                         {isCorrect ? "정답!" : "오답"}
                       </p>
-                      <p className="mt-1 text-xs">{q.explanation}</p>
+                      <div className="mt-1 text-xs">
+                        <QuizChoiceExplanation
+                          correct={isCorrect}
+                          choiceText={q.options[selected ?? q.correctIndex]}
+                          correctChoiceText={q.options[q.correctIndex]}
+                          basisText={q.explanation}
+                          wrongRule={`정답 선택지 "${q.options[q.correctIndex]}"이 따르는 탐색 정의·OPEN/CLOSED 처리·비용 기준과 선택한 보기를 비교한다.`}
+                          accentClass="text-cyan-700 dark:text-cyan-300"
+                        />
+                      </div>
                     </div>
                   </motion.div>
                 )}

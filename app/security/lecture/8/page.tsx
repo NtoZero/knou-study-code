@@ -3,7 +3,7 @@ import IDSArchitectureDiagram from "@/components/security8/IDSArchitectureDiagra
 import IDSAnalysisMethodsComparison from "@/components/security8/IDSAnalysisMethodsComparison";
 import IDSClassificationTree from "@/components/security8/IDSClassificationTree";
 import IPSExplorer from "@/components/security8/IPSExplorer";
-import Lecture8Quiz from "@/components/security8/Lecture8Quiz";
+import SecurityExamQuiz from "@/components/securityShared/SecurityExamQuiz";
 
 export default function Lecture8() {
   return (
@@ -12,7 +12,7 @@ export default function Lecture8() {
       <IDSAnalysisMethodsComparison />
       <IDSClassificationTree />
       <IPSExplorer />
-      <Lecture8Quiz />
+      <SecurityExamQuiz lectureId={8} />
     </SecurityLectureLayout>
   );
 }

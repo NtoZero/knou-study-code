@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SectionTitle from "@/components/common/SectionTitle";
+import QuizChoiceExplanation from "@/components/aiReview/QuizChoiceExplanation";
 
 interface QuizItem {
   id: number;
@@ -365,9 +366,16 @@ export default function QuizSection() {
                     exit={{ opacity: 0, height: 0 }}
                     className="mt-3 overflow-hidden rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
                   >
-                    <p className="text-xs text-gray-700 dark:text-gray-300">
-                      <strong>해설:</strong> {q.explanation}
-                    </p>
+                    <div className="text-xs text-gray-700 dark:text-gray-300">
+                      <QuizChoiceExplanation
+                        correct={isCorrect}
+                        choiceText={q.options[userAnswer ?? q.answerIdx]}
+                        correctChoiceText={q.options[q.answerIdx]}
+                        basisText={q.explanation}
+                        wrongRule={`정답 선택지 "${q.options[q.answerIdx]}"이 따르는 최대최소·알파베타·MCTS 절차와 선택한 보기를 비교한다.`}
+                        accentClass="text-fuchsia-700 dark:text-fuchsia-300"
+                      />
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

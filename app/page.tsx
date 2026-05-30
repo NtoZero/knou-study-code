@@ -157,7 +157,7 @@ export default function Home() {
             <Shield size={36} className="text-purple-600 mb-4" />
             <h2 className="text-xl font-semibold">컴퓨터보안</h2>
             <p className="mt-2 text-sm text-gray-500">
-              6~10강 인터랙티브 학습
+              1~15강 인터랙티브 학습
             </p>
           </Link>
         </div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, ClipboardList, Target } from "lucide-react";
 import { algorithmChapterWeights, algorithmLectures } from "@/lib/algorithmCourse";
+import { AlgorithmFinalAnalysis } from "./AlgorithmFinalAnalysis";
 
 export function AlgorithmSummary() {
   return (
@@ -10,11 +11,13 @@ export function AlgorithmSummary() {
           <Target size={18} />
           기말시험 범위: 교재 및 강의 전체
         </div>
-        <h1 className="text-3xl font-bold">알고리즘 기말 요약</h1>
+        <h1 className="text-3xl font-bold">알고리즘 기말분석</h1>
         <p className="mt-2 text-gray-500">
-          교재 1~7장 출제 문항 배정과 1~15강 강의 흐름을 함께 정리합니다.
+          교재 1~7장 출제 문항 배정과 1~15강 강의 흐름을 비중·취약도·실전 연습 순서로 정리합니다.
         </p>
       </div>
+
+      <AlgorithmFinalAnalysis />
 
       <section className="mb-8 rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
         <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
