@@ -13,6 +13,7 @@ import {
   Target,
 } from "lucide-react";
 import { securityLectures } from "@/lib/constants";
+import PastExamModeDock from "@/components/pastExam/PastExamModeDock";
 import {
   securityPastExamQuestions,
   securityPastExamTopicEntries,
@@ -71,8 +72,10 @@ export default function SecurityPastExamWorkbook() {
   const [lectureId, setLectureId] = useState<number | "all">("all");
   const [conceptTag, setConceptTag] = useState<string>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
+  const [reviewScope, setReviewScope] = useState<"visible" | "year">("visible");
   const [selected, setSelected] = useState<Record<string, SecurityChoiceKey>>({});
-  const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const [answerRevealed, setAnswerRevealed] = useState<Record<string, boolean>>({});
+  const [explanationExpanded, setExplanationExpanded] = useState<Record<string, boolean>>({});
 
   const yearQuestions = useMemo(
     () => securityPastExamQuestions.filter((question) => question.year === year),
@@ -107,7 +110,7 @@ export default function SecurityPastExamWorkbook() {
         return false;
       }
 
-      const isRevealed = Boolean(revealed[question.id]);
+      const isRevealed = Boolean(answerRevealed[question.id]);
       const chosen = selected[question.id];
       const isCorrect = chosen === question.correctChoice;
 
@@ -117,7 +120,7 @@ export default function SecurityPastExamWorkbook() {
       if (status === "wrong") return isRevealed && Boolean(chosen) && !isCorrect;
       return true;
     });
-  }, [yearQuestions, lectureId, conceptTag, status, selected, revealed]);
+  }, [yearQuestions, lectureId, conceptTag, status, selected, answerRevealed]);
 
   useEffect(() => {
     const linkedYear = parsePastExamYear(new URLSearchParams(window.location.search).get("year"));
@@ -144,33 +147,91 @@ export default function SecurityPastExamWorkbook() {
   }, [year, filteredQuestions.length]);
 
   const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
-  const revealedCount = yearQuestions.filter((question) => revealed[question.id]).length;
+  const answerRevealedCount = yearQuestions.filter((question) => answerRevealed[question.id]).length;
+  const visibleAnswerRevealedCount = filteredQuestions.filter((question) => answerRevealed[question.id]).length;
+  const explanationExpandedCount = yearQuestions.filter((question) => explanationExpanded[question.id]).length;
+  const visibleExplanationExpandedCount = filteredQuestions.filter(
+    (question) => explanationExpanded[question.id],
+  ).length;
   const correctCount = yearQuestions.filter(
-    (question) => revealed[question.id] && selected[question.id] === question.correctChoice,
+    (question) => answerRevealed[question.id] && selected[question.id] === question.correctChoice,
   ).length;
   const wrongCount = yearQuestions.filter(
     (question) =>
-      revealed[question.id] &&
+      answerRevealed[question.id] &&
       selected[question.id] &&
       selected[question.id] !== question.correctChoice,
   ).length;
+  const modeScopeQuestions = reviewScope === "visible" ? filteredQuestions : yearQuestions;
 
   function selectChoice(questionId: string, choice: SecurityChoiceKey) {
     setSelected((prev) => ({ ...prev, [questionId]: choice }));
   }
 
-  function toggleReveal(questionId: string) {
-    setRevealed((prev) => ({ ...prev, [questionId]: !prev[questionId] }));
+  function toggleAnswer(questionId: string) {
+    const nextVisible = !answerRevealed[questionId];
+    setAnswerRevealed((prev) => ({ ...prev, [questionId]: nextVisible }));
+    if (!nextVisible) {
+      setExplanationExpanded((prev) => ({ ...prev, [questionId]: false }));
+    }
+  }
+
+  function toggleExplanation(questionId: string) {
+    setAnswerRevealed((prev) => ({ ...prev, [questionId]: true }));
+    setExplanationExpanded((prev) => ({ ...prev, [questionId]: !prev[questionId] }));
+  }
+
+  function setAnswerVisibilityForQuestions(questions: SecurityPastExamQuestion[], value: boolean) {
+    setAnswerRevealed((prev) => {
+      const next = { ...prev };
+      questions.forEach((question) => {
+        next[question.id] = value;
+      });
+      return next;
+    });
+
+    if (!value) {
+      setExplanationExpanded((prev) => {
+        const next = { ...prev };
+        questions.forEach((question) => {
+          next[question.id] = false;
+        });
+        return next;
+      });
+    }
+  }
+
+  function setExplanationForQuestions(questions: SecurityPastExamQuestion[], value: boolean) {
+    if (value) {
+      setAnswerRevealed((prev) => {
+        const next = { ...prev };
+        questions.forEach((question) => {
+          next[question.id] = true;
+        });
+        return next;
+      });
+    }
+
+    setExplanationExpanded((prev) => {
+      const next = { ...prev };
+      questions.forEach((question) => {
+        next[question.id] = value;
+      });
+      return next;
+    });
   }
 
   function resetYear() {
     const ids = new Set(yearQuestions.map((question) => question.id));
     setSelected((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
-    setRevealed((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
+    setAnswerRevealed((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
+    setExplanationExpanded((prev) =>
+      Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))),
+    );
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:py-10">
+    <div className="mx-auto max-w-7xl px-4 pb-28 pt-8 sm:pt-10 lg:pb-10">
       <header className="mb-8 rounded-lg border border-cyan-200 bg-white p-5 shadow-sm dark:border-cyan-900 dark:bg-gray-950 sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -194,7 +255,7 @@ export default function SecurityPastExamWorkbook() {
 
           <div className="grid min-w-0 grid-cols-2 gap-2 text-sm sm:grid-cols-4 lg:min-w-[460px]">
             <ProgressBox label="선택" value={`${answeredCount}/25`} tone="cyan" />
-            <ProgressBox label="확인" value={`${revealedCount}/25`} tone="amber" />
+            <ProgressBox label="확인" value={`${answerRevealedCount}/25`} tone="amber" />
             <ProgressBox label="맞힘" value={`${correctCount}`} tone="emerald" />
             <ProgressBox label="재검토" value={`${wrongCount}`} tone="rose" />
           </div>
@@ -204,7 +265,7 @@ export default function SecurityPastExamWorkbook() {
       <SecurityExamAtlas
         selectedYear={year}
         selected={selected}
-        revealed={revealed}
+        revealed={answerRevealed}
         onSelectLecture={setLectureId}
         onSelectTag={setConceptTag}
       />
@@ -283,6 +344,26 @@ export default function SecurityPastExamWorkbook() {
         </div>
       </section>
 
+      <PastExamModeDock
+        tone="cyan"
+        scope={reviewScope}
+        visibleCount={filteredQuestions.length}
+        totalCount={yearQuestions.length}
+        answeredCount={answeredCount}
+        answerRevealedCount={answerRevealedCount}
+        explanationExpandedCount={explanationExpandedCount}
+        correctCount={correctCount}
+        wrongCount={wrongCount}
+        visibleAnswerRevealedCount={visibleAnswerRevealedCount}
+        visibleExplanationExpandedCount={visibleExplanationExpandedCount}
+        onScopeChange={setReviewScope}
+        onRevealAnswers={() => setAnswerVisibilityForQuestions(modeScopeQuestions, true)}
+        onHideAnswers={() => setAnswerVisibilityForQuestions(modeScopeQuestions, false)}
+        onExpandExplanations={() => setExplanationForQuestions(modeScopeQuestions, true)}
+        onCollapseExplanations={() => setExplanationForQuestions(modeScopeQuestions, false)}
+        onResetProgress={resetYear}
+      />
+
       <section className="mb-8 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
         <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -303,7 +384,7 @@ export default function SecurityPastExamWorkbook() {
               key={`jump-${question.id}`}
               href={`#${question.id}`}
               className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold transition-colors ${
-                revealed[question.id]
+                answerRevealed[question.id]
                   ? selected[question.id] === question.correctChoice
                     ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-100"
                     : "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-100"
@@ -325,9 +406,11 @@ export default function SecurityPastExamWorkbook() {
               key={question.id}
               question={question}
               selected={selected[question.id]}
-              revealed={Boolean(revealed[question.id])}
+              answerRevealed={Boolean(answerRevealed[question.id])}
+              explanationExpanded={Boolean(explanationExpanded[question.id])}
               onSelect={selectChoice}
-              onReveal={toggleReveal}
+              onToggleAnswer={toggleAnswer}
+              onToggleExplanation={toggleExplanation}
             />
           ))}
         </div>
@@ -339,7 +422,7 @@ export default function SecurityPastExamWorkbook() {
           </div>
           <div className="space-y-3 text-sm">
             <SummaryLine label="풀이한 문항" value={`${answeredCount} / 25`} />
-            <SummaryLine label="정답 확인" value={`${revealedCount} / 25`} />
+            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / 25`} />
             <SummaryLine label="맞힌 문항" value={`${correctCount}`} />
             <SummaryLine label="다시 볼 문항" value={`${wrongCount}`} />
           </div>

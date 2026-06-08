@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Brain, ChevronRight, FileQuestion } from "lucide-react";
+import { Menu, X, Brain, ChevronRight, FileQuestion, BookOpenCheck } from "lucide-react";
 import { aiLectures } from "@/lib/constants";
 
 export default function AINavigation() {
@@ -61,6 +61,27 @@ export default function AINavigation() {
               <div className="truncate text-xs text-gray-400">2017-2019 기말</div>
             </div>
             {pathname === "/ai/past-exam" && (
+              <ChevronRight size={14} className="ml-auto shrink-0" />
+            )}
+          </Link>
+
+          <Link
+            href="/ai/frequent-concepts"
+            onClick={() => setOpen(false)}
+            className={`mb-3 flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors ${
+              pathname === "/ai/frequent-concepts"
+                ? "bg-indigo-50 font-semibold text-indigo-600 dark:bg-indigo-950 dark:text-indigo-300"
+                : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            }`}
+          >
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-indigo-600 text-white">
+              <BookOpenCheck size={15} />
+            </span>
+            <div className="min-w-0">
+              <div className="truncate font-medium">빈출개념</div>
+              <div className="truncate text-xs text-gray-400">강의별 기출 커버리지</div>
+            </div>
+            {pathname === "/ai/frequent-concepts" && (
               <ChevronRight size={14} className="ml-auto shrink-0" />
             )}
           </Link>

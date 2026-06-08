@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { aiLectures } from "@/lib/constants";
+import AIPastExamCoverage from "@/components/aiPastExam/AIPastExamCoverage";
 
 interface Props {
   lectureId: number;
@@ -36,7 +37,10 @@ export default function AILectureLayout({ lectureId, children }: Props) {
       </div>
 
       {/* Content */}
-      <div className="space-y-12">{children}</div>
+      <div className="space-y-12">
+        <AIPastExamCoverage lectureId={lectureId} />
+        {children}
+      </div>
 
       {/* Prev / Next */}
       <div className="mt-16 flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-800">

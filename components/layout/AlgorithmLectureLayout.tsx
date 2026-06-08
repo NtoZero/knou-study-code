@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { algorithmLectures, getAlgorithmLecture } from "@/lib/algorithmCourse";
+import AlgorithmPastExamCoverage from "@/components/algorithmPastExam/AlgorithmPastExamCoverage";
 
 interface Props {
   lectureId: number;
@@ -37,7 +38,10 @@ export default function AlgorithmLectureLayout({ lectureId, children }: Props) {
         <p className="mt-1 text-gray-600 dark:text-gray-300">{lecture.subtitle}</p>
       </div>
 
-      <div className="space-y-8">{children}</div>
+      <div className="space-y-8">
+        <AlgorithmPastExamCoverage lectureId={lectureId} />
+        {children}
+      </div>
 
       <div className="mt-14 flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-800">
         {prev ? (

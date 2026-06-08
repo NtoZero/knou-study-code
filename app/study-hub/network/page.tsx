@@ -1,6 +1,7 @@
 import StudyHeader from "@/components/studyHub/StudyHeader";
 import StudyStageTabs from "@/components/studyHub/StudyStageTabs";
-import { Radio } from "lucide-react";
+import Link from "next/link";
+import { BookOpenCheck, Radio } from "lucide-react";
 
 import ShannonWeaverModel from "@/components/studyHub/network/ShannonWeaverModel";
 import CommunicationElementsMapping from "@/components/studyHub/network/CommunicationElementsMapping";
@@ -41,6 +42,19 @@ export default function NetworkStudyHub() {
           "인간 개입형 인터페이스·프로토콜 설계 원리 습득",
         ]}
       />
+
+      <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900 dark:bg-emerald-950/30">
+        <Link
+          href="/network/past-exam"
+          className="inline-flex items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-emerald-800"
+        >
+          <BookOpenCheck size={16} />
+          2015~2019 기말 기출분석 보기
+        </Link>
+        <p className="mt-2 text-sm leading-6 text-emerald-900 dark:text-emerald-100">
+          정보통신망 기말 대비용 출제축 분석과 재구성 문제 페이지로 이동합니다.
+        </p>
+      </div>
 
       <StudyStageTabs
         accent={{

@@ -7,6 +7,7 @@ import { GraduationCap, ChevronRight } from "lucide-react";
 const courseMap: Record<string, string> = {
   network: "정보통신망",
   algorithm: "알고리즘",
+  "official-exercises": "공식 연습문제",
 };
 
 export default function SiteHeader() {

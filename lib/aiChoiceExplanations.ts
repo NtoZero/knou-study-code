@@ -4,6 +4,20 @@ export function normalizeAIChoiceText(choiceText: string) {
   return choiceText.replace(/\s+/g, " ").trim();
 }
 
+function hasFinalConsonant(value: string) {
+  const chars = Array.from(normalizeAIChoiceText(value).replace(/[」"'`)\\\]]+$/g, ""));
+  const last = chars[chars.length - 1];
+  if (!last) return false;
+  const code = last.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return false;
+  return (code - 0xac00) % 28 !== 0;
+}
+
+function markedChoice(choiceText: string) {
+  const text = normalizeAIChoiceText(choiceText);
+  return `「${text}」${hasFinalConsonant(text) ? "은" : "는"}`;
+}
+
 function stripDecorations(choiceText: string) {
   return normalizeAIChoiceText(choiceText)
     .replace(/^["'「『]/, "")
@@ -124,7 +138,6 @@ export function describeAIChoiceConcept(choiceText: string) {
 
 export function buildAIChoiceExplanation({
   choiceText,
-  correctChoiceText,
   isCorrect,
   topicConcept,
   topicBasis,
@@ -132,7 +145,7 @@ export function buildAIChoiceExplanation({
   textbook,
 }: {
   choiceText: string;
-  correctChoiceText: string;
+  correctChoiceText?: string;
   isCorrect: boolean;
   topicConcept: string;
   topicBasis: string;
@@ -142,13 +155,14 @@ export function buildAIChoiceExplanation({
   const normalizedChoice = normalizeAIChoiceText(choiceText);
   const choiceConcept = describeAIChoiceConcept(choiceText);
   const source = `강의 내용 기준: ${topicBasis}${textbook ? ` 교재 개념 기준: ${textbook}.` : ""}`;
+  const marked = markedChoice(normalizedChoice);
 
   if (isCorrect) {
     return {
       verdict: "correct",
       reason: [
         `정답 근거: ${choiceConcept ?? topicBasis}`,
-        `「${normalizedChoice}」는 ${topicConcept} 문항에서 요구한 기준과 일치한다.`,
+        `${marked} ${topicConcept} 문항에서 요구한 기준과 일치한다.`,
       ].join(" "),
       conceptBasis: source,
     };
@@ -156,15 +170,14 @@ export function buildAIChoiceExplanation({
 
   const wrongConcept =
     choiceConcept ??
-    `「${normalizedChoice}」는 ${topicConcept} 문항의 후보 선택지이므로, 이 선택지 자체가 나타내는 정의·절차·계산 조건을 먼저 확인해야 한다.`;
-  const rejectionRule = topicWrongRule ?? `${topicConcept} 문항은 ${topicBasis}`;
+    `${marked} 선택지 본문의 정의·절차·계산 조건을 강의 기준으로 확인해야 한다.`;
+  const rejectionRule = topicWrongRule ? ` 판별 기준: ${topicWrongRule}` : "";
 
   return {
     verdict: "wrong",
     reason: [
       `오답 근거: ${wrongConcept}`,
-      `판별 기준: ${rejectionRule}`,
-      `따라서 이 선택지는 ${topicConcept}에서 묻는 정의·절차·계산 조건과 맞지 않는다.`,
+      `${marked} ${topicConcept}에서 묻는 정의·절차·계산 조건과 맞지 않는다.${rejectionRule}`,
     ].join(" "),
     conceptBasis: source,
   };

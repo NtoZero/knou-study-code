@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vercel Deploy Update"
+  short_description: "Safely refresh this project's Vercel deployment."
+  default_prompt: "현재 프로젝트를 점검하고 Vercel CLI로 최신 코드 배포를 진행해줘."

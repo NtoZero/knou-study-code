@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   BookOpen,
@@ -669,6 +670,7 @@ function ConceptDetail({
         <div className="mt-5 space-y-5">
           <DetailBlock title="개념 정리">{concept.definition}</DetailBlock>
           <DetailBlock title="기출 단서">{concept.examCue}</DetailBlock>
+          <ConceptVisuals visuals={concept.visuals} />
 
           <div>
             <div className="mb-2 text-sm font-bold text-gray-950 dark:text-gray-50">
@@ -731,6 +733,37 @@ function ConceptDetail({
         </div>
       </div>
     </aside>
+  );
+}
+
+function ConceptVisuals({ visuals }: { visuals: SecurityFrequentConcept["visuals"] }) {
+  if (!visuals?.length) return null;
+
+  return (
+    <div className="space-y-3">
+      {visuals.map((visual) => (
+        <figure
+          key={visual.src}
+          className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900"
+        >
+          <Image
+            src={visual.src}
+            alt={visual.alt}
+            width={visual.width}
+            height={visual.height}
+            sizes="(min-width: 1280px) 28vw, (min-width: 768px) 50vw, 92vw"
+            className="h-auto w-full bg-white"
+          />
+          <figcaption className="border-t border-gray-200 px-3 py-2 text-xs leading-5 text-gray-600 dark:border-gray-800 dark:text-gray-300">
+            <span className="font-bold text-gray-800 dark:text-gray-100">
+              {visual.sourceLabel}
+            </span>
+            {" · "}
+            {visual.caption}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
   );
 }
 

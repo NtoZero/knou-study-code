@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { lectures } from "@/lib/constants";
+import NetworkPastExamCoverage from "@/components/networkShared/NetworkPastExamCoverage";
 
 interface Props {
   lectureId: number;
@@ -37,6 +38,10 @@ export default function LectureLayout({ lectureId, children }: Props) {
 
       {/* Content */}
       <div className="space-y-12">{children}</div>
+
+      <div className="mt-12">
+        <NetworkPastExamCoverage lectureId={lectureId} />
+      </div>
 
       {/* Prev / Next */}
       <div className="mt-16 flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-800">

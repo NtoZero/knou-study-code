@@ -128,6 +128,8 @@ EXCLUDES=(
   # 환경·시크릿
   ".env"
   ".env.*"
+  # Vercel 로컬 프로젝트 메타데이터
+  ".vercel/"
   # 디버그 로그
   "npm-debug.log*"
   "yarn-debug.log*"

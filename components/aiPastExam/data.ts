@@ -1166,7 +1166,6 @@ function makeQuestion(year: 2017 | 2018 | 2019, number: number): PastExamQuestio
   const id = `${year}-2-q${String(number).padStart(2, "0")}`;
   const parsedText = mergeParsedText(id, `${year}학년도 2학기 인공지능 ${number}번`);
   const choiceTextOverrides = CHOICE_TEXT_OVERRIDES[id] ?? {};
-  const correctChoiceText = choiceTextOverrides[correctChoice] ?? parsedText.choices[correctChoice] ?? FALLBACK_CHOICE_TEXT[correctChoice];
 
   return {
     id,
@@ -1184,7 +1183,6 @@ function makeQuestion(year: 2017 | 2018 | 2019, number: number): PastExamQuestio
         text: choiceText,
         explanation: buildAIChoiceExplanation({
           choiceText,
-          correctChoiceText,
           isCorrect: key === correctChoice,
           topicConcept: topic.concept,
           topicBasis: topic.basis,

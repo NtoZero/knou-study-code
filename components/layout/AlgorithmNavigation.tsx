@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BookOpen, BookOpenCheck, ChevronRight, FileText, Menu, X } from "lucide-react";
+import { BarChart3, BookOpen, BookOpenCheck, ChevronRight, FileText, Menu, Target, X } from "lucide-react";
 import { algorithmLectures } from "@/lib/algorithmCourse";
 
 export default function AlgorithmNavigation() {
@@ -81,6 +81,22 @@ export default function AlgorithmNavigation() {
             <div>
               <div>기출분석</div>
               <div className="text-xs opacity-70">2017-2019 기말</div>
+            </div>
+          </Link>
+
+          <Link
+            href="/algorithm/frequent-concepts"
+            onClick={() => setOpen(false)}
+            className={`mb-3 flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors ${
+              pathname === "/algorithm/frequent-concepts"
+                ? "bg-emerald-50 font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200"
+                : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            }`}
+          >
+            <Target size={18} />
+            <div>
+              <div>빈출 개념</div>
+              <div className="text-xs opacity-70">개념별 기출 지도</div>
             </div>
           </Link>
 

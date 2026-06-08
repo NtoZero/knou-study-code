@@ -10,6 +10,7 @@ import {
   Shield,
   ArrowRight,
   Sparkles,
+  ClipboardCheck,
 } from "lucide-react";
 
 export default function Home() {
@@ -107,6 +108,51 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── 공식 연습문제 ───────────────────────────────── */}
+      <section className="mb-14">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
+              <ClipboardCheck size={22} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">공식 연습문제</h2>
+              <p className="text-xs text-gray-500">
+                U-KNOU 학습창 연습문제 기반 · 정답 확인과 이미지 문항 복습
+              </p>
+            </div>
+          </div>
+          <span className="hidden items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-200 sm:inline-flex">
+            <Sparkles size={12} /> 195문항
+          </span>
+        </div>
+
+        <Link
+          href="/official-exercises"
+          className="group block rounded-xl border border-blue-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-blue-900/60 dark:bg-gray-900"
+        >
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-300">
+                2026-1학기 6과목
+              </div>
+              <h3 className="text-xl font-bold">연습문제 시각화 문제집</h3>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
+                정보통신망, Java프로그래밍, 인공지능 공식 연습문제를 과목·강의·유형별로 필터링하고
+                이미지 문항과 정답 예시를 함께 확인합니다.
+              </p>
+            </div>
+            <div className="inline-flex w-fit items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white">
+              문제집 열기
+              <ArrowRight
+                size={15}
+                className="transition-transform group-hover:translate-x-1"
+              />
+            </div>
+          </div>
+        </Link>
+      </section>
+
       {/* ── 과목별 강의 시각화 ───────────────────────────── */}
       <section>
         <div className="mb-6 flex items-center gap-3">
@@ -127,7 +173,17 @@ export default function Home() {
             <BookOpen size={36} className="text-blue-500 mb-4" />
             <h2 className="text-xl font-semibold">정보통신망</h2>
             <p className="mt-2 text-sm text-gray-500">
-              1~10강 인터랙티브 시각화
+              1~15강 인터랙티브 시각화
+            </p>
+          </Link>
+          <Link
+            href="/network/past-exam"
+            className="group rounded-xl border border-emerald-200 bg-white p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-emerald-900 dark:bg-gray-900"
+          >
+            <BookOpen size={36} className="text-emerald-500 mb-4" />
+            <h2 className="text-xl font-semibold">정보통신망 기출분석</h2>
+            <p className="mt-2 text-sm text-gray-500">
+              2015~2019 기말 분석과 재구성 문제
             </p>
           </Link>
           <Link
@@ -158,6 +214,16 @@ export default function Home() {
             <h2 className="text-xl font-semibold">컴퓨터보안</h2>
             <p className="mt-2 text-sm text-gray-500">
               1~15강 인터랙티브 학습
+            </p>
+          </Link>
+          <Link
+            href="/software"
+            className="group rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+          >
+            <Layers size={36} className="text-emerald-600 mb-4" />
+            <h2 className="text-xl font-semibold">소프트웨어공학</h2>
+            <p className="mt-2 text-sm text-gray-500">
+              1~15강 정리와 기출·빈출 개념
             </p>
           </Link>
         </div>

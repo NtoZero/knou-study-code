@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, BarChart3, BookOpen, BookOpenCheck, FileText } from "lucide-react";
+import { ArrowRight, BarChart3, BookOpen, BookOpenCheck, FileText, Target } from "lucide-react";
+import AlgorithmExamPrepMap from "@/components/algorithmPastExam/AlgorithmExamPrepMap";
 import { algorithmChapterWeights, algorithmLectures } from "@/lib/algorithmCourse";
 
 export default function AlgorithmHome() {
@@ -15,7 +16,7 @@ export default function AlgorithmHome() {
         </p>
       </div>
 
-      <div className="mb-8 grid gap-4 md:grid-cols-3">
+      <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Link
           href="/algorithm/summary"
           className="group rounded-xl border border-emerald-200 bg-emerald-50 p-5 transition-all hover:-translate-y-1 hover:shadow-md dark:border-emerald-900/60 dark:bg-emerald-950/30"
@@ -60,7 +61,24 @@ export default function AlgorithmHome() {
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
           </div>
         </Link>
+
+        <Link
+          href="/algorithm/frequent-concepts"
+          className="group rounded-xl border border-emerald-200 bg-emerald-50 p-5 transition-all hover:-translate-y-1 hover:shadow-md dark:border-emerald-900/60 dark:bg-emerald-950/30"
+        >
+          <Target size={28} className="text-emerald-700 dark:text-emerald-200" />
+          <h2 className="mt-3 text-lg font-bold">빈출 개념 지도</h2>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+            2017~2019 기출을 개념별 빈도, 강의 근거, 오답 기준으로 압축해 확인합니다.
+          </p>
+          <div className="mt-4 flex items-center gap-1 text-sm font-semibold text-emerald-700 dark:text-emerald-200">
+            개념 지도 열기
+            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+          </div>
+        </Link>
       </div>
+
+      <AlgorithmExamPrepMap />
 
       <section className="mb-8 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
         <h2 className="mb-4 text-lg font-bold">출제 배정</h2>

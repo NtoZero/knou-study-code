@@ -7,9 +7,13 @@ import type { ChoiceKey, PastExamQuestion } from "./types";
 type Props = {
   question: PastExamQuestion;
   selected?: ChoiceKey;
-  revealed: boolean;
+  revealed?: boolean;
+  answerRevealed?: boolean;
+  explanationExpanded?: boolean;
   onSelect: (questionId: string, choice: ChoiceKey) => void;
-  onReveal: (questionId: string) => void;
+  onReveal?: (questionId: string) => void;
+  onToggleAnswer?: (questionId: string) => void;
+  onToggleExplanation?: (questionId: string) => void;
 };
 
 const choiceStyle = {
@@ -27,10 +31,29 @@ function getChoiceState(question: PastExamQuestion, selected: ChoiceKey | undefi
   return "dimmed";
 }
 
-export default function PastExamQuestionCard({ question, selected, revealed, onSelect, onReveal }: Props) {
+export default function PastExamQuestionCard({
+  question,
+  selected,
+  revealed,
+  answerRevealed,
+  explanationExpanded,
+  onSelect,
+  onReveal,
+  onToggleAnswer,
+  onToggleExplanation,
+}: Props) {
+  const answerVisible = answerRevealed ?? revealed ?? false;
+  const explanationOpen = explanationExpanded ?? revealed ?? false;
+  const splitControls =
+    answerRevealed !== undefined ||
+    explanationExpanded !== undefined ||
+    onToggleAnswer !== undefined ||
+    onToggleExplanation !== undefined;
   const isCorrect = selected === question.correctChoice;
   const selectedChoice = question.choices.find((choice) => choice.key === selected);
   const visuals = question.images ?? [];
+  const handleToggleAnswer = () => (onToggleAnswer ?? onReveal)?.(question.id);
+  const handleToggleExplanation = () => (onToggleExplanation ?? onReveal)?.(question.id);
 
   return (
     <article
@@ -80,7 +103,7 @@ export default function PastExamQuestionCard({ question, selected, revealed, onS
           <div className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">답 선택</div>
           <div className="space-y-2">
             {question.choices.map((choice) => {
-              const state = getChoiceState(question, selected, choice.key, revealed);
+              const state = getChoiceState(question, selected, choice.key, answerVisible);
               return (
                 <button
                   key={choice.key}
@@ -102,13 +125,23 @@ export default function PastExamQuestionCard({ question, selected, revealed, onS
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => onReveal(question.id)}
+            onClick={handleToggleAnswer}
             className="inline-flex items-center gap-2 rounded-lg bg-slate-950 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-700 dark:bg-cyan-200 dark:text-slate-950 dark:hover:bg-cyan-100"
           >
-            {revealed ? <EyeOff size={16} /> : <Eye size={16} />}
-            {revealed ? "해설 접기" : "정답 보기"}
+            {answerVisible ? <EyeOff size={16} /> : <Eye size={16} />}
+            {answerVisible ? "정답 숨기기" : "정답 보기"}
           </button>
-          {revealed && (
+          {answerVisible && splitControls && (
+            <button
+              type="button"
+              onClick={handleToggleExplanation}
+              className="inline-flex items-center gap-2 rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 text-sm font-semibold text-cyan-800 transition-colors hover:bg-cyan-100 dark:border-cyan-900 dark:bg-cyan-950/30 dark:text-cyan-100 dark:hover:bg-cyan-950"
+            >
+              {explanationOpen ? <EyeOff size={16} /> : <BookOpen size={16} />}
+              {explanationOpen ? "해설 접기" : "해설 보기"}
+            </button>
+          )}
+          {answerVisible && (
             <span
               className={`inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold ${
                 isCorrect
@@ -122,17 +155,20 @@ export default function PastExamQuestionCard({ question, selected, revealed, onS
           )}
         </div>
 
-        {revealed && (
-          <div className="space-y-4 rounded-xl border border-cyan-100 bg-cyan-50/70 p-4 dark:border-cyan-900 dark:bg-cyan-950/30">
-            <div>
-              <div className="text-sm font-bold text-cyan-900 dark:text-cyan-100">
-                정답: {question.correctChoice}번
-              </div>
-              <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200">
-                <strong>{question.lectureRefs[0].concept}</strong> 근거: {question.basis}
-              </p>
+        {answerVisible && (
+          <div className="rounded-xl border border-cyan-100 bg-cyan-50/70 p-4 dark:border-cyan-900 dark:bg-cyan-950/30">
+            <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-cyan-900 dark:text-cyan-100">
+              <CheckCircle2 size={16} />
+              정답: {question.correctChoice}번
             </div>
+            <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200">
+              <strong>{question.lectureRefs[0].concept}</strong> 근거: {question.basis}
+            </p>
+          </div>
+        )}
 
+        {answerVisible && explanationOpen && (
+          <div className="space-y-4 rounded-xl border border-cyan-100 bg-cyan-50/70 p-4 dark:border-cyan-900 dark:bg-cyan-950/30">
             <div className="rounded-lg bg-white p-3 text-sm leading-6 text-slate-700 dark:bg-slate-900 dark:text-slate-200">
               <div className="font-semibold text-slate-950 dark:text-white">선택지별 해설</div>
               <div className="mt-3 space-y-2">

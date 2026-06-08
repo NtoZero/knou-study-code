@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BarChart3, BookOpenCheck, Filter, RotateCcw } from "lucide-react";
+import PastExamModeDock from "@/components/pastExam/PastExamModeDock";
 import { algorithmChapterWeights, type AlgorithmChapterId } from "@/lib/algorithmCourse";
 import { algorithmPastExamQuestions, algorithmPastExamYears } from "./data";
 import PastExamQuestionCard from "./PastExamQuestionCard";
@@ -9,17 +10,35 @@ import type { ChoiceKey } from "./types";
 
 type StatusFilter = "all" | "unanswered" | "revealed" | "correct" | "wrong";
 
+function parsePastExamYear(value: string | null) {
+  const candidate = Number(value);
+  return algorithmPastExamYears.includes(candidate as 2017 | 2018 | 2019)
+    ? (candidate as 2017 | 2018 | 2019)
+    : null;
+}
+
 export default function AlgorithmPastExamWorkbook() {
+  const pendingHashRef = useRef<string | null>(null);
   const [year, setYear] = useState<2017 | 2018 | 2019>(2019);
   const [chapterId, setChapterId] = useState<AlgorithmChapterId | "all">("all");
   const [lectureId, setLectureId] = useState<number | "all">("all");
+  const [conceptTag, setConceptTag] = useState("all");
   const [status, setStatus] = useState<StatusFilter>("all");
+  const [reviewScope, setReviewScope] = useState<"visible" | "year">("visible");
   const [selected, setSelected] = useState<Record<string, ChoiceKey>>({});
-  const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const [answerRevealed, setAnswerRevealed] = useState<Record<string, boolean>>({});
+  const [explanationExpanded, setExplanationExpanded] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const param = new URLSearchParams(window.location.search).get("chapter");
-    const parsed = Number(param);
+    const params = new URLSearchParams(window.location.search);
+    const linkedYear = parsePastExamYear(params.get("year"));
+    const parsed = Number(params.get("chapter"));
+    pendingHashRef.current = window.location.hash ? window.location.hash.slice(1) : null;
+
+    if (linkedYear) {
+      setYear(linkedYear);
+    }
+
     if ([1, 2, 3, 4, 5, 6, 7].includes(parsed)) {
       setChapterId(parsed as AlgorithmChapterId);
       setLectureId("all");
@@ -46,7 +65,7 @@ export default function AlgorithmPastExamWorkbook() {
     return allIds.filter((id) => chapterLectureIds?.has(id));
   }, [chapterId, chapterLectureMap, yearQuestions]);
 
-  const filteredQuestions = useMemo(() => {
+  const scopedQuestions = useMemo(() => {
     return yearQuestions.filter((question) => {
       if (chapterId !== "all") {
         const chapterLectureIds = chapterLectureMap.get(chapterId);
@@ -59,7 +78,33 @@ export default function AlgorithmPastExamWorkbook() {
         return false;
       }
 
-      const isRevealed = Boolean(revealed[question.id]);
+      return true;
+    });
+  }, [chapterId, chapterLectureMap, yearQuestions, lectureId]);
+
+  const conceptOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    scopedQuestions.forEach((question) => {
+      question.conceptTags.forEach((tag) => counts.set(tag, (counts.get(tag) ?? 0) + 1));
+    });
+    return Array.from(counts)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ko"))
+      .map(([tag, count]) => ({ tag, count }));
+  }, [scopedQuestions]);
+
+  useEffect(() => {
+    if (conceptTag !== "all" && !conceptOptions.some((item) => item.tag === conceptTag)) {
+      setConceptTag("all");
+    }
+  }, [conceptOptions, conceptTag]);
+
+  const filteredQuestions = useMemo(() => {
+    return scopedQuestions.filter((question) => {
+      if (conceptTag !== "all" && !question.conceptTags.includes(conceptTag)) {
+        return false;
+      }
+
+      const isRevealed = Boolean(answerRevealed[question.id]);
       const chosen = selected[question.id];
       const isCorrect = chosen === question.correctChoice;
 
@@ -69,29 +114,98 @@ export default function AlgorithmPastExamWorkbook() {
       if (status === "wrong") return isRevealed && Boolean(chosen) && !isCorrect;
       return true;
     });
-  }, [chapterId, chapterLectureMap, yearQuestions, lectureId, status, selected, revealed]);
+  }, [scopedQuestions, conceptTag, status, selected, answerRevealed]);
+
+  useEffect(() => {
+    const targetId = pendingHashRef.current;
+    if (!targetId) return;
+
+    const timer = window.setTimeout(() => {
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ block: "start" });
+        pendingHashRef.current = null;
+      }
+    }, 120);
+
+    return () => window.clearTimeout(timer);
+  }, [year, filteredQuestions.length]);
 
   const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
-  const revealedCount = yearQuestions.filter((question) => revealed[question.id]).length;
-  const correctCount = yearQuestions.filter((question) => revealed[question.id] && selected[question.id] === question.correctChoice).length;
-  const wrongCount = yearQuestions.filter((question) => revealed[question.id] && selected[question.id] && selected[question.id] !== question.correctChoice).length;
+  const answerRevealedCount = yearQuestions.filter((question) => answerRevealed[question.id]).length;
+  const visibleAnswerRevealedCount = filteredQuestions.filter((question) => answerRevealed[question.id]).length;
+  const explanationExpandedCount = yearQuestions.filter((question) => explanationExpanded[question.id]).length;
+  const visibleExplanationExpandedCount = filteredQuestions.filter((question) => explanationExpanded[question.id]).length;
+  const correctCount = yearQuestions.filter((question) => answerRevealed[question.id] && selected[question.id] === question.correctChoice).length;
+  const wrongCount = yearQuestions.filter((question) => answerRevealed[question.id] && selected[question.id] && selected[question.id] !== question.correctChoice).length;
+  const modeScopeQuestions = reviewScope === "visible" ? filteredQuestions : yearQuestions;
 
   function selectChoice(questionId: string, choice: ChoiceKey) {
     setSelected((prev) => ({ ...prev, [questionId]: choice }));
   }
 
-  function toggleReveal(questionId: string) {
-    setRevealed((prev) => ({ ...prev, [questionId]: !prev[questionId] }));
+  function toggleAnswer(questionId: string) {
+    const nextVisible = !answerRevealed[questionId];
+    setAnswerRevealed((prev) => ({ ...prev, [questionId]: nextVisible }));
+    if (!nextVisible) {
+      setExplanationExpanded((prev) => ({ ...prev, [questionId]: false }));
+    }
+  }
+
+  function toggleExplanation(questionId: string) {
+    setAnswerRevealed((prev) => ({ ...prev, [questionId]: true }));
+    setExplanationExpanded((prev) => ({ ...prev, [questionId]: !prev[questionId] }));
+  }
+
+  function setAnswerVisibilityForQuestions(questions: typeof yearQuestions, value: boolean) {
+    setAnswerRevealed((prev) => {
+      const next = { ...prev };
+      questions.forEach((question) => {
+        next[question.id] = value;
+      });
+      return next;
+    });
+
+    if (!value) {
+      setExplanationExpanded((prev) => {
+        const next = { ...prev };
+        questions.forEach((question) => {
+          next[question.id] = false;
+        });
+        return next;
+      });
+    }
+  }
+
+  function setExplanationForQuestions(questions: typeof yearQuestions, value: boolean) {
+    if (value) {
+      setAnswerRevealed((prev) => {
+        const next = { ...prev };
+        questions.forEach((question) => {
+          next[question.id] = true;
+        });
+        return next;
+      });
+    }
+
+    setExplanationExpanded((prev) => {
+      const next = { ...prev };
+      questions.forEach((question) => {
+        next[question.id] = value;
+      });
+      return next;
+    });
   }
 
   function resetYear() {
     const ids = new Set(yearQuestions.map((question) => question.id));
     setSelected((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
-    setRevealed((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
+    setAnswerRevealed((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
+    setExplanationExpanded((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
+    <div className="mx-auto max-w-6xl px-4 pb-28 pt-8 sm:pt-10 lg:pb-10">
       <header className="mb-8 rounded-xl border border-cyan-200 bg-white p-5 shadow-sm dark:border-cyan-900 dark:bg-slate-950 sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -107,7 +221,7 @@ export default function AlgorithmPastExamWorkbook() {
 
           <div className="grid min-w-0 grid-cols-2 gap-2 text-sm sm:grid-cols-4 lg:min-w-[440px]">
             <ProgressBox label="선택" value={`${answeredCount}/35`} tone="cyan" />
-            <ProgressBox label="확인" value={`${revealedCount}/35`} tone="amber" />
+            <ProgressBox label="확인" value={`${answerRevealedCount}/35`} tone="amber" />
             <ProgressBox label="맞힘" value={`${correctCount}`} tone="emerald" />
             <ProgressBox label="재검토" value={`${wrongCount}`} tone="rose" />
           </div>
@@ -119,7 +233,7 @@ export default function AlgorithmPastExamWorkbook() {
           <Filter size={16} />
           필터
         </div>
-        <div className="grid gap-3 lg:grid-cols-[1.2fr_1fr_1fr_1fr_auto]">
+        <div className="grid gap-3 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1fr_auto]">
           <div className="flex flex-wrap gap-2">
             {algorithmPastExamYears.map((item) => (
               <button
@@ -178,6 +292,19 @@ export default function AlgorithmPastExamWorkbook() {
             <option value="wrong">다시 볼 문제</option>
           </select>
 
+          <select
+            value={conceptTag}
+            onChange={(event) => setConceptTag(event.target.value)}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          >
+            <option value="all">전체 개념</option>
+            {conceptOptions.map(({ tag, count }) => (
+              <option key={tag} value={tag}>
+                {tag} {count}
+              </option>
+            ))}
+          </select>
+
           <button
             type="button"
             onClick={resetYear}
@@ -188,6 +315,26 @@ export default function AlgorithmPastExamWorkbook() {
           </button>
         </div>
       </section>
+
+      <PastExamModeDock
+        tone="cyan"
+        scope={reviewScope}
+        visibleCount={filteredQuestions.length}
+        totalCount={yearQuestions.length}
+        answeredCount={answeredCount}
+        answerRevealedCount={answerRevealedCount}
+        explanationExpandedCount={explanationExpandedCount}
+        correctCount={correctCount}
+        wrongCount={wrongCount}
+        visibleAnswerRevealedCount={visibleAnswerRevealedCount}
+        visibleExplanationExpandedCount={visibleExplanationExpandedCount}
+        onScopeChange={setReviewScope}
+        onRevealAnswers={() => setAnswerVisibilityForQuestions(modeScopeQuestions, true)}
+        onHideAnswers={() => setAnswerVisibilityForQuestions(modeScopeQuestions, false)}
+        onExpandExplanations={() => setExplanationForQuestions(modeScopeQuestions, true)}
+        onCollapseExplanations={() => setExplanationForQuestions(modeScopeQuestions, false)}
+        onResetProgress={resetYear}
+      />
 
       <section className="mb-8 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950">
         <div className="mb-3">
@@ -200,7 +347,7 @@ export default function AlgorithmPastExamWorkbook() {
               key={`jump-${question.id}`}
               href={`#${question.id}`}
               className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold transition-colors ${
-                revealed[question.id]
+                answerRevealed[question.id]
                   ? selected[question.id] === question.correctChoice
                     ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-100"
                     : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-100"
@@ -223,9 +370,11 @@ export default function AlgorithmPastExamWorkbook() {
                 key={question.id}
                 question={question}
                 selected={selected[question.id]}
-                revealed={Boolean(revealed[question.id])}
+                answerRevealed={Boolean(answerRevealed[question.id])}
+                explanationExpanded={Boolean(explanationExpanded[question.id])}
                 onSelect={selectChoice}
-                onReveal={toggleReveal}
+                onToggleAnswer={toggleAnswer}
+                onToggleExplanation={toggleExplanation}
               />
             ))
           ) : (
@@ -237,6 +386,7 @@ export default function AlgorithmPastExamWorkbook() {
                 onClick={() => {
                   setChapterId("all");
                   setLectureId("all");
+                  setConceptTag("all");
                   setStatus("all");
                 }}
                 className="mt-3 inline-flex items-center gap-2 rounded-lg bg-amber-900 px-3 py-2 font-semibold text-white transition-colors hover:bg-amber-800 dark:bg-amber-200 dark:text-amber-950 dark:hover:bg-amber-100"
@@ -255,7 +405,7 @@ export default function AlgorithmPastExamWorkbook() {
           </div>
           <div className="space-y-3 text-sm">
             <SummaryLine label="풀이한 문항" value={`${answeredCount} / 35`} />
-            <SummaryLine label="정답 확인" value={`${revealedCount} / 35`} />
+            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / 35`} />
             <SummaryLine label="맞힌 문항" value={`${correctCount}`} />
             <SummaryLine label="다시 볼 문항" value={`${wrongCount}`} />
           </div>

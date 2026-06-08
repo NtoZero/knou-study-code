@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { BarChart3, BookOpenCheck, Filter, RotateCcw } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
+import PastExamModeDock from "@/components/pastExam/PastExamModeDock";
 import { aiPastExamQuestions, aiPastExamYears } from "./data";
 import PastExamQuestionCard from "./PastExamQuestionCard";
 import type { ChoiceKey } from "./types";
@@ -12,9 +13,12 @@ type StatusFilter = "all" | "unanswered" | "revealed" | "correct" | "wrong";
 export default function AIPastExamWorkbook() {
   const [year, setYear] = useState<2017 | 2018 | 2019>(2019);
   const [lectureId, setLectureId] = useState<number | "all">("all");
+  const [conceptTag, setConceptTag] = useState<string>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
+  const [reviewScope, setReviewScope] = useState<"visible" | "year">("visible");
   const [selected, setSelected] = useState<Record<string, ChoiceKey>>({});
-  const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const [answerRevealed, setAnswerRevealed] = useState<Record<string, boolean>>({});
+  const [explanationExpanded, setExplanationExpanded] = useState<Record<string, boolean>>({});
 
   const yearQuestions = useMemo(
     () => aiPastExamQuestions.filter((question) => question.year === year),
@@ -29,13 +33,24 @@ export default function AIPastExamWorkbook() {
     return Array.from(ids).sort((a, b) => a - b);
   }, [yearQuestions]);
 
+  const conceptOptions = useMemo(() => {
+    const tags = new Set<string>();
+    yearQuestions.forEach((question) => {
+      question.conceptTags.forEach((tag) => tags.add(tag));
+    });
+    return Array.from(tags).sort((a, b) => a.localeCompare(b, "ko"));
+  }, [yearQuestions]);
+
   const filteredQuestions = useMemo(() => {
     return yearQuestions.filter((question) => {
       if (lectureId !== "all" && !question.lectureRefs.some((ref) => ref.lectureId === lectureId)) {
         return false;
       }
+      if (conceptTag !== "all" && !question.conceptTags.includes(conceptTag)) {
+        return false;
+      }
 
-      const isRevealed = Boolean(revealed[question.id]);
+      const isRevealed = Boolean(answerRevealed[question.id]);
       const chosen = selected[question.id];
       const isCorrect = chosen === question.correctChoice;
 
@@ -45,29 +60,83 @@ export default function AIPastExamWorkbook() {
       if (status === "wrong") return isRevealed && Boolean(chosen) && !isCorrect;
       return true;
     });
-  }, [yearQuestions, lectureId, status, selected, revealed]);
+  }, [yearQuestions, lectureId, conceptTag, status, selected, answerRevealed]);
 
   const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
-  const revealedCount = yearQuestions.filter((question) => revealed[question.id]).length;
-  const correctCount = yearQuestions.filter((question) => revealed[question.id] && selected[question.id] === question.correctChoice).length;
-  const wrongCount = yearQuestions.filter((question) => revealed[question.id] && selected[question.id] && selected[question.id] !== question.correctChoice).length;
+  const answerRevealedCount = yearQuestions.filter((question) => answerRevealed[question.id]).length;
+  const visibleAnswerRevealedCount = filteredQuestions.filter((question) => answerRevealed[question.id]).length;
+  const explanationExpandedCount = yearQuestions.filter((question) => explanationExpanded[question.id]).length;
+  const visibleExplanationExpandedCount = filteredQuestions.filter((question) => explanationExpanded[question.id]).length;
+  const correctCount = yearQuestions.filter((question) => answerRevealed[question.id] && selected[question.id] === question.correctChoice).length;
+  const wrongCount = yearQuestions.filter((question) => answerRevealed[question.id] && selected[question.id] && selected[question.id] !== question.correctChoice).length;
+  const modeScopeQuestions = reviewScope === "visible" ? filteredQuestions : yearQuestions;
 
   function selectChoice(questionId: string, choice: ChoiceKey) {
     setSelected((prev) => ({ ...prev, [questionId]: choice }));
   }
 
-  function toggleReveal(questionId: string) {
-    setRevealed((prev) => ({ ...prev, [questionId]: !prev[questionId] }));
+  function toggleAnswer(questionId: string) {
+    const nextVisible = !answerRevealed[questionId];
+    setAnswerRevealed((prev) => ({ ...prev, [questionId]: nextVisible }));
+    if (!nextVisible) {
+      setExplanationExpanded((prev) => ({ ...prev, [questionId]: false }));
+    }
+  }
+
+  function toggleExplanation(questionId: string) {
+    setAnswerRevealed((prev) => ({ ...prev, [questionId]: true }));
+    setExplanationExpanded((prev) => ({ ...prev, [questionId]: !prev[questionId] }));
+  }
+
+  function setAnswerVisibilityForQuestions(questions: typeof yearQuestions, value: boolean) {
+    setAnswerRevealed((prev) => {
+      const next = { ...prev };
+      questions.forEach((question) => {
+        next[question.id] = value;
+      });
+      return next;
+    });
+
+    if (!value) {
+      setExplanationExpanded((prev) => {
+        const next = { ...prev };
+        questions.forEach((question) => {
+          next[question.id] = false;
+        });
+        return next;
+      });
+    }
+  }
+
+  function setExplanationForQuestions(questions: typeof yearQuestions, value: boolean) {
+    if (value) {
+      setAnswerRevealed((prev) => {
+        const next = { ...prev };
+        questions.forEach((question) => {
+          next[question.id] = true;
+        });
+        return next;
+      });
+    }
+
+    setExplanationExpanded((prev) => {
+      const next = { ...prev };
+      questions.forEach((question) => {
+        next[question.id] = value;
+      });
+      return next;
+    });
   }
 
   function resetYear() {
     const ids = new Set(yearQuestions.map((question) => question.id));
     setSelected((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
-    setRevealed((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
+    setAnswerRevealed((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
+    setExplanationExpanded((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
+    <div className="mx-auto max-w-6xl px-4 pb-28 pt-8 sm:pt-10 lg:pb-10">
       <header className="mb-8 rounded-lg border border-indigo-200 bg-white p-5 shadow-sm dark:border-indigo-900 dark:bg-gray-950 sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -84,7 +153,7 @@ export default function AIPastExamWorkbook() {
 
           <div className="grid min-w-0 grid-cols-2 gap-2 text-sm sm:grid-cols-4 lg:min-w-[440px]">
             <ProgressBox label="선택" value={`${answeredCount}/35`} tone="indigo" />
-            <ProgressBox label="확인" value={`${revealedCount}/35`} tone="amber" />
+            <ProgressBox label="확인" value={`${answerRevealedCount}/35`} tone="amber" />
             <ProgressBox label="맞힘" value={`${correctCount}`} tone="emerald" />
             <ProgressBox label="재검토" value={`${wrongCount}`} tone="rose" />
           </div>
@@ -96,7 +165,7 @@ export default function AIPastExamWorkbook() {
           <Filter size={16} />
           필터
         </div>
-        <div className="grid gap-3 lg:grid-cols-[1.2fr_1fr_1fr_auto]">
+        <div className="grid gap-3 xl:grid-cols-[1.2fr_0.8fr_0.9fr_0.9fr_auto]">
           <div className="flex flex-wrap gap-2">
             {aiPastExamYears.map((item) => (
               <button
@@ -128,6 +197,19 @@ export default function AIPastExamWorkbook() {
           </select>
 
           <select
+            value={conceptTag}
+            onChange={(event) => setConceptTag(event.target.value)}
+            className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900"
+          >
+            <option value="all">전체 개념</option>
+            {conceptOptions.map((tag) => (
+              <option key={tag} value={tag}>
+                {tag}
+              </option>
+            ))}
+          </select>
+
+          <select
             value={status}
             onChange={(event) => setStatus(event.target.value as StatusFilter)}
             className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900"
@@ -150,6 +232,26 @@ export default function AIPastExamWorkbook() {
         </div>
       </section>
 
+      <PastExamModeDock
+        tone="indigo"
+        scope={reviewScope}
+        visibleCount={filteredQuestions.length}
+        totalCount={yearQuestions.length}
+        answeredCount={answeredCount}
+        answerRevealedCount={answerRevealedCount}
+        explanationExpandedCount={explanationExpandedCount}
+        correctCount={correctCount}
+        wrongCount={wrongCount}
+        visibleAnswerRevealedCount={visibleAnswerRevealedCount}
+        visibleExplanationExpandedCount={visibleExplanationExpandedCount}
+        onScopeChange={setReviewScope}
+        onRevealAnswers={() => setAnswerVisibilityForQuestions(modeScopeQuestions, true)}
+        onHideAnswers={() => setAnswerVisibilityForQuestions(modeScopeQuestions, false)}
+        onExpandExplanations={() => setExplanationForQuestions(modeScopeQuestions, true)}
+        onCollapseExplanations={() => setExplanationForQuestions(modeScopeQuestions, false)}
+        onResetProgress={resetYear}
+      />
+
       <section className="mb-8 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
         <SectionTitle
           title={`${year}학년도 2학기 ${filteredQuestions.length}문항`}
@@ -161,7 +263,7 @@ export default function AIPastExamWorkbook() {
               key={`jump-${question.id}`}
               href={`#${question.id}`}
               className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold transition-colors ${
-                revealed[question.id]
+                answerRevealed[question.id]
                   ? selected[question.id] === question.correctChoice
                     ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200"
                     : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-200"
@@ -183,9 +285,11 @@ export default function AIPastExamWorkbook() {
               key={question.id}
               question={question}
               selected={selected[question.id]}
-              revealed={Boolean(revealed[question.id])}
+              answerRevealed={Boolean(answerRevealed[question.id])}
+              explanationExpanded={Boolean(explanationExpanded[question.id])}
               onSelect={selectChoice}
-              onReveal={toggleReveal}
+              onToggleAnswer={toggleAnswer}
+              onToggleExplanation={toggleExplanation}
             />
           ))}
         </div>
@@ -197,7 +301,7 @@ export default function AIPastExamWorkbook() {
           </div>
           <div className="space-y-3 text-sm">
             <SummaryLine label="풀이한 문항" value={`${answeredCount} / 35`} />
-            <SummaryLine label="정답 확인" value={`${revealedCount} / 35`} />
+            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / 35`} />
             <SummaryLine label="맞힌 문항" value={`${correctCount}`} />
             <SummaryLine label="다시 볼 문항" value={`${wrongCount}`} />
           </div>

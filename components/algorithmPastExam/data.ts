@@ -826,7 +826,7 @@ const CHOICE_REASON_OVERRIDES: Partial<Record<string, Partial<Record<ChoiceKey, 
     "1": "정답 근거: 경로는 그래프에서 간선으로 연결된 정점들의 순서 리스트이다. 문항의 빈칸 뒤에 정점 v₁부터 vₙ까지의 간선열과 정점 순서 리스트가 제시되어 있으므로 경로 정의와 일치한다.",
     "2": "오답 근거: 차수는 한 정점에 부속된 간선의 수를 나타내는 개념이다. 방향 그래프에서는 들어오는 간선 수와 나가는 간선 수를 구분한다. 이 문항은 간선 수를 묻지 않고, 간선으로 이어진 정점들의 순서 리스트 이름을 묻기 때문에 차수는 들어갈 수 없다.",
     "3": "오답 근거: 연결은 두 정점 사이에 경로가 존재하는지 또는 그래프가 하나의 연결 구조인지 판단하는 개념이다. 이 문항은 연결 여부가 아니라 v₁, v₂, ..., vₙ처럼 실제로 나열되는 정점 순서 리스트의 명칭을 묻기 때문에 연결은 빈칸에 들어갈 용어가 아니다.",
-    "4": "오답 근거: 사이클은 시작 정점과 끝 정점이 같은 특수한 경로이다. 문항의 정의는 v₁에서 vₙ까지의 일반적인 정점 순서 리스트를 설명하며 시작점과 끝점이 같다는 조건이 없다. 따라서 사이클은 경로보다 좁은 개념이라 오답이다.",
+    "4": "오답 근거: 사이클은 시작 정점과 끝 정점이 같은 특수한 경로이다. 문항의 정의는 v₁에서 vₙ까지의 일반적인 정점 순서 리스트를 설명하며 시작점과 끝점이 같다는 조건이 없다.",
   },
 };
 
@@ -899,7 +899,7 @@ function describeChoiceConcept(choiceText: string) {
   return unique.length > 0 ? unique.join(" ") : undefined;
 }
 
-function buildChoiceReason(topic: Topic, choiceText: string, isCorrect: boolean, correctChoiceText: string, questionId: string, choiceKey: ChoiceKey) {
+function buildChoiceReason(topic: Topic, choiceText: string, isCorrect: boolean, questionId: string, choiceKey: ChoiceKey) {
   const override = CHOICE_REASON_OVERRIDES[questionId]?.[choiceKey];
   if (override) {
     return {
@@ -912,7 +912,6 @@ function buildChoiceReason(topic: Topic, choiceText: string, isCorrect: boolean,
   const normalizedChoice = normalizeChoiceText(choiceText);
   const choiceLead = isFallbackChoiceText(choiceText) ? "해당 선택지" : `「${normalizedChoice}」 선택지`;
   const choiceConcept = describeChoiceConcept(choiceText);
-  const correctConcept = describeChoiceConcept(correctChoiceText);
   const basis = `강의 내용 기준: ${topic.basis} 교재 개념 기준: ${topic.textbook}.`;
   if (isCorrect) {
     return {
@@ -920,19 +919,26 @@ function buildChoiceReason(topic: Topic, choiceText: string, isCorrect: boolean,
       reason: [
         `정답 근거: ${topic.basis}`,
         choiceConcept,
-        `${choiceLead}는 문항의 정답 조건을 충족한다.`,
+        `${choiceLead}는 문항에서 요구한 정의·절차·계산 조건과 일치한다.`,
       ].filter(Boolean).join(" "),
       conceptBasis: basis,
     };
   }
 
+  const wrongReasonParts = choiceConcept
+    ? [
+        `오답 근거: ${choiceConcept}`,
+        `${choiceLead}는 ${topic.concept} 문항에서 묻는 정의·절차·계산 조건과 맞지 않는다.`,
+        `판별 기준: ${topic.wrongRule}`,
+      ]
+    : [
+        `오답 근거: ${topic.wrongRule}`,
+        `강의·교재 기준: ${topic.basis}`,
+      ];
+
   return {
     verdict: "wrong" as const,
-    reason: [
-      choiceConcept ? `오답 근거: ${choiceConcept}` : `오답 근거: ${choiceLead}는 ${topic.concept}의 핵심 정의와 맞지 않는다.`,
-      correctConcept ? `정답 조건은 ${correctConcept}` : `정답 조건은 ${topic.basis}`,
-      choiceConcept ? `따라서 ${choiceLead}는 문항이 요구한 조건과 범위가 다르다.` : undefined,
-    ].filter(Boolean).join(" "),
+    reason: wrongReasonParts.join(" "),
     conceptBasis: basis,
   };
 }
@@ -1609,7 +1615,6 @@ function makeQuestion(year: 2017 | 2018 | 2019, number: number): PastExamQuestio
   const correctChoice = ANSWERS[year][number - 1] as ChoiceKey;
   const id = `${year}-1-q${String(number).padStart(2, "0")}`;
   const parsedText = parseQuestionText(CLEAN_PROMPTS[id] ?? algorithmPastExamOcrText[id] ?? `${year}학년도 1학기 알고리즘 ${number}번`);
-  const correctChoiceText = parsedText.choices[correctChoice] ?? FALLBACK_CHOICE_TEXT[correctChoice];
   return {
     id,
     year,
@@ -1624,7 +1629,7 @@ function makeQuestion(year: 2017 | 2018 | 2019, number: number): PastExamQuestio
         key,
         label: CHOICE_LABELS[key],
         text: choiceText,
-        explanation: buildChoiceReason(topic, choiceText, key === correctChoice, correctChoiceText, id, key),
+        explanation: buildChoiceReason(topic, choiceText, key === correctChoice, id, key),
       };
     }),
     correctChoice,

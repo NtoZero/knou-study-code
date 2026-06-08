@@ -28,6 +28,16 @@ export type SecurityFrequentConcept = {
   variants: string[];
   special?: SecurityFrequentConceptSpecial;
   note?: string;
+  visuals?: SecurityFrequentConceptVisual[];
+};
+
+export type SecurityFrequentConceptVisual = {
+  src: string;
+  alt: string;
+  caption: string;
+  sourceLabel: string;
+  width: number;
+  height: number;
 };
 
 type SecurityFrequentConceptInput = Omit<
@@ -48,6 +58,148 @@ export const securityFrequentConceptCategories: SecurityFrequentConceptCategory[
   "웹·무선 보안",
   "디지털 포렌식",
 ];
+
+function visual(
+  file: string,
+  width: number,
+  height: number,
+  sourceLabel: string,
+  caption: string,
+): SecurityFrequentConceptVisual {
+  return {
+    src: `/security/frequent-concepts/figures/${file}`,
+    alt: `${sourceLabel} 도식`,
+    caption,
+    sourceLabel,
+    width,
+    height,
+  };
+}
+
+const securityConceptVisuals: Record<string, SecurityFrequentConceptVisual[]> = {
+  "crypto-basic-terms": [
+    visual(
+      "encryption-decryption-loop.png",
+      520,
+      250,
+      "교재 2장 암호화와 복호화",
+      "암호화는 평문에서 암호문으로, 복호화는 암호문에서 평문으로 되돌리는 방향.",
+    ),
+  ],
+  "public-key-crypto": [
+    visual(
+      "public-key-crypto-flow.png",
+      720,
+      240,
+      "교재 2장 공개키 암호의 개념",
+      "공개키로 암호화한 암호문은 대응하는 개인키로 복호화.",
+    ),
+  ],
+  "server-intrusion-stages": [
+    visual(
+      "server-intrusion-stages.png",
+      670,
+      420,
+      "교재 5장 서버 침입 및 정보유출 단계",
+      "서버 침입은 정보획득, 권한획득, 공격, 재침입의 단계로 이어짐.",
+    ),
+  ],
+  "ipsec-ah-esp": [
+    visual(
+      "ipsec-ah-format.png",
+      580,
+      400,
+      "교재 6장 AH 형식과 위치",
+      "AH는 IP 데이터그램의 무결성과 출처를 보장하지만 기밀성은 제공하지 않음.",
+    ),
+    visual(
+      "ipsec-esp-format.png",
+      590,
+      290,
+      "교재 6장 ESP 형식",
+      "ESP는 페이로드를 보호해 기밀성을 제공하고 무결성·출처 확인과 함께 출제.",
+    ),
+  ],
+  "firewall-configuration": [
+    visual(
+      "firewall-screening-router-bastion.png",
+      780,
+      510,
+      "교재 7장 스크리닝 라우터와 베스천 호스트",
+      "방화벽 구축 형태는 라우터, 베스천 호스트, 듀얼 홈, 스크린 호스트 위치로 구분.",
+    ),
+  ],
+  "firewall-topologies": [
+    visual(
+      "firewall-screened-host-gateway.png",
+      790,
+      600,
+      "교재 7장 듀얼 홈·스크린 호스트 게이트웨이",
+      "스크린 호스트 게이트웨이는 스크리닝 라우터와 베스천 호스트를 조합.",
+    ),
+  ],
+  "vpn-types": [
+    visual(
+      "vpn-implementation-types.png",
+      670,
+      510,
+      "교재 7장 VPN 구현 형태",
+      "VPN 구현 형태는 방화벽 기반, 라우터 기반, 전용 VPN, 소프트웨어 형태로 비교.",
+    ),
+  ],
+  "ids-components": [
+    visual(
+      "ids-components.png",
+      660,
+      380,
+      "교재 8장 IDS 구성요소",
+      "IDS는 모니터링부, 분석 및 조치부, 관리부로 나뉘며 정보 수집·분석·통제를 담당.",
+    ),
+  ],
+  "pgp-process": [
+    visual(
+      "pgp-auth-confidentiality.png",
+      740,
+      1100,
+      "교재 9장 PGP 인증과 기밀성",
+      "PGP는 해시, RSA, ZIP, 대칭키 암호를 조합해 인증과 기밀성을 제공.",
+    ),
+    visual(
+      "pgp-message-format.png",
+      570,
+      380,
+      "교재 9장 PGP 메시지 형식",
+      "PGP 메시지는 세션키, 서명, 메시지 요소와 각각의 키 ID·타임스탬프를 포함.",
+    ),
+  ],
+  "sql-injection": [
+    visual(
+      "sql-injection-impact.png",
+      760,
+      230,
+      "교재 10장 SQL injection 공격 영향",
+      "SQL injection은 웹 애플리케이션 입력이 데이터베이스 명령으로 섞이는 공격.",
+    ),
+  ],
+  "xss": [
+    visual(
+      "reflected-xss-flow.png",
+      540,
+      360,
+      "교재 10장 반사된 XSS",
+      "반사형 XSS는 악성 스크립트를 포함한 URL 접근 후 웹 클라이언트에서 실행되는 흐름.",
+    ),
+  ],
+  "forensic-procedure": [
+    visual(
+      "digital-forensic-procedure.png",
+      660,
+      270,
+      "교재 11장 디지털 포렌식 절차",
+      "사전준비, 증거수집, 포장 및 이송, 조사분석, 정밀검토, 보고서 작성 순서.",
+    ),
+  ],
+};
 
 const concepts: SecurityFrequentConceptInput[] = [
   {
@@ -673,6 +825,7 @@ function yearFromRef(ref: string) {
 export const securityFrequentConcepts: SecurityFrequentConcept[] = concepts.map(
   (concept) => ({
     ...concept,
+    visuals: securityConceptVisuals[concept.id],
     frequency: concept.refs.length,
     years: Array.from(new Set(concept.refs.map(yearFromRef))).sort((a, b) => a - b),
   }),
