@@ -8,7 +8,6 @@ export type JavaPastExamChoice = {
   explanation: {
     verdict: "correct" | "wrong";
     reason: string;
-    conceptBasis: string;
   };
 };
 
@@ -36,7 +35,7 @@ export type JavaPastExamQuestion = {
   correctChoice: JavaChoiceKey;
   lectureRefs: JavaLectureRef[];
   conceptTags: string[];
-  basis: string;
+  answerExplanation: string;
   examSkill: string;
   answerSourceInternal: string;
   questionSourceInternal: string;

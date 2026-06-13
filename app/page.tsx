@@ -110,6 +110,13 @@ const pastExams = [
     iconClass: "text-indigo-500",
   },
   {
+    href: "/java/past-exam",
+    title: "Java프로그래밍 기출분석",
+    subtitle: "2017~2019 기말 75문항 코드 판독 풀이",
+    Icon: Code2,
+    iconClass: "text-amber-600",
+  },
+  {
     href: "/algorithm/past-exam",
     title: "알고리즘 기출분석",
     subtitle: "2017~2019 기말 105문항 풀이",

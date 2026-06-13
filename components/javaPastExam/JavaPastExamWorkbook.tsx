@@ -20,6 +20,11 @@ function parseYear(value: string | null) {
   return javaPastExamYears.includes(year as JavaPastExamYear) ? (year as JavaPastExamYear) : null;
 }
 
+function pastExamLectureTitle(id: number) {
+  if (id === 15) return "AWT GUI와 이벤트 처리";
+  return javaLectures.find((lecture) => lecture.id === id)?.title ?? "강의";
+}
+
 export default function JavaPastExamWorkbook() {
   const pendingHashRef = useRef<string | null>(null);
   const [year, setYear] = useState<JavaPastExamYear>(2019);
@@ -297,7 +302,7 @@ export default function JavaPastExamWorkbook() {
             <select value={lectureId} onChange={(event) => setLectureId(event.target.value === "all" ? "all" : Number(event.target.value))} className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
               <option value="all">전체 강의</option>
               {lectureOptions.map((id) => (
-                <option key={id} value={id}>{id}강 {javaLectures.find((lecture) => lecture.id === id)?.title}</option>
+                <option key={id} value={id}>{id}강 {pastExamLectureTitle(id)}</option>
               ))}
             </select>
           </label>

@@ -27,7 +27,8 @@ export default function PastExamQuestionCard({
   onToggleAnswer,
   onToggleExplanation,
 }: Props) {
-  const correctLabel = question.choices.find((choice) => choice.key === question.correctChoice)?.label;
+  const correctChoice = question.choices.find((choice) => choice.key === question.correctChoice);
+  const correctLabel = correctChoice?.label;
   const isCorrect = selected === question.correctChoice;
 
   return (
@@ -124,8 +125,12 @@ export default function PastExamQuestionCard({
 
         {answerRevealed && (
           <div className="rounded-lg border border-amber-100 bg-amber-50/70 p-4 dark:border-amber-900 dark:bg-amber-950/20">
-            <div className="text-sm font-bold text-amber-950 dark:text-amber-100">정답: {correctLabel}</div>
-            <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-gray-200">{question.basis}</p>
+            <div className="text-sm font-bold text-amber-950 dark:text-amber-100">
+              정답: {correctLabel} {correctChoice?.text}
+            </div>
+            <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-gray-200">
+              {question.answerExplanation}
+            </p>
           </div>
         )}
 
@@ -158,7 +163,6 @@ export default function PastExamQuestionCard({
                         </span>
                       </div>
                       <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-gray-300">{choice.explanation.reason}</p>
-                      <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">{choice.explanation.conceptBasis}</p>
                     </div>
                   );
                 })}
