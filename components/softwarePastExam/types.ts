@@ -1,6 +1,19 @@
 export type SoftwareChoiceKey = "1" | "2" | "3" | "4";
 export type SoftwarePastExamYear = 2017 | 2018 | 2019;
 
+export type SoftwarePastExamImage = {
+  src: string;
+  alt: string;
+  aiDescriptionHidden: string;
+  sourcePageInternal: 1 | 2 | 3;
+  cropBoxInternal: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+};
+
 export type SoftwarePastExamChoice = {
   key: SoftwareChoiceKey;
   label: string;
@@ -26,6 +39,7 @@ export type SoftwarePastExamQuestion = {
   examName: string;
   number: number;
   prompt: string;
+  images?: SoftwarePastExamImage[];
   choices: SoftwarePastExamChoice[];
   correctChoice: SoftwareChoiceKey;
   lectureRefs: SoftwareLectureRef[];

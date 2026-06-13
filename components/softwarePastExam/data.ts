@@ -1,5 +1,6 @@
 import type {
   SoftwareChoiceKey,
+  SoftwarePastExamImage,
   SoftwarePastExamQuestion,
   SoftwarePastExamYear,
 } from "./types";
@@ -39,6 +40,259 @@ const lectureConcept: Record<number, string> = {
   15: "컴포넌트·배포·패키지 다이어그램",
 };
 
+function visual(
+  fileName: string,
+  alt: string,
+  aiDescriptionHidden: string,
+  sourcePageInternal: 1 | 2 | 3,
+  cropBoxInternal: SoftwarePastExamImage["cropBoxInternal"],
+): SoftwarePastExamImage {
+  return {
+    src: `/software/past-exam/figures/${fileName}`,
+    alt,
+    aiDescriptionHidden,
+    sourcePageInternal,
+    cropBoxInternal,
+  };
+}
+
+const visualByQuestion: Partial<Record<string, SoftwarePastExamImage[]>> = {
+  "software-2019-21": [
+    visual(
+      "2019-1-q21-extend-usecase.png",
+      "Perform ATM Transaction과 On-Line Help 사이의 확장 관계 유스케이스 그림",
+      "Perform ATM Transaction 유스케이스와 On-Line Help 유스케이스가 점선 화살표로 연결되어 있고, 점선은 On-Line Help 쪽에서 Perform ATM Transaction 쪽을 향한다. 두 유스케이스 사이 위쪽에는 빈 스테레오타입 표기 괄호가 있다.",
+      2,
+      { x: 100, y: 1905, width: 575, height: 143 },
+    ),
+  ],
+  "software-2019-23": [
+    visual(
+      "2019-1-q23-activity-fork-join.png",
+      "TV보기와 밥먹기가 포크와 조인 사이에서 병렬 수행되는 액티비티 다이어그램",
+      "초기 노드에서 포크 막대로 흐름이 나뉘어 TV보기와 밥먹기 액션으로 진행하고, 두 흐름이 조인 막대에서 합쳐진 뒤 종료 노드로 이어진다.",
+      2,
+      { x: 855, y: 372, width: 450, height: 163 },
+    ),
+  ],
+  "software-2019-24": [
+    visual(
+      "2019-1-q24-activity-partition.png",
+      "청구서 발생, 청구서, 결제 액션이 영역별로 나뉜 액티비티 다이어그램",
+      "가로와 세로 구분선으로 나뉜 파티션 안에 청구서 발생, 청구서, 결제 액션이 배치되어 있고 흐름 화살표가 각 액션을 순서대로 연결한다.",
+      2,
+      { x: 860, y: 775, width: 450, height: 225 },
+    ),
+  ],
+  "software-2019-25": [
+    visual(
+      "2019-1-q25-27-sequence-course.png",
+      "교수, 수업신청UI, 수업관리모듈, CS강좌 객체가 참여하는 시퀀스 다이어그램",
+      "교수 액터, 수업신청UI 경계 객체, 수업관리모듈 제어 객체, CS강좌 엔터티 객체가 생명선으로 배치되어 있고 강좌 정보 입력, 입력완료, 강좌추가, 생성완료, 강좌 생성 메시지가 시간 순서로 표시된다.",
+      2,
+      { x: 860, y: 1215, width: 545, height: 315 },
+    ),
+  ],
+  "software-2019-26": [
+    visual(
+      "2019-1-q25-27-sequence-course.png",
+      "교수, 수업신청UI, 수업관리모듈, CS강좌 객체가 참여하는 시퀀스 다이어그램",
+      "교수 액터, 수업신청UI 경계 객체, 수업관리모듈 제어 객체, CS강좌 엔터티 객체가 생명선으로 배치되어 있고 강좌 정보 입력, 입력완료, 강좌추가, 생성완료, 강좌 생성 메시지가 시간 순서로 표시된다.",
+      2,
+      { x: 860, y: 1215, width: 545, height: 315 },
+    ),
+  ],
+  "software-2019-27": [
+    visual(
+      "2019-1-q25-27-sequence-course.png",
+      "교수, 수업신청UI, 수업관리모듈, CS강좌 객체가 참여하는 시퀀스 다이어그램",
+      "교수 액터, 수업신청UI 경계 객체, 수업관리모듈 제어 객체, CS강좌 엔터티 객체가 생명선으로 배치되어 있고 강좌 정보 입력, 입력완료, 강좌추가, 생성완료, 강좌 생성 메시지가 시간 순서로 표시된다.",
+      2,
+      { x: 860, y: 1215, width: 545, height: 315 },
+    ),
+  ],
+  "software-2019-29": [
+    visual(
+      "2019-1-q29-interface-realization.png",
+      "NewsPaper 인터페이스와 KoreanNewsPaper 클래스 사이의 실현 관계",
+      "위쪽에는 <<interface>> NewsPaper가, 아래쪽에는 KoreanNewsPaper 클래스가 있으며 아래 클래스에서 위 인터페이스를 향해 점선과 빈 삼각형 화살표가 연결된다.",
+      3,
+      { x: 100, y: 360, width: 225, height: 265 },
+    ),
+  ],
+  "software-2019-30": [
+    visual(
+      "2019-1-q30-object-diagram-link.png",
+      "myObject:MyClass와 yourObject:YourClass가 링크로 연결된 객체 다이어그램",
+      "왼쪽의 myObject:MyClass 객체와 오른쪽의 yourObject:YourClass 객체가 실선 링크로 연결되어 있다.",
+      3,
+      { x: 100, y: 820, width: 570, height: 105 },
+    ),
+  ],
+  "software-2019-32": [
+    visual(
+      "2019-1-q32-state-machine-door.png",
+      "닫힘 상태에서 열린 상태로 전이하는 문 상태 머신 다이어그램",
+      "초기 노드에서 닫힘 상태로 들어가고 노크하기[노크 횟수<3] 조건에서는 닫힘 상태로 되돌아간다. 노크하기[노크 횟수=3]/불켜기 전이가 열린 상태로 이어지고 열린 상태에서 종료 노드로 진행한다.",
+      3,
+      { x: 95, y: 1455, width: 460, height: 310 },
+    ),
+  ],
+  "software-2019-33": [
+    visual(
+      "2019-1-q33-component-datasource-provider.png",
+      "DBHelper와 MySQLDB가 DataSource 인터페이스로 연결된 컴포넌트 다이어그램",
+      "DBHelper 컴포넌트 위에는 Query와 StoredProc 제공 인터페이스가 있고, DBHelper와 MySQLDB 사이에는 DataSource 인터페이스가 연결되어 있다.",
+      3,
+      { x: 90, y: 1935, width: 535, height: 190 },
+    ),
+  ],
+  "software-2019-34": [
+    visual(
+      "2019-1-q34-deployment-node.png",
+      "Node라고 적힌 UML 배포 다이어그램 노드 기호",
+      "Node라고 적힌 입체 직육면체 모양의 UML 노드 기호가 제시되어 있다.",
+      3,
+      { x: 870, y: 230, width: 175, height: 160 },
+    ),
+  ],
+  "software-2019-35": [
+    visual(
+      "2019-1-q35-uml-symbol-options.png",
+      "패키지, 노드, 아티팩트, 제공 인터페이스 UML 기호 보기",
+      "보기 1은 탭이 달린 폴더 모양, 보기 2는 입체 노드 모양, 보기 3은 접힌 모서리가 있는 문서 모양, 보기 4는 작은 선과 원으로 된 제공 인터페이스 기호이다.",
+      3,
+      { x: 850, y: 645, width: 545, height: 240 },
+    ),
+  ],
+  "software-2018-22": [
+    visual(
+      "2018-1-q22-usecase-actor-include.png",
+      "Doctor와 Insurance Company 액터가 HIS System 유스케이스와 상호작용하는 유스케이스 다이어그램",
+      "HIS System 경계 안에 Insert EMR, Load Old Chart, Check Registration 유스케이스가 있고 Insert EMR과 Load Old Chart에서 Check Registration으로 <<include>> 관계가 향한다. Doctor와 Insurance Company 액터가 시스템과 연결되어 있다.",
+      2,
+      { x: 140, y: 1788, width: 590, height: 267 },
+    ),
+  ],
+  "software-2018-25": [
+    visual(
+      "2018-1-q25-activity-interrupt-region.png",
+      "주문 처리와 주문 취소 흐름이 있는 액티비티 다이어그램",
+      "주문 받기 이후 주문 처리와 취소 흐름이 점선 영역 안에서 분기되고, 배송과 주문 취소 액션이 종료 노드로 이어진다.",
+      2,
+      { x: 925, y: 745, width: 535, height: 195 },
+    ),
+  ],
+  "software-2018-26": [
+    visual(
+      "2018-1-q26-27-sequence-course.png",
+      "교수, 수업신청UI, 수업관리모듈, CS강좌 객체가 참여하는 시퀀스 다이어그램",
+      "교수 액터, 수업신청UI, 수업관리모듈, CS강좌:강좌 참여 요소가 생명선으로 배치되고 강좌 정보 입력, 입력완료, 강좌추가, 생성완료, 강좌 생성 메시지가 표시된다.",
+      2,
+      { x: 925, y: 1170, width: 533, height: 285 },
+    ),
+  ],
+  "software-2018-27": [
+    visual(
+      "2018-1-q26-27-sequence-course.png",
+      "교수, 수업신청UI, 수업관리모듈, CS강좌 객체가 참여하는 시퀀스 다이어그램",
+      "교수 액터, 수업신청UI, 수업관리모듈, CS강좌:강좌 참여 요소가 생명선으로 배치되고 강좌 정보 입력, 입력완료, 강좌추가, 생성완료, 강좌 생성 메시지가 표시된다.",
+      2,
+      { x: 925, y: 1170, width: 533, height: 285 },
+    ),
+  ],
+  "software-2018-29": [
+    visual(
+      "2018-1-q29-class-association-constraint.png",
+      "ShoppingHistory와 Shopping 클래스 사이의 연관 및 제약 조건 클래스 다이어그램",
+      "ShoppingHistory 클래스와 Shopping 클래스가 -shoppings {unique} 연관으로 연결되고 다중성 1과 별표가 표시된다. Shopping 클래스에는 orders와 comments private 속성이 들어 있다.",
+      3,
+      { x: 110, y: 150, width: 655, height: 170 },
+    ),
+  ],
+  "software-2018-30": [
+    visual(
+      "2018-1-q30-class-generalization.png",
+      "A 클래스에서 B 클래스로 빈 삼각형 화살표가 향하는 일반화 관계 클래스 다이어그램",
+      "A 클래스와 B 클래스가 실선으로 연결되어 있고 빈 삼각형 화살표가 B 클래스 쪽을 향한다.",
+      3,
+      { x: 160, y: 530, width: 565, height: 190 },
+    ),
+  ],
+  "software-2018-34": [
+    visual(
+      "2018-1-q34-component-provided-interface.png",
+      "DBHelper 컴포넌트의 Query, StoredProc, DataSource 인터페이스 그림",
+      "DBHelper 컴포넌트 위쪽에 Query와 StoredProc 제공 인터페이스가 있고, 오른쪽에는 DataSource 인터페이스가 반원 형태로 연결되어 있다.",
+      3,
+      { x: 235, y: 1815, width: 400, height: 230 },
+    ),
+  ],
+  "software-2018-35": [
+    visual(
+      "2018-1-q35-deployment-artifact-node.png",
+      "MyServer 노드 안에 MyServer::myLibrary.jar 아티팩트가 배치된 배포 다이어그램",
+      "입체 노드 <<device>> MyServer 안에 <<artifact>> MyServer::myLibrary.jar가 포함되어 하드웨어 노드에 아티팩트가 배포된 형태를 보인다.",
+      3,
+      { x: 1040, y: 165, width: 345, height: 215 },
+    ),
+  ],
+  "software-2017-26": [
+    visual(
+      "2017-1-q26-aggregation-loan.png",
+      "Loan이 Customer와 Resource를 흰 마름모로 포함하는 집합 관계 클래스 다이어그램",
+      "Loan 클래스 아래에 흰 마름모가 있고 Customer와 Resource 클래스가 Loan에 포함되는 형태로 연결되어 있다.",
+      3,
+      { x: 255, y: 180, width: 355, height: 205 },
+    ),
+  ],
+  "software-2017-28": [
+    visual(
+      "2017-1-q28-usecase-include.png",
+      "Insert EMR과 Load Old Chart가 Check Registration을 포함하는 유스케이스 다이어그램",
+      "Doctor 액터가 Insert EMR과 Load Old Chart 유스케이스에 연결되고 두 유스케이스에서 Check Registration 유스케이스로 <<include>> 점선 화살표가 향한다.",
+      3,
+      { x: 100, y: 925, width: 660, height: 295 },
+    ),
+  ],
+  "software-2017-30": [
+    visual(
+      "2017-1-q30-sequence-course.png",
+      "교수, 수업신청UI, 수업관리모듈, CS강좌 객체가 참여하는 시퀀스 다이어그램",
+      "교수 액터와 수업신청UI, 수업관리모듈, CS강좌:강좌 참여 요소가 생명선으로 배치되고 강좌정보입력, 입력완료, 강좌추가, 생성완료, 강좌생성 메시지가 순서대로 표시된다.",
+      3,
+      { x: 85, y: 1740, width: 705, height: 305 },
+    ),
+  ],
+  "software-2017-31": [
+    visual(
+      "2017-1-q31-32-activity-order.png",
+      "Receive Order Request부터 Submit Order까지 이어지는 주문 처리 액티비티 다이어그램",
+      "초기 노드에서 Receive Order Request, Order pending, Approve Payment, Order approved, Submit Order를 거쳐 종료 노드로 이동하는 액션 흐름이 표시된다.",
+      3,
+      { x: 835, y: 145, width: 710, height: 105 },
+    ),
+  ],
+  "software-2017-32": [
+    visual(
+      "2017-1-q31-32-activity-order.png",
+      "Receive Order Request부터 Submit Order까지 이어지는 주문 처리 액티비티 다이어그램",
+      "초기 노드에서 Receive Order Request, Order pending, Approve Payment, Order approved, Submit Order를 거쳐 종료 노드로 이동하는 액션 흐름이 표시된다.",
+      3,
+      { x: 835, y: 145, width: 710, height: 105 },
+    ),
+  ],
+  "software-2017-35": [
+    visual(
+      "2017-1-q35-component-datasource.png",
+      "DBHelper와 MySQLDB가 DataSource 인터페이스로 연결된 컴포넌트 다이어그램",
+      "DBHelper 컴포넌트 위에는 Query와 StoredProc 제공 인터페이스가 있고 DBHelper는 DataSource 인터페이스를 통해 MySQLDB 컴포넌트와 연결되어 있다.",
+      3,
+      { x: 935, y: 1375, width: 520, height: 210 },
+    ),
+  ],
+};
+
 function basisFor(spec: Spec) {
   const concept = lectureConcept[spec.lectureId];
   return `강의와 교재의 ${concept} 개념에서는 정의, 적용 대상, 표기 조건을 함께 보아야 한다. 이 문항은 ${spec.tag}의 조건을 묻는다.`;
@@ -47,14 +301,16 @@ function basisFor(spec: Spec) {
 function makeQuestion(spec: Spec): SoftwarePastExamQuestion {
   const concept = lectureConcept[spec.lectureId];
   const correctText = spec.choices[Number(spec.correct) - 1];
+  const id = `software-${spec.year}-${spec.number}`;
 
   return {
-    id: `software-${spec.year}-${spec.number}`,
+    id,
     year: spec.year,
     semester: "1",
     examName: `${spec.year}학년도 1학기 기말`,
     number: spec.number,
     prompt: spec.prompt,
+    images: visualByQuestion[id],
     choices: spec.choices.map((text, idx) => {
       const key = String(idx + 1) as SoftwareChoiceKey;
       const verdict = key === spec.correct ? "correct" : "wrong";

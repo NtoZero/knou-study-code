@@ -4,11 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "prebuild": "npm run audit:java-past-exam",
+    "prebuild": "npm run audit:java-past-exam && npm run audit:software-past-exam",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "audit:java-past-exam": "node script/audit-java-past-exam.mjs"
+    "audit:java-past-exam": "node script/audit-java-past-exam.mjs",
+    "audit:official-exercises-context": "node script/audit-official-exercises-context.mjs",
+    "audit:past-exam-context": "node script/audit-past-exam-context.mjs",
+    "audit:software-past-exam": "node script/audit-software-past-exam.mjs"
   },
   "dependencies": {
     "next": "^15",

@@ -26,6 +26,7 @@ export default function PastExamQuestionCard({
 }: Props) {
   const correctLabel = question.choices.find((choice) => choice.key === question.correctChoice)?.label;
   const isCorrect = selected === question.correctChoice;
+  const visuals = question.images ?? [];
 
   return (
     <article
@@ -52,6 +53,27 @@ export default function PastExamQuestionCard({
         <pre className="whitespace-pre-wrap break-keep rounded-md border border-gray-200 bg-gray-50 p-3 font-sans text-sm leading-7 text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100">
           {question.prompt}
         </pre>
+
+        {visuals.length > 0 && (
+          <div className="space-y-3 rounded-lg border border-emerald-100 bg-white p-3 dark:border-emerald-900 dark:bg-gray-900">
+            <div className="text-sm font-semibold text-gray-700 dark:text-gray-200">문항 시각 자료</div>
+            {visuals.map((image) => (
+              <figure
+                key={image.src}
+                className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950"
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  width={image.cropBoxInternal.width}
+                  height={image.cropBoxInternal.height}
+                  loading="lazy"
+                  className="h-auto max-h-[420px] w-full bg-white object-contain"
+                />
+              </figure>
+            ))}
+          </div>
+        )}
 
         <div className="space-y-2">
           {question.choices.map((choice) => {
