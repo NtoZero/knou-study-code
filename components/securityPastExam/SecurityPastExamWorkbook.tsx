@@ -12,6 +12,7 @@ import {
   Shield,
   Target,
 } from "lucide-react";
+import { MultiSelectChips, SingleSelectChips } from "@/components/pastExam/PastExamFilterChips";
 import { securityLectures } from "@/lib/constants";
 import PastExamModeDock from "@/components/pastExam/PastExamModeDock";
 import { useQuestionProgress } from "@/hooks/useQuestionProgress";
@@ -30,6 +31,7 @@ import type {
 } from "./types";
 
 type StatusFilter = "all" | "unanswered" | "revealed" | "correct" | "wrong";
+type ViewOrder = "exam" | "lecture";
 
 type Track = "기초" | "공격" | "시스템" | "응용" | "포렌식" | "암호심화";
 
@@ -71,7 +73,8 @@ function parsePastExamYear(value: string | null) {
 
 export default function SecurityPastExamWorkbook() {
   const pendingHashRef = useRef<string | null>(null);
-  const [year, setYear] = useState<SecurityPastExamYear>(2019);
+  const [selectedYears, setSelectedYears] = useState<SecurityPastExamYear[]>([...securityPastExamYears]);
+  const [viewOrder, setViewOrder] = useState<ViewOrder>("exam");
   const [lectureId, setLectureId] = useState<number | "all">("all");
   const [conceptTag, setConceptTag] = useState<string>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -127,9 +130,17 @@ export default function SecurityPastExamWorkbook() {
   }, [progressById]);
 
   const yearQuestions = useMemo(
-    () => securityPastExamQuestions.filter((question) => question.year === year),
-    [year],
+    () => securityPastExamQuestions.filter((question) => selectedYears.includes(question.year)),
+    [selectedYears],
   );
+  const yearOrder = useMemo(
+    () => new Map(securityPastExamYears.map((item, index) => [item, index])),
+    [],
+  );
+  const selectedYearLabel = useMemo(() => {
+    if (selectedYears.length === securityPastExamYears.length) return "2015-2019";
+    return [...selectedYears].sort((a, b) => a - b).map((item) => `${item}`).join(", ");
+  }, [selectedYears]);
 
   const lectureOptions = useMemo(() => {
     const ids = new Set<number>();
@@ -168,15 +179,21 @@ export default function SecurityPastExamWorkbook() {
       if (status === "correct") return isRevealed && isCorrect;
       if (status === "wrong") return isRevealed && Boolean(chosen) && !isCorrect;
       return true;
+    }).sort((a, b) => {
+      if (viewOrder === "lecture") {
+        const lectureDelta = (a.lectureRefs[0]?.lectureId ?? 999) - (b.lectureRefs[0]?.lectureId ?? 999);
+        if (lectureDelta !== 0) return lectureDelta;
+      }
+      return (yearOrder.get(a.year) ?? 999) - (yearOrder.get(b.year) ?? 999) || a.number - b.number;
     });
-  }, [yearQuestions, lectureId, conceptTag, status, selected, answerRevealed]);
+  }, [yearQuestions, lectureId, conceptTag, status, selected, answerRevealed, viewOrder, yearOrder]);
 
   useEffect(() => {
     const linkedYear = parsePastExamYear(new URLSearchParams(window.location.search).get("year"));
     pendingHashRef.current = window.location.hash ? window.location.hash.slice(1) : null;
 
     if (linkedYear) {
-      setYear(linkedYear);
+      setSelectedYears([linkedYear]);
     }
   }, []);
 
@@ -193,7 +210,7 @@ export default function SecurityPastExamWorkbook() {
     }, 120);
 
     return () => window.clearTimeout(timer);
-  }, [year, filteredQuestions.length]);
+  }, [selectedYears, filteredQuestions.length]);
 
   const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
   const answerRevealedCount = yearQuestions.filter((question) => answerRevealed[question.id]).length;
@@ -355,8 +372,8 @@ export default function SecurityPastExamWorkbook() {
           </div>
 
           <div className="grid min-w-0 grid-cols-2 gap-2 text-sm sm:grid-cols-4 lg:min-w-[460px]">
-            <ProgressBox label="선택" value={`${answeredCount}/25`} tone="cyan" />
-            <ProgressBox label="확인" value={`${answerRevealedCount}/25`} tone="amber" />
+            <ProgressBox label="선택" value={`${answeredCount}/${yearQuestions.length}`} tone="cyan" />
+            <ProgressBox label="확인" value={`${answerRevealedCount}/${yearQuestions.length}`} tone="amber" />
             <ProgressBox label="맞힘" value={`${correctCount}`} tone="emerald" />
             <ProgressBox label="재검토" value={`${wrongCount}`} tone="rose" />
           </div>
@@ -364,7 +381,8 @@ export default function SecurityPastExamWorkbook() {
       </header>
 
       <SecurityExamAtlas
-        selectedYear={year}
+        selectedYears={selectedYears}
+        selectedYearLabel={selectedYearLabel}
         selected={selected}
         revealed={answerRevealed}
         onSelectLecture={setLectureId}
@@ -376,23 +394,27 @@ export default function SecurityPastExamWorkbook() {
           <Filter size={16} />
           필터
         </div>
-        <div className="grid gap-3 xl:grid-cols-[1.2fr_0.8fr_0.9fr_0.9fr_auto]">
-          <div className="flex flex-wrap gap-2">
-            {securityPastExamYears.map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setYear(item)}
-                className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-                  year === item
-                    ? "bg-cyan-700 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-                }`}
-              >
-                {item}년
-              </button>
-            ))}
-          </div>
+        <div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_0.8fr_0.9fr_0.9fr_auto]">
+          <MultiSelectChips
+            label="연도"
+            options={securityPastExamYears}
+            selected={selectedYears}
+            tone="cyan"
+            allLabel="전체 연도"
+            getLabel={(item) => `${item}년`}
+            onChange={setSelectedYears}
+          />
+
+          <SingleSelectChips
+            label="보기"
+            tone="cyan"
+            value={viewOrder}
+            onChange={setViewOrder}
+            options={[
+              { value: "exam", label: "시험지순" },
+              { value: "lecture", label: "강의순" },
+            ]}
+          />
 
           <select
             value={lectureId}
@@ -448,6 +470,7 @@ export default function SecurityPastExamWorkbook() {
       <PastExamModeDock
         tone="cyan"
         scope={reviewScope}
+        totalScopeLabel="선택 연도"
         visibleCount={filteredQuestions.length}
         totalCount={yearQuestions.length}
         answeredCount={answeredCount}
@@ -469,7 +492,7 @@ export default function SecurityPastExamWorkbook() {
         <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-lg font-bold text-gray-950 dark:text-gray-50">
-              {year}학년도 1학기 {filteredQuestions.length}문항
+              {selectedYearLabel}학년도 1학기 {filteredQuestions.length}문항
             </h2>
             <p className="text-sm text-gray-500">
               정답 공개 전에는 정오답 색상을 표시하지 않습니다.
@@ -484,7 +507,7 @@ export default function SecurityPastExamWorkbook() {
             <a
               key={`jump-${question.id}`}
               href={`#${question.id}`}
-              className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold transition-colors ${
+              className={`flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-xs font-bold transition-colors ${
                 answerRevealed[question.id]
                   ? selected[question.id] === question.correctChoice
                     ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-100"
@@ -494,7 +517,7 @@ export default function SecurityPastExamWorkbook() {
                     : "bg-gray-100 text-gray-500 dark:bg-gray-900 dark:text-gray-400"
               }`}
             >
-              {question.number}
+              {selectedYears.length > 1 ? `${String(question.year).slice(2)}-${question.number}` : question.number}
             </a>
           ))}
         </div>
@@ -522,8 +545,8 @@ export default function SecurityPastExamWorkbook() {
             복습 요약
           </div>
           <div className="space-y-3 text-sm">
-            <SummaryLine label="풀이한 문항" value={`${answeredCount} / 25`} />
-            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / 25`} />
+            <SummaryLine label="풀이한 문항" value={`${answeredCount} / ${yearQuestions.length}`} />
+            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / ${yearQuestions.length}`} />
             <SummaryLine label="맞힌 문항" value={`${correctCount}`} />
             <SummaryLine label="다시 볼 문항" value={`${wrongCount}`} />
           </div>
@@ -554,13 +577,15 @@ export default function SecurityPastExamWorkbook() {
 }
 
 function SecurityExamAtlas({
-  selectedYear,
+  selectedYears,
+  selectedYearLabel,
   selected,
   revealed,
   onSelectLecture,
   onSelectTag,
 }: {
-  selectedYear: SecurityPastExamYear;
+  selectedYears: SecurityPastExamYear[];
+  selectedYearLabel: string;
   selected: Record<string, SecurityChoiceKey>;
   revealed: Record<string, boolean>;
   onSelectLecture: (lectureId: number | "all") => void;
@@ -597,12 +622,17 @@ function SecurityExamAtlas({
       .sort((a, b) => b.count - a.count);
   }, []);
 
+  const yearOrder = useMemo(
+    () => new Map(securityPastExamYears.map((item, index) => [item, index])),
+    [],
+  );
+
   const selectedYearQuestions = useMemo(
     () =>
       securityPastExamQuestions
-        .filter((question) => question.year === selectedYear)
-        .sort((a, b) => a.number - b.number),
-    [selectedYear],
+        .filter((question) => selectedYears.includes(question.year))
+        .sort((a, b) => (yearOrder.get(a.year) ?? 999) - (yearOrder.get(b.year) ?? 999) || a.number - b.number),
+    [selectedYears, yearOrder],
   );
 
   const lectureYearMatrix = useMemo(() => {
@@ -630,7 +660,7 @@ function SecurityExamAtlas({
   const weakTags = useMemo(() => {
     const wrong = securityPastExamQuestions.filter(
       (question) =>
-        question.year === selectedYear &&
+        selectedYears.includes(question.year) &&
         revealed[question.id] &&
         selected[question.id] &&
         selected[question.id] !== question.correctChoice,
@@ -644,7 +674,7 @@ function SecurityExamAtlas({
     return Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 6);
-  }, [revealed, selected, selectedYear]);
+  }, [revealed, selected, selectedYears]);
 
   const maxLectureCount = Math.max(...lectureCounts.map((item) => item.count));
   const maxTopicCount = Math.max(...topicStats.map((item) => item.count));
@@ -761,7 +791,7 @@ function SecurityExamAtlas({
           <div>
             <div className="mb-1 flex items-center gap-2 text-sm font-bold">
               <Network size={16} className="text-cyan-500" />
-              {selectedYear}년 문항 흐름 레일
+              {selectedYearLabel}년 문항 흐름 레일
             </div>
             <p className="text-xs text-gray-500">
               문제 번호 순서대로 어떤 강의가 연속 출제되는지 보여줍니다. 선택·오답 상태도 같이 표시됩니다.
@@ -805,7 +835,7 @@ function SecurityExamAtlas({
                 }`}
               >
                 <div className="font-mono text-[11px] font-black text-gray-500">
-                  {question.number}
+                  {selectedYears.length > 1 ? `${String(question.year).slice(2)}-${question.number}` : question.number}
                 </div>
                 <div className={`mt-1 inline-flex rounded px-1.5 py-0.5 text-[11px] font-bold ${trackStyles[track]}`}>
                   {lecture.lectureId}강

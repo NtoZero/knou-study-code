@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { BookOpenCheck, Flame, RotateCcw } from "lucide-react";
+import { MultiSelectChips, SingleSelectChips } from "@/components/pastExam/PastExamFilterChips";
 import PastExamModeDock from "@/components/pastExam/PastExamModeDock";
 import { useQuestionProgress } from "@/hooks/useQuestionProgress";
 import { pastExamIdentity } from "@/lib/studyProgress/identity";
@@ -14,6 +15,7 @@ import type { JavaChoiceKey, JavaPastExamQuestion, JavaPastExamYear } from "./ty
 
 type StatusFilter = "all" | "unanswered" | "revealed" | "correct" | "wrong";
 type Scope = "visible" | "year";
+type ViewOrder = "exam" | "lecture";
 
 function parseYear(value: string | null) {
   const year = Number(value);
@@ -27,7 +29,8 @@ function pastExamLectureTitle(id: number) {
 
 export default function JavaPastExamWorkbook() {
   const pendingHashRef = useRef<string | null>(null);
-  const [year, setYear] = useState<JavaPastExamYear>(2019);
+  const [selectedYears, setSelectedYears] = useState<JavaPastExamYear[]>([...javaPastExamYears]);
+  const [viewOrder, setViewOrder] = useState<ViewOrder>("exam");
   const [lectureId, setLectureId] = useState<number | "all">("all");
   const [conceptTag, setConceptTag] = useState("all");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -82,10 +85,17 @@ export default function JavaPastExamWorkbook() {
   useEffect(() => {
     const linkedYear = parseYear(new URLSearchParams(window.location.search).get("year"));
     pendingHashRef.current = window.location.hash ? window.location.hash.slice(1) : null;
-    if (linkedYear) setYear(linkedYear);
+    if (linkedYear) setSelectedYears([linkedYear]);
   }, []);
 
-  const yearQuestions = useMemo(() => javaPastExamQuestions.filter((question) => question.year === year), [year]);
+  const yearQuestions = useMemo(
+    () => javaPastExamQuestions.filter((question) => selectedYears.includes(question.year)),
+    [selectedYears],
+  );
+  const yearOrder = useMemo(
+    () => new Map(javaPastExamYears.map((item, index) => [item, index])),
+    [],
+  );
 
   const lectureOptions = useMemo(() => {
     const ids = new Set<number>();
@@ -110,8 +120,14 @@ export default function JavaPastExamWorkbook() {
       if (status === "correct") return revealed && chosen === question.correctChoice;
       if (status === "wrong") return revealed && Boolean(chosen) && chosen !== question.correctChoice;
       return true;
+    }).sort((a, b) => {
+      if (viewOrder === "lecture") {
+        const lectureDelta = (a.lectureRefs[0]?.lectureId ?? 999) - (b.lectureRefs[0]?.lectureId ?? 999);
+        if (lectureDelta !== 0) return lectureDelta;
+      }
+      return (yearOrder.get(a.year) ?? 999) - (yearOrder.get(b.year) ?? 999) || a.number - b.number;
     });
-  }, [answerRevealed, conceptTag, lectureId, selected, status, yearQuestions]);
+  }, [answerRevealed, conceptTag, lectureId, selected, status, viewOrder, yearOrder, yearQuestions]);
 
   useEffect(() => {
     const targetId = pendingHashRef.current;
@@ -124,7 +140,7 @@ export default function JavaPastExamWorkbook() {
       }
     }, 120);
     return () => window.clearTimeout(timer);
-  }, [filteredQuestions.length, year]);
+  }, [filteredQuestions.length, selectedYears]);
 
   const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
   const answerRevealedCount = yearQuestions.filter((question) => answerRevealed[question.id]).length;
@@ -288,15 +304,26 @@ export default function JavaPastExamWorkbook() {
       </header>
 
       <section className="mb-6 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
-        <div className="grid gap-3 md:grid-cols-5">
-          <label className="text-sm font-semibold">
-            연도
-            <select value={year} onChange={(event) => setYear(Number(event.target.value) as JavaPastExamYear)} className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
-              {javaPastExamYears.map((item) => (
-                <option key={item} value={item}>{item}년</option>
-              ))}
-            </select>
-          </label>
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.2fr_1fr_0.9fr_0.9fr_0.8fr_0.8fr]">
+          <MultiSelectChips
+            label="연도"
+            options={javaPastExamYears}
+            selected={selectedYears}
+            tone="amber"
+            allLabel="전체 연도"
+            getLabel={(item) => `${item}년`}
+            onChange={setSelectedYears}
+          />
+          <SingleSelectChips
+            label="보기"
+            tone="amber"
+            value={viewOrder}
+            onChange={setViewOrder}
+            options={[
+              { value: "exam", label: "시험지순" },
+              { value: "lecture", label: "강의순" },
+            ]}
+          />
           <label className="text-sm font-semibold">
             강의
             <select value={lectureId} onChange={(event) => setLectureId(event.target.value === "all" ? "all" : Number(event.target.value))} className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
@@ -329,7 +356,7 @@ export default function JavaPastExamWorkbook() {
             일괄 범위
             <select value={scope} onChange={(event) => setScope(event.target.value as Scope)} className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
               <option value="visible">현재 필터</option>
-              <option value="year">선택 연도 전체</option>
+              <option value="year">선택 연도</option>
             </select>
           </label>
         </div>

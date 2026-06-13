@@ -1,3 +1,5 @@
+import type { PastExamSolutionProcess } from "@/components/pastExam/solutionProcessTypes";
+
 export type ChoiceKey = "1" | "2" | "3" | "4";
 
 export type PastExamQuestionImage = {
@@ -45,6 +47,7 @@ export type PastExamQuestion = {
   conceptTags: string[];
   basis: string;
   wrongRule: string;
+  solutionProcess?: PastExamSolutionProcess;
   examSkill: string;
   sourceBasis: Array<{
     learnerLabel: string;

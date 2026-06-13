@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { BookOpen, CheckCircle2, Eye, EyeOff, XCircle } from "lucide-react";
+import SolutionProcessPanel from "@/components/pastExam/SolutionProcessPanel";
 import type { ChoiceKey, PastExamQuestion } from "./types";
 
 type Props = {
@@ -169,7 +170,7 @@ export default function PastExamQuestionCard({
               정답: {correctLabel}
             </div>
             <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-gray-200">
-              <strong>{question.lectureRefs[0].concept}</strong> 근거: {question.basis}
+              {question.answerExplanation}
             </p>
           </div>
         )}
@@ -184,6 +185,8 @@ export default function PastExamQuestionCard({
               className="overflow-hidden"
             >
               <div className="space-y-4 rounded-lg border border-indigo-100 bg-indigo-50/70 p-4 dark:border-indigo-900 dark:bg-indigo-950/30">
+                {question.solutionProcess && <SolutionProcessPanel process={question.solutionProcess} tone="indigo" />}
+
                 <div className="rounded-md bg-white p-3 text-sm leading-6 text-gray-700 dark:bg-gray-900 dark:text-gray-200">
                   <div className="font-semibold text-gray-900 dark:text-white">선택지별 해설</div>
                   <div className="mt-3 space-y-2">
@@ -215,9 +218,6 @@ export default function PastExamQuestionCard({
                             </span>
                           </div>
                           <p className="mt-2 text-sm leading-6">{choice.explanation.reason}</p>
-                          <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
-                            {choice.explanation.conceptBasis}
-                          </p>
                         </div>
                       );
                     })}

@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { AIVisualizationLab } from "./AIVisualizationLabs";
-import { buildAIChoiceExplanation } from "@/lib/aiChoiceExplanations";
 
 type ConceptBlock = {
   title: string;
@@ -1594,26 +1593,18 @@ function AnswerFeedback({
   choiceText: string;
   correctChoiceText: string;
 }) {
-  const explanation = buildAIChoiceExplanation({
-    choiceText,
-    correctChoiceText,
-    isCorrect: correct,
-    topicConcept: correctChoiceText,
-    topicBasis: basis.replace(/^근거:\s*/, ""),
-    topicWrongRule: wrongRule,
-    textbook: "인공지능 강의·교재",
-  });
+  const cleanedBasis = basis.replace(/^근거:\s*/, "");
+  const cleanedWrongRule = wrongRule.replace(/^오답 기준:\s*/, "");
+  const feedback = correct
+    ? `${choiceText}: ${cleanedBasis}`
+    : `${choiceText}: ${cleanedWrongRule}`;
 
   return (
     <div className="mt-3 rounded-md bg-white p-3 text-xs leading-5 text-gray-600 dark:bg-gray-900 dark:text-gray-300">
       <div className="font-bold">{correct ? "정답입니다." : "오답입니다."}</div>
       <div className="mt-1">
-        <span className="font-bold text-indigo-700 dark:text-indigo-300">{correct ? "정답 근거: " : "선택지 판별: "}</span>
-        {explanation.reason.replace(/^정답 근거:\s*/, "").replace(/^오답 근거:\s*/, "")}
-      </div>
-      <div className="mt-1">
-        <span className="font-bold text-indigo-700 dark:text-indigo-300">전체 판별 기준: </span>
-        {wrongRule.replace(/^오답 기준:\s*/, "")}
+        <span className="font-bold text-indigo-700 dark:text-indigo-300">{correct ? "해설: " : "선택지 해설: "}</span>
+        {feedback}
       </div>
     </div>
   );

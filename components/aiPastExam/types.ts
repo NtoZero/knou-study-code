@@ -1,3 +1,5 @@
+import type { PastExamSolutionProcess } from "@/components/pastExam/solutionProcessTypes";
+
 export type ChoiceKey = "1" | "2" | "3" | "4";
 
 export type PastExamQuestionImage = {
@@ -27,7 +29,6 @@ export type PastExamChoice = {
   explanation: {
     verdict: "correct" | "wrong";
     reason: string;
-    conceptBasis: string;
   };
 };
 
@@ -43,11 +44,10 @@ export type PastExamQuestion = {
   correctChoice: ChoiceKey;
   lectureRefs: LectureRef[];
   conceptTags: string[];
-  basis: string;
-  wrongRule: string;
+  answerExplanation: string;
+  solutionProcess?: PastExamSolutionProcess;
   examSkill: string;
-  sourceBasis: Array<{
-    learnerLabel: string;
+  sourceBasisInternal: Array<{
     concept: string;
     internalLectureSource: string;
     internalTextbookSource: string;

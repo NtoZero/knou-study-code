@@ -1,5 +1,3 @@
-import { buildAIChoiceExplanation } from "@/lib/aiChoiceExplanations";
-
 type Props = {
   correct: boolean;
   choiceText: string;
@@ -17,28 +15,20 @@ export default function QuizChoiceExplanation({
   wrongRule,
   accentClass = "text-indigo-700 dark:text-indigo-300",
 }: Props) {
-  const explanation = buildAIChoiceExplanation({
-    choiceText,
-    correctChoiceText,
-    isCorrect: correct,
-    topicConcept: correctChoiceText,
-    topicBasis: basisText,
-    topicWrongRule: wrongRule,
-    textbook: "인공지능 강의·교재",
-  });
+  const basis = basisText.replace(/^근거:\s*/, "");
+  const cleanedWrongRule = wrongRule?.replace(/^오답 기준:\s*/, "");
+  const feedback = correct
+    ? `${choiceText}: ${basis}`
+    : cleanedWrongRule
+      ? `${choiceText}: ${cleanedWrongRule}`
+      : `${choiceText}: 정답인 ${correctChoiceText}와 다른 개념이다. ${basis}`;
 
   return (
     <div className="mt-1 space-y-1">
       <p>
-        <span className={`font-bold ${accentClass}`}>{correct ? "정답 근거: " : "선택지 판별: "}</span>
-        {explanation.reason.replace(/^정답 근거:\s*/, "").replace(/^오답 근거:\s*/, "")}
+        <span className={`font-bold ${accentClass}`}>{correct ? "해설: " : "선택지 해설: "}</span>
+        {feedback}
       </p>
-      {wrongRule && (
-        <p>
-          <span className={`font-bold ${accentClass}`}>전체 판별 기준: </span>
-          {wrongRule}
-        </p>
-      )}
     </div>
   );
 }

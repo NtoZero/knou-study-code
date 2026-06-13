@@ -27,12 +27,13 @@ export default function AIPastExamCoverage({ lectureId }: { lectureId: number })
     const question = questions.find((item) =>
       item.lectureRefs.some((ref) => ref.lectureId === lectureId && ref.concept === concept)
     );
+    const wrongChoice = question?.choices.find((choice) => choice.key !== question.correctChoice);
     return {
       concept,
-      basis: question?.basis ?? "",
-      wrongRule: question?.wrongRule ?? "",
+      answerExplanation: question?.answerExplanation ?? "",
+      wrongExplanation: wrongChoice?.explanation.reason ?? "",
       examSkill: question?.examSkill ?? "",
-      source: question?.sourceBasis[0]?.internalTextbookSource ?? `${lectureId}강 교재`,
+      source: question?.sourceBasisInternal[0]?.internalTextbookSource ?? `${lectureId}강 교재`,
     };
   });
 
@@ -132,7 +133,7 @@ export default function AIPastExamCoverage({ lectureId }: { lectureId: number })
                   강의·교재 근거
                 </div>
                 <p className="text-sm leading-6 text-gray-700 dark:text-gray-300">
-                  {item.source}: {item.basis}
+                  {item.source}
                 </p>
               </div>
               <div>
@@ -146,10 +147,10 @@ export default function AIPastExamCoverage({ lectureId }: { lectureId: number })
               <div>
                 <div className="mb-1 flex items-center gap-1 text-xs font-bold uppercase text-indigo-700 dark:text-indigo-200">
                   <CheckCircle2 size={13} />
-                  오답 기준
+                  대표 오답 해설
                 </div>
                 <p className="text-sm leading-6 text-gray-700 dark:text-gray-300">
-                  {item.wrongRule}
+                  {item.wrongExplanation || item.answerExplanation}
                 </p>
               </div>
             </div>

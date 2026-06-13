@@ -18,8 +18,10 @@ import {
   networkAnswerKeySets,
   networkExamCategories,
   networkFrequentConcepts,
+  networkPastExamYears,
   networkReconstructedQuestions,
 } from "./data";
+import { MultiSelectChips, SingleSelectChips } from "@/components/pastExam/PastExamFilterChips";
 import { useQuestionProgress } from "@/hooks/useQuestionProgress";
 import { networkReconstructedIdentity } from "@/lib/studyProgress/identity";
 import { resetQuestionProgressByIds } from "@/lib/studyProgress/service";
@@ -28,10 +30,12 @@ import type {
   NetworkChoiceKey,
   NetworkExamCategory,
   NetworkFrequentConcept,
+  NetworkPastExamYear,
   NetworkReconstructedQuestion,
 } from "./types";
 
 type StatusFilter = "all" | "unanswered" | "revealed" | "correct" | "wrong";
+type ViewOrder = "exam" | "lecture";
 
 const categoryStyles: Record<NetworkExamCategory, string> = {
   "통신망 기초": "border-sky-200 bg-sky-50 text-sky-800 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-100",
@@ -68,8 +72,17 @@ function matchesQuestion(question: NetworkReconstructedQuestion, query: string) 
     .includes(keyword);
 }
 
+function questionYears(question: NetworkReconstructedQuestion) {
+  const years = question.refs
+    .map((ref) => Number(ref.slice(0, 4)) as NetworkPastExamYear)
+    .filter((year) => networkPastExamYears.includes(year));
+  return Array.from(new Set(years));
+}
+
 export default function NetworkPastExamAnalysisPage() {
   const pendingHashRef = useRef<string | null>(null);
+  const [selectedYears, setSelectedYears] = useState<NetworkPastExamYear[]>([...networkPastExamYears]);
+  const [viewOrder, setViewOrder] = useState<ViewOrder>("exam");
   const [category, setCategory] = useState<NetworkExamCategory | "all">("all");
   const [patternId, setPatternId] = useState<string>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -131,9 +144,22 @@ export default function NetworkPastExamAnalysisPage() {
   const patternOptions = useMemo(() => {
     return networkFrequentConcepts.filter((pattern) => category === "all" || pattern.category === category);
   }, [category]);
+  const yearOrder = useMemo(
+    () => new Map(networkPastExamYears.map((item, index) => [item, index])),
+    [],
+  );
+  const selectedYearLabel = useMemo(() => {
+    if (selectedYears.length === networkPastExamYears.length) return "2015-2019";
+    return [...selectedYears].sort((a, b) => a - b).map((item) => `${item}`).join(", ");
+  }, [selectedYears]);
+
+  const yearQuestions = useMemo(
+    () => networkReconstructedQuestions.filter((question) => questionYears(question).some((year) => selectedYears.includes(year))),
+    [selectedYears],
+  );
 
   const filteredQuestions = useMemo(() => {
-    return networkReconstructedQuestions.filter((question) => {
+    return yearQuestions.filter((question) => {
       if (!matchesQuestion(question, query)) return false;
       if (category !== "all" && question.category !== category) return false;
       if (patternId !== "all" && question.patternId !== patternId) return false;
@@ -147,8 +173,16 @@ export default function NetworkPastExamAnalysisPage() {
       if (status === "correct") return revealed && correct;
       if (status === "wrong") return revealed && Boolean(chosen) && !correct;
       return true;
+    }).sort((a, b) => {
+      if (viewOrder === "lecture") {
+        const lectureDelta = (a.lectureRefs[0]?.lectureId ?? 999) - (b.lectureRefs[0]?.lectureId ?? 999);
+        if (lectureDelta !== 0) return lectureDelta;
+      }
+      const aYear = questionYears(a)[0] ?? 9999;
+      const bYear = questionYears(b)[0] ?? 9999;
+      return (yearOrder.get(aYear) ?? 999) - (yearOrder.get(bYear) ?? 999) || a.number - b.number;
     });
-  }, [answerRevealed, category, patternId, query, selected, status]);
+  }, [answerRevealed, category, patternId, query, selected, status, viewOrder, yearOrder, yearQuestions]);
 
   useEffect(() => {
     const targetId = pendingHashRef.current;
@@ -165,26 +199,26 @@ export default function NetworkPastExamAnalysisPage() {
     return () => window.clearTimeout(timer);
   }, [filteredQuestions.length]);
 
-  const answeredCount = networkReconstructedQuestions.filter((question) => selected[question.id]).length;
-  const answerRevealedCount = networkReconstructedQuestions.filter((question) => answerRevealed[question.id]).length;
+  const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
+  const answerRevealedCount = yearQuestions.filter((question) => answerRevealed[question.id]).length;
   const visibleAnswerRevealedCount = filteredQuestions.filter((question) => answerRevealed[question.id]).length;
-  const explanationExpandedCount = networkReconstructedQuestions.filter(
+  const explanationExpandedCount = yearQuestions.filter(
     (question) => explanationExpanded[question.id],
   ).length;
   const visibleExplanationExpandedCount = filteredQuestions.filter(
     (question) => explanationExpanded[question.id],
   ).length;
-  const correctCount = networkReconstructedQuestions.filter(
+  const correctCount = yearQuestions.filter(
     (question) => answerRevealed[question.id] && selected[question.id] === question.correctChoice,
   ).length;
-  const wrongCount = networkReconstructedQuestions.filter(
+  const wrongCount = yearQuestions.filter(
     (question) =>
       answerRevealed[question.id] &&
       selected[question.id] &&
       selected[question.id] !== question.correctChoice,
   ).length;
   const modeScopeQuestions =
-    reviewScope === "visible" ? filteredQuestions : networkReconstructedQuestions;
+    reviewScope === "visible" ? filteredQuestions : yearQuestions;
 
   function selectChoice(questionId: string, choice: NetworkChoiceKey) {
     setSelected((prev) => ({ ...prev, [questionId]: choice }));
@@ -294,14 +328,17 @@ export default function NetworkPastExamAnalysisPage() {
   }
 
   async function resetProgress() {
-    setSelected({});
-    setAnswerRevealed({});
-    setExplanationExpanded({});
-    await resetQuestionProgressByIds(networkReconstructedQuestions.map((question) => question.id));
+    const ids = new Set(yearQuestions.map((question) => question.id));
+    setSelected((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
+    setAnswerRevealed((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
+    setExplanationExpanded((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
+    await resetQuestionProgressByIds(Array.from(ids));
     await reload();
   }
 
   function resetFilters() {
+    setSelectedYears([...networkPastExamYears]);
+    setViewOrder("exam");
     setCategory("all");
     setPatternId("all");
     setStatus("all");
@@ -363,7 +400,28 @@ export default function NetworkPastExamAnalysisPage() {
           <Filter size={16} />
           필터
         </div>
-        <div className="grid gap-3 xl:grid-cols-[1.1fr_0.8fr_1fr_0.8fr_auto_auto]">
+        <div className="grid gap-3 xl:grid-cols-[1.1fr_1fr_1.1fr_0.8fr_1fr_0.8fr_auto_auto]">
+          <MultiSelectChips
+            label="연도"
+            options={networkPastExamYears}
+            selected={selectedYears}
+            tone="emerald"
+            allLabel="전체 연도"
+            getLabel={(item) => `${item}년`}
+            onChange={setSelectedYears}
+          />
+
+          <SingleSelectChips
+            label="보기"
+            tone="emerald"
+            value={viewOrder}
+            onChange={setViewOrder}
+            options={[
+              { value: "exam", label: "시험지순" },
+              { value: "lecture", label: "강의순" },
+            ]}
+          />
+
           <label className="relative">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -438,9 +496,9 @@ export default function NetworkPastExamAnalysisPage() {
       <PastExamModeDock
         tone="emerald"
         scope={reviewScope}
-        totalScopeLabel="전체 문제"
+        totalScopeLabel="선택 연도"
         visibleCount={filteredQuestions.length}
-        totalCount={networkReconstructedQuestions.length}
+        totalCount={yearQuestions.length}
         answeredCount={answeredCount}
         answerRevealedCount={answerRevealedCount}
         explanationExpandedCount={explanationExpandedCount}
@@ -460,14 +518,14 @@ export default function NetworkPastExamAnalysisPage() {
         <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-lg font-bold text-gray-950 dark:text-gray-50">
-              기출형 재구성 문제 {filteredQuestions.length}문항
+              {selectedYearLabel} 기출형 재구성 문제 {filteredQuestions.length}문항
             </h2>
             <p className="text-sm text-gray-500">
               정답 공개 전에는 정오답 색상을 표시하지 않습니다.
             </p>
           </div>
           <div className="text-xs font-semibold text-gray-500">
-            전체 {networkReconstructedQuestions.length}문항 중 필터 결과
+            선택 연도 {yearQuestions.length}문항 중 필터 결과
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -513,8 +571,8 @@ export default function NetworkPastExamAnalysisPage() {
             복습 요약
           </div>
           <div className="space-y-3 text-sm">
-            <SummaryLine label="풀이한 문항" value={`${answeredCount} / ${networkReconstructedQuestions.length}`} />
-            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / ${networkReconstructedQuestions.length}`} />
+            <SummaryLine label="풀이한 문항" value={`${answeredCount} / ${yearQuestions.length}`} />
+            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / ${yearQuestions.length}`} />
             <SummaryLine label="맞힌 문항" value={`${correctCount}`} />
             <SummaryLine label="다시 볼 문항" value={`${wrongCount}`} />
           </div>

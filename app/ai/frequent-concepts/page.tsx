@@ -265,6 +265,7 @@ export default function AIFrequentConceptsPage() {
                   const question = questions.find((item) =>
                     item.lectureRefs.some((ref) => ref.lectureId === lecture.id && ref.concept === concept)
                   );
+                  const wrongChoice = question?.choices.find((choice) => choice.key !== question.correctChoice);
                   const visuals = aiConceptVisuals[concept];
                   return (
                     <div
@@ -280,11 +281,11 @@ export default function AIFrequentConceptsPage() {
                         </h3>
                       </div>
                       <p className="text-sm leading-6 text-gray-700 dark:text-gray-300">
-                        {question?.basis}
+                        {question?.answerExplanation}
                       </p>
                       <ConceptVisuals visuals={visuals} />
                       <p className="mt-2 text-xs leading-5 text-gray-500">
-                        오답 기준: {question?.wrongRule}
+                        대표 오답: {wrongChoice?.explanation.reason}
                       </p>
                     </div>
                   );

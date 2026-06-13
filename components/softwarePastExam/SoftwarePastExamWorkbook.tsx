@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { BookOpenCheck, Flame, RotateCcw } from "lucide-react";
+import { MultiSelectChips, SingleSelectChips } from "@/components/pastExam/PastExamFilterChips";
 import { softwareLectures } from "@/lib/constants";
 import PastExamModeDock from "@/components/pastExam/PastExamModeDock";
 import { useQuestionProgress } from "@/hooks/useQuestionProgress";
@@ -17,6 +18,7 @@ import type { SoftwareChoiceKey, SoftwarePastExamQuestion, SoftwarePastExamYear 
 
 type StatusFilter = "all" | "unanswered" | "revealed" | "correct" | "wrong";
 type Scope = "visible" | "year";
+type ViewOrder = "exam" | "lecture";
 
 function parseYear(value: string | null) {
   const year = Number(value);
@@ -27,7 +29,8 @@ function parseYear(value: string | null) {
 
 export default function SoftwarePastExamWorkbook() {
   const pendingHashRef = useRef<string | null>(null);
-  const [year, setYear] = useState<SoftwarePastExamYear>(2019);
+  const [selectedYears, setSelectedYears] = useState<SoftwarePastExamYear[]>([...softwarePastExamYears]);
+  const [viewOrder, setViewOrder] = useState<ViewOrder>("exam");
   const [lectureId, setLectureId] = useState<number | "all">("all");
   const [conceptTag, setConceptTag] = useState("all");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -83,8 +86,12 @@ export default function SoftwarePastExamWorkbook() {
   }, [progressById]);
 
   const yearQuestions = useMemo(
-    () => softwarePastExamQuestions.filter((question) => question.year === year),
-    [year],
+    () => softwarePastExamQuestions.filter((question) => selectedYears.includes(question.year)),
+    [selectedYears],
+  );
+  const yearOrder = useMemo(
+    () => new Map(softwarePastExamYears.map((item, index) => [item, index])),
+    [],
   );
 
   const lectureOptions = useMemo(() => {
@@ -110,13 +117,19 @@ export default function SoftwarePastExamWorkbook() {
       if (status === "correct") return revealed && chosen === question.correctChoice;
       if (status === "wrong") return revealed && Boolean(chosen) && chosen !== question.correctChoice;
       return true;
+    }).sort((a, b) => {
+      if (viewOrder === "lecture") {
+        const lectureDelta = (a.lectureRefs[0]?.lectureId ?? 999) - (b.lectureRefs[0]?.lectureId ?? 999);
+        if (lectureDelta !== 0) return lectureDelta;
+      }
+      return (yearOrder.get(a.year) ?? 999) - (yearOrder.get(b.year) ?? 999) || a.number - b.number;
     });
-  }, [answerRevealed, conceptTag, lectureId, selected, status, yearQuestions]);
+  }, [answerRevealed, conceptTag, lectureId, selected, status, viewOrder, yearOrder, yearQuestions]);
 
   useEffect(() => {
     const linkedYear = parseYear(new URLSearchParams(window.location.search).get("year"));
     pendingHashRef.current = window.location.hash ? window.location.hash.slice(1) : null;
-    if (linkedYear) setYear(linkedYear);
+    if (linkedYear) setSelectedYears([linkedYear]);
   }, []);
 
   useEffect(() => {
@@ -130,7 +143,7 @@ export default function SoftwarePastExamWorkbook() {
       }
     }, 120);
     return () => window.clearTimeout(timer);
-  }, [filteredQuestions.length, year]);
+  }, [filteredQuestions.length, selectedYears]);
 
   const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
   const answerRevealedCount = yearQuestions.filter((question) => answerRevealed[question.id]).length;
@@ -276,8 +289,8 @@ export default function SoftwarePastExamWorkbook() {
             </Link>
           </div>
           <div className="grid min-w-0 grid-cols-2 gap-2 text-sm sm:grid-cols-4 lg:min-w-[460px]">
-            <ProgressBox label="선택" value={`${answeredCount}/35`} tone="emerald" />
-            <ProgressBox label="확인" value={`${answerRevealedCount}/35`} tone="amber" />
+            <ProgressBox label="선택" value={`${answeredCount}/${yearQuestions.length}`} tone="emerald" />
+            <ProgressBox label="확인" value={`${answerRevealedCount}/${yearQuestions.length}`} tone="amber" />
             <ProgressBox label="맞힘" value={`${correctCount}`} tone="blue" />
             <ProgressBox label="재검토" value={`${wrongCount}`} tone="rose" />
           </div>
@@ -285,12 +298,26 @@ export default function SoftwarePastExamWorkbook() {
       </header>
 
       <section className="mb-6 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
-        <div className="grid gap-3 md:grid-cols-4">
-          <Select label="연도" value={String(year)} onChange={(value) => setYear(Number(value) as SoftwarePastExamYear)}>
-            {softwarePastExamYears.map((item) => (
-              <option key={item} value={item}>{item}년</option>
-            ))}
-          </Select>
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1.2fr_1fr_0.9fr_0.9fr_0.8fr]">
+          <MultiSelectChips
+            label="연도"
+            options={softwarePastExamYears}
+            selected={selectedYears}
+            tone="emerald"
+            allLabel="전체 연도"
+            getLabel={(item) => `${item}년`}
+            onChange={setSelectedYears}
+          />
+          <SingleSelectChips
+            label="보기"
+            tone="emerald"
+            value={viewOrder}
+            onChange={setViewOrder}
+            options={[
+              { value: "exam", label: "시험지순" },
+              { value: "lecture", label: "강의순" },
+            ]}
+          />
           <Select label="강의" value={String(lectureId)} onChange={(value) => setLectureId(value === "all" ? "all" : Number(value))}>
             <option value="all">전체 강의</option>
             {lectureOptions.map((id) => (
@@ -315,7 +342,7 @@ export default function SoftwarePastExamWorkbook() {
 
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="text-sm text-gray-600 dark:text-gray-300">
-          현재 표시 {filteredQuestions.length}문항
+          현재 표시 {filteredQuestions.length}문항 · {viewOrder === "lecture" ? "강의순" : "시험지순"}
         </div>
         <button
           type="button"
@@ -345,7 +372,7 @@ export default function SoftwarePastExamWorkbook() {
       <PastExamModeDock
         tone="emerald"
         scope={scope}
-        totalScopeLabel="연도 전체"
+        totalScopeLabel="선택 연도"
         visibleCount={filteredQuestions.length}
         totalCount={yearQuestions.length}
         answeredCount={answeredCount}

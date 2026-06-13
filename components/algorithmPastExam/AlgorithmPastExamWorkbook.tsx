@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BarChart3, BookOpenCheck, Filter, RotateCcw } from "lucide-react";
+import { MultiSelectChips, SingleSelectChips } from "@/components/pastExam/PastExamFilterChips";
 import PastExamModeDock from "@/components/pastExam/PastExamModeDock";
 import { useQuestionProgress } from "@/hooks/useQuestionProgress";
 import { algorithmChapterWeights, type AlgorithmChapterId } from "@/lib/algorithmCourse";
@@ -12,6 +13,8 @@ import PastExamQuestionCard from "./PastExamQuestionCard";
 import type { ChoiceKey } from "./types";
 
 type StatusFilter = "all" | "unanswered" | "revealed" | "correct" | "wrong";
+type AlgorithmPastExamYear = (typeof algorithmPastExamYears)[number];
+type ViewOrder = "exam" | "lecture";
 
 function parsePastExamYear(value: string | null) {
   const candidate = Number(value);
@@ -22,7 +25,8 @@ function parsePastExamYear(value: string | null) {
 
 export default function AlgorithmPastExamWorkbook() {
   const pendingHashRef = useRef<string | null>(null);
-  const [year, setYear] = useState<2017 | 2018 | 2019>(2019);
+  const [selectedYears, setSelectedYears] = useState<AlgorithmPastExamYear[]>([...algorithmPastExamYears]);
+  const [viewOrder, setViewOrder] = useState<ViewOrder>("exam");
   const [chapterId, setChapterId] = useState<AlgorithmChapterId | "all">("all");
   const [lectureId, setLectureId] = useState<number | "all">("all");
   const [conceptTag, setConceptTag] = useState("all");
@@ -85,7 +89,7 @@ export default function AlgorithmPastExamWorkbook() {
     pendingHashRef.current = window.location.hash ? window.location.hash.slice(1) : null;
 
     if (linkedYear) {
-      setYear(linkedYear);
+      setSelectedYears([linkedYear]);
     }
 
     if ([1, 2, 3, 4, 5, 6, 7].includes(parsed)) {
@@ -95,9 +99,17 @@ export default function AlgorithmPastExamWorkbook() {
   }, []);
 
   const yearQuestions = useMemo(
-    () => algorithmPastExamQuestions.filter((question) => question.year === year),
-    [year],
+    () => algorithmPastExamQuestions.filter((question) => selectedYears.includes(question.year as AlgorithmPastExamYear)),
+    [selectedYears],
   );
+  const yearOrder = useMemo(
+    () => new Map(algorithmPastExamYears.map((item, index) => [item, index])),
+    [],
+  );
+  const selectedYearLabel = useMemo(() => {
+    if (selectedYears.length === algorithmPastExamYears.length) return "2017-2019";
+    return [...selectedYears].sort((a, b) => a - b).map((item) => `${item}`).join(", ");
+  }, [selectedYears]);
 
   const chapterLectureMap = useMemo(() => {
     return new Map(algorithmChapterWeights.map((chapter) => [chapter.chapter, new Set<number>(chapter.lectures)]));
@@ -162,8 +174,14 @@ export default function AlgorithmPastExamWorkbook() {
       if (status === "correct") return isRevealed && isCorrect;
       if (status === "wrong") return isRevealed && Boolean(chosen) && !isCorrect;
       return true;
+    }).sort((a, b) => {
+      if (viewOrder === "lecture") {
+        const lectureDelta = (a.lectureRefs[0]?.lectureId ?? 999) - (b.lectureRefs[0]?.lectureId ?? 999);
+        if (lectureDelta !== 0) return lectureDelta;
+      }
+      return (yearOrder.get(a.year as AlgorithmPastExamYear) ?? 999) - (yearOrder.get(b.year as AlgorithmPastExamYear) ?? 999) || a.number - b.number;
     });
-  }, [scopedQuestions, conceptTag, status, selected, answerRevealed]);
+  }, [scopedQuestions, conceptTag, status, selected, answerRevealed, viewOrder, yearOrder]);
 
   useEffect(() => {
     const targetId = pendingHashRef.current;
@@ -178,7 +196,7 @@ export default function AlgorithmPastExamWorkbook() {
     }, 120);
 
     return () => window.clearTimeout(timer);
-  }, [year, filteredQuestions.length]);
+  }, [selectedYears, filteredQuestions.length]);
 
   const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
   const answerRevealedCount = yearQuestions.filter((question) => answerRevealed[question.id]).length;
@@ -321,8 +339,8 @@ export default function AlgorithmPastExamWorkbook() {
           </div>
 
           <div className="grid min-w-0 grid-cols-2 gap-2 text-sm sm:grid-cols-4 lg:min-w-[440px]">
-            <ProgressBox label="선택" value={`${answeredCount}/35`} tone="cyan" />
-            <ProgressBox label="확인" value={`${answerRevealedCount}/35`} tone="amber" />
+            <ProgressBox label="선택" value={`${answeredCount}/${yearQuestions.length}`} tone="cyan" />
+            <ProgressBox label="확인" value={`${answerRevealedCount}/${yearQuestions.length}`} tone="amber" />
             <ProgressBox label="맞힘" value={`${correctCount}`} tone="emerald" />
             <ProgressBox label="재검토" value={`${wrongCount}`} tone="rose" />
           </div>
@@ -334,23 +352,27 @@ export default function AlgorithmPastExamWorkbook() {
           <Filter size={16} />
           필터
         </div>
-        <div className="grid gap-3 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1fr_auto]">
-          <div className="flex flex-wrap gap-2">
-            {algorithmPastExamYears.map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setYear(item)}
-                className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-                  year === item
-                    ? "bg-cyan-600 text-white"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-                }`}
-              >
-                {item}년
-              </button>
-            ))}
-          </div>
+        <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_auto]">
+          <MultiSelectChips
+            label="연도"
+            options={algorithmPastExamYears}
+            selected={selectedYears}
+            tone="cyan"
+            allLabel="전체 연도"
+            getLabel={(item) => `${item}년`}
+            onChange={setSelectedYears}
+          />
+
+          <SingleSelectChips
+            label="보기"
+            tone="cyan"
+            value={viewOrder}
+            onChange={setViewOrder}
+            options={[
+              { value: "exam", label: "시험지순" },
+              { value: "lecture", label: "강의순" },
+            ]}
+          />
 
           <select
             value={chapterId}
@@ -420,6 +442,7 @@ export default function AlgorithmPastExamWorkbook() {
       <PastExamModeDock
         tone="cyan"
         scope={reviewScope}
+        totalScopeLabel="선택 연도"
         visibleCount={filteredQuestions.length}
         totalCount={yearQuestions.length}
         answeredCount={answeredCount}
@@ -439,15 +462,17 @@ export default function AlgorithmPastExamWorkbook() {
 
       <section className="mb-8 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950">
         <div className="mb-3">
-          <h2 className="text-lg font-bold">{year}학년도 기말 {filteredQuestions.length}문항</h2>
-          <p className="mt-1 text-sm text-slate-500">정답 공개 전에는 정오답을 표시하지 않습니다.</p>
+          <h2 className="text-lg font-bold">{selectedYearLabel}학년도 기말 {filteredQuestions.length}문항</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            {viewOrder === "lecture" ? "강의 순서로 묶어 표시합니다." : "시험지 순서로 표시합니다."} 정답 공개 전에는 정오답을 표시하지 않습니다.
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           {filteredQuestions.map((question) => (
             <a
               key={`jump-${question.id}`}
               href={`#${question.id}`}
-              className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold transition-colors ${
+              className={`flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-xs font-bold transition-colors ${
                 answerRevealed[question.id]
                   ? selected[question.id] === question.correctChoice
                     ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-100"
@@ -457,7 +482,7 @@ export default function AlgorithmPastExamWorkbook() {
                     : "bg-slate-100 text-slate-500 dark:bg-slate-900 dark:text-slate-400"
               }`}
             >
-              {question.number}
+              {selectedYears.length > 1 ? `${String(question.year).slice(2)}-${question.number}` : question.number}
             </a>
           ))}
         </div>
@@ -505,8 +530,8 @@ export default function AlgorithmPastExamWorkbook() {
             복습 요약
           </div>
           <div className="space-y-3 text-sm">
-            <SummaryLine label="풀이한 문항" value={`${answeredCount} / 35`} />
-            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / 35`} />
+            <SummaryLine label="풀이한 문항" value={`${answeredCount} / ${yearQuestions.length}`} />
+            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / ${yearQuestions.length}`} />
             <SummaryLine label="맞힌 문항" value={`${correctCount}`} />
             <SummaryLine label="다시 볼 문항" value={`${wrongCount}`} />
           </div>

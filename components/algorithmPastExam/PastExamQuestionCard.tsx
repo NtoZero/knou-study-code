@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { BookOpen, CheckCircle2, Eye, EyeOff, XCircle } from "lucide-react";
+import SolutionProcessPanel from "@/components/pastExam/SolutionProcessPanel";
 import type { ChoiceKey, PastExamQuestion } from "./types";
 
 type Props = {
@@ -169,6 +170,8 @@ export default function PastExamQuestionCard({
 
         {answerVisible && explanationOpen && (
           <div className="space-y-4 rounded-xl border border-cyan-100 bg-cyan-50/70 p-4 dark:border-cyan-900 dark:bg-cyan-950/30">
+            {question.solutionProcess && <SolutionProcessPanel process={question.solutionProcess} tone="cyan" />}
+
             <div className="rounded-lg bg-white p-3 text-sm leading-6 text-slate-700 dark:bg-slate-900 dark:text-slate-200">
               <div className="font-semibold text-slate-950 dark:text-white">선택지별 해설</div>
               <div className="mt-3 space-y-2">
@@ -200,9 +203,6 @@ export default function PastExamQuestionCard({
                         </span>
                       </div>
                       <p className="mt-2 text-sm leading-6">{choice.explanation.reason}</p>
-                      <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                        {choice.explanation.conceptBasis}
-                      </p>
                     </div>
                   );
                 })}

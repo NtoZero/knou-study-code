@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { BarChart3, BookOpenCheck, Filter, RotateCcw } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
+import { MultiSelectChips, SingleSelectChips } from "@/components/pastExam/PastExamFilterChips";
 import PastExamModeDock from "@/components/pastExam/PastExamModeDock";
 import { useQuestionProgress } from "@/hooks/useQuestionProgress";
 import { pastExamIdentity } from "@/lib/studyProgress/identity";
@@ -12,9 +13,12 @@ import PastExamQuestionCard from "./PastExamQuestionCard";
 import type { ChoiceKey } from "./types";
 
 type StatusFilter = "all" | "unanswered" | "revealed" | "correct" | "wrong";
+type AIPastExamYear = (typeof aiPastExamYears)[number];
+type ViewOrder = "exam" | "lecture";
 
 export default function AIPastExamWorkbook() {
-  const [year, setYear] = useState<2017 | 2018 | 2019>(2019);
+  const [selectedYears, setSelectedYears] = useState<AIPastExamYear[]>([...aiPastExamYears]);
+  const [viewOrder, setViewOrder] = useState<ViewOrder>("exam");
   const [lectureId, setLectureId] = useState<number | "all">("all");
   const [conceptTag, setConceptTag] = useState<string>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -70,9 +74,17 @@ export default function AIPastExamWorkbook() {
   }, [progressById]);
 
   const yearQuestions = useMemo(
-    () => aiPastExamQuestions.filter((question) => question.year === year),
-    [year],
+    () => aiPastExamQuestions.filter((question) => selectedYears.includes(question.year as AIPastExamYear)),
+    [selectedYears],
   );
+  const yearOrder = useMemo(
+    () => new Map(aiPastExamYears.map((item, index) => [item, index])),
+    [],
+  );
+  const selectedYearLabel = useMemo(() => {
+    if (selectedYears.length === aiPastExamYears.length) return "2017-2019";
+    return [...selectedYears].sort((a, b) => a - b).map((item) => `${item}`).join(", ");
+  }, [selectedYears]);
 
   const lectureOptions = useMemo(() => {
     const ids = new Set<number>();
@@ -108,8 +120,14 @@ export default function AIPastExamWorkbook() {
       if (status === "correct") return isRevealed && isCorrect;
       if (status === "wrong") return isRevealed && Boolean(chosen) && !isCorrect;
       return true;
+    }).sort((a, b) => {
+      if (viewOrder === "lecture") {
+        const lectureDelta = (a.lectureRefs[0]?.lectureId ?? 999) - (b.lectureRefs[0]?.lectureId ?? 999);
+        if (lectureDelta !== 0) return lectureDelta;
+      }
+      return (yearOrder.get(a.year as AIPastExamYear) ?? 999) - (yearOrder.get(b.year as AIPastExamYear) ?? 999) || a.number - b.number;
     });
-  }, [yearQuestions, lectureId, conceptTag, status, selected, answerRevealed]);
+  }, [yearQuestions, lectureId, conceptTag, status, selected, answerRevealed, viewOrder, yearOrder]);
 
   const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
   const answerRevealedCount = yearQuestions.filter((question) => answerRevealed[question.id]).length;
@@ -253,8 +271,8 @@ export default function AIPastExamWorkbook() {
           </div>
 
           <div className="grid min-w-0 grid-cols-2 gap-2 text-sm sm:grid-cols-4 lg:min-w-[440px]">
-            <ProgressBox label="선택" value={`${answeredCount}/35`} tone="indigo" />
-            <ProgressBox label="확인" value={`${answerRevealedCount}/35`} tone="amber" />
+            <ProgressBox label="선택" value={`${answeredCount}/${yearQuestions.length}`} tone="indigo" />
+            <ProgressBox label="확인" value={`${answerRevealedCount}/${yearQuestions.length}`} tone="amber" />
             <ProgressBox label="맞힘" value={`${correctCount}`} tone="emerald" />
             <ProgressBox label="재검토" value={`${wrongCount}`} tone="rose" />
           </div>
@@ -266,23 +284,27 @@ export default function AIPastExamWorkbook() {
           <Filter size={16} />
           필터
         </div>
-        <div className="grid gap-3 xl:grid-cols-[1.2fr_0.8fr_0.9fr_0.9fr_auto]">
-          <div className="flex flex-wrap gap-2">
-            {aiPastExamYears.map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setYear(item)}
-                className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-                  year === item
-                    ? "bg-indigo-600 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-                }`}
-              >
-                {item}년
-              </button>
-            ))}
-          </div>
+        <div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_0.8fr_0.9fr_0.9fr_auto]">
+          <MultiSelectChips
+            label="연도"
+            options={aiPastExamYears}
+            selected={selectedYears}
+            tone="indigo"
+            allLabel="전체 연도"
+            getLabel={(item) => `${item}년`}
+            onChange={setSelectedYears}
+          />
+
+          <SingleSelectChips
+            label="보기"
+            tone="indigo"
+            value={viewOrder}
+            onChange={setViewOrder}
+            options={[
+              { value: "exam", label: "시험지순" },
+              { value: "lecture", label: "강의순" },
+            ]}
+          />
 
           <select
             value={lectureId}
@@ -336,6 +358,7 @@ export default function AIPastExamWorkbook() {
       <PastExamModeDock
         tone="indigo"
         scope={reviewScope}
+        totalScopeLabel="선택 연도"
         visibleCount={filteredQuestions.length}
         totalCount={yearQuestions.length}
         answeredCount={answeredCount}
@@ -355,15 +378,15 @@ export default function AIPastExamWorkbook() {
 
       <section className="mb-8 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
         <SectionTitle
-          title={`${year}학년도 2학기 ${filteredQuestions.length}문항`}
-          subtitle="문항은 원문 시험지 기준으로 표시합니다. 정답 공개 전에는 정오답을 표시하지 않습니다."
+          title={`${selectedYearLabel}학년도 2학기 ${filteredQuestions.length}문항`}
+          subtitle={viewOrder === "lecture" ? "문항은 강의 순서 기준으로 표시합니다. 정답 공개 전에는 정오답을 표시하지 않습니다." : "문항은 원문 시험지 기준으로 표시합니다. 정답 공개 전에는 정오답을 표시하지 않습니다."}
         />
         <div className="flex flex-wrap gap-2">
           {yearQuestions.map((question) => (
             <a
               key={`jump-${question.id}`}
               href={`#${question.id}`}
-              className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold transition-colors ${
+              className={`flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-xs font-bold transition-colors ${
                 answerRevealed[question.id]
                   ? selected[question.id] === question.correctChoice
                     ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200"
@@ -373,7 +396,7 @@ export default function AIPastExamWorkbook() {
                     : "bg-gray-100 text-gray-500 dark:bg-gray-900 dark:text-gray-400"
               }`}
             >
-              {question.number}
+              {selectedYears.length > 1 ? `${String(question.year).slice(2)}-${question.number}` : question.number}
             </a>
           ))}
         </div>
@@ -401,8 +424,8 @@ export default function AIPastExamWorkbook() {
             복습 요약
           </div>
           <div className="space-y-3 text-sm">
-            <SummaryLine label="풀이한 문항" value={`${answeredCount} / 35`} />
-            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / 35`} />
+            <SummaryLine label="풀이한 문항" value={`${answeredCount} / ${yearQuestions.length}`} />
+            <SummaryLine label="정답 확인" value={`${answerRevealedCount} / ${yearQuestions.length}`} />
             <SummaryLine label="맞힌 문항" value={`${correctCount}`} />
             <SummaryLine label="다시 볼 문항" value={`${wrongCount}`} />
           </div>
