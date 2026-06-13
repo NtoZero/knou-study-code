@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertTriangle,
@@ -21,6 +21,9 @@ import {
   XCircle,
 } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
+import { useQuestionProgress } from "@/hooks/useQuestionProgress";
+import { resetQuestionProgressByIds } from "@/lib/studyProgress/service";
+import type { QuestionIdentity } from "@/lib/studyProgress/types";
 import type {
   SecurityConceptUnit,
   SecurityLab,
@@ -979,21 +982,114 @@ function VisualLab({ lab }: { lab: SecurityLab }) {
 }
 
 export function SecurityQuizSection({ quizzes, lectureId }: { quizzes: SecurityQuiz[]; lectureId: number }) {
+  const questionIdentities = useMemo(
+    () =>
+      quizzes.map((quiz, idx): QuestionIdentity => {
+        const correctIndex = quiz.choices.findIndex((choice) => choice.isCorrect);
+        return {
+          questionId: `security-lecture-${lectureId}-quiz-${idx + 1}`,
+          source: "lecture-quiz",
+          subjectSlug: "security",
+          subjectLabel: "컴퓨터보안",
+          questionTitle: `컴퓨터보안 ${lectureId}강 Q${idx + 1}`,
+          questionPath: `/security/lecture/${lectureId}#security-lecture-${lectureId}-quiz-${idx + 1}`,
+          kind: "multiple",
+          lectureId,
+          lectureTitle: `${lectureId}강`,
+          questionNumber: idx + 1,
+          correctChoice: correctIndex >= 0 ? String(correctIndex + 1) : undefined,
+          conceptTags: [quiz.category, quiz.examSkill].filter(Boolean),
+        };
+      }),
+    [lectureId, quizzes],
+  );
+  const { progressById, recordAttempt, ensureIdentity, patchProgress, reload } =
+    useQuestionProgress(questionIdentities);
   const [answers, setAnswers] = useState<Record<number, number | null>>(
     Object.fromEntries(quizzes.map((_, idx) => [idx, null]))
   );
   const [submitted, setSubmitted] = useState(false);
   const [open, setOpen] = useState<Record<number, boolean>>({});
 
+  useEffect(() => {
+    const nextAnswers: Record<number, number | null> = Object.fromEntries(
+      quizzes.map((_, idx) => [idx, null]),
+    );
+    const nextOpen: Record<number, boolean> = {};
+    let hasStoredProgress = false;
+    let hasRevealedAnswer = false;
+
+    questionIdentities.forEach((identity, idx) => {
+      const progress = progressById[identity.questionId];
+      if (!progress) return;
+
+      hasStoredProgress = true;
+
+      if (progress.latestChoice) {
+        const restoredChoice = Number(progress.latestChoice) - 1;
+        if (Number.isInteger(restoredChoice) && restoredChoice >= 0) {
+          nextAnswers[idx] = restoredChoice;
+        }
+      }
+
+      if (progress.answerRevealed) {
+        hasRevealedAnswer = true;
+      }
+
+      if (progress.explanationViewed) {
+        nextOpen[idx] = true;
+      }
+    });
+
+    if (hasStoredProgress) {
+      setAnswers(nextAnswers);
+      setOpen(nextOpen);
+      setSubmitted(hasRevealedAnswer);
+    }
+  }, [progressById, questionIdentities, quizzes]);
+
   const correctCount = quizzes.filter((quiz, idx) => {
     const selected = answers[idx];
     return selected !== null && quiz.choices[selected]?.isCorrect;
   }).length;
 
-  function reset() {
+  async function submit() {
+    setSubmitted(true);
+
+    await Promise.all(
+      quizzes.map(async (quiz, idx) => {
+        const identity = questionIdentities[idx];
+        if (!identity) return;
+
+        const selected = answers[idx];
+        const selectedChoice = selected !== null ? quiz.choices[selected] : undefined;
+
+        if (selected !== null && selectedChoice) {
+          await recordAttempt({
+            ...identity,
+            selectedChoice: String(selected + 1),
+            isCorrect: selectedChoice.isCorrect,
+            mode: "practice",
+          });
+        } else {
+          await ensureIdentity(identity);
+        }
+
+        await patchProgress(identity.questionId, {
+          answerRevealed: true,
+          lastReviewedAt: new Date().toISOString(),
+        });
+      }),
+    );
+    await reload();
+  }
+
+  async function reset() {
     setAnswers(Object.fromEntries(quizzes.map((_, idx) => [idx, null])));
     setSubmitted(false);
     setOpen({});
+    await resetQuestionProgressByIds(questionIdentities.map((identity) => identity.questionId));
+    await reload();
   }
 
   return (
@@ -1005,13 +1101,13 @@ export function SecurityQuizSection({ quizzes, lectureId }: { quizzes: SecurityQ
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <button
-          onClick={() => setSubmitted(true)}
+          onClick={() => void submit()}
           className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white"
         >
           채점하기
         </button>
         <button
-          onClick={reset}
+          onClick={() => void reset()}
           className="flex items-center gap-1 rounded-lg border border-gray-200 px-4 py-2 text-sm dark:border-gray-700"
         >
           <RotateCcw size={14} />
@@ -1031,6 +1127,7 @@ export function SecurityQuizSection({ quizzes, lectureId }: { quizzes: SecurityQ
           return (
             <div
               key={quiz.q}
+              id={questionIdentities[qIdx]?.questionId}
               className={`rounded-xl border p-5 ${
                 submitted
                   ? selectedCorrect
@@ -1089,7 +1186,21 @@ export function SecurityQuizSection({ quizzes, lectureId }: { quizzes: SecurityQ
               {submitted && (
                 <div className="mt-4">
                   <button
-                    onClick={() => setOpen((prev) => ({ ...prev, [qIdx]: !prev[qIdx] }))}
+                    onClick={() => {
+                      setOpen((prev) => {
+                        const nextOpen = !prev[qIdx];
+                        if (nextOpen) {
+                          const identity = questionIdentities[qIdx];
+                          if (identity) {
+                            void patchProgress(identity.questionId, {
+                              explanationViewed: true,
+                              lastReviewedAt: new Date().toISOString(),
+                            });
+                          }
+                        }
+                        return { ...prev, [qIdx]: nextOpen };
+                      });
+                    }}
                     className="flex items-center gap-1 text-xs font-semibold text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-300"
                   >
                     <ChevronDown size={14} className={`transition-transform ${open[qIdx] ? "rotate-180" : ""}`} />

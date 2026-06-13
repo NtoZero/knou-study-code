@@ -2185,3 +2185,124 @@ for (const [idText, override] of Object.entries(richLectureOverrides)) {
     quizzes: override.quizzes ?? richQuizzes(units),
   };
 }
+
+const lectureVisuals: Record<number, NonNullable<SoftwareLectureContent["visuals"]>> = {
+  2: [
+    {
+      src: "/software/frequent-concepts/figures/process-prototyping-cycle.png",
+      alt: "빠른 계획, 빠른 설계, 프로토타입 만들기, 실행과 피드백이 순환하는 프로토타이핑 과정",
+      caption: "프로토타이핑은 요구가 불분명할 때 빠른 설계와 실행 피드백을 반복해 요구를 구체화하는 모델.",
+      sourceLabel: "교재 2장 프로토타이핑 과정",
+      width: 692,
+      height: 455,
+    },
+  ],
+  3: [
+    {
+      src: "/software/frequent-concepts/figures/project-cpm-network.png",
+      alt: "작업 A부터 M까지의 CPM 네트워크와 각 노드의 EST, EFT, LST, LFT 및 여유 시간",
+      caption: "CPM은 가장 긴 경로와 여유 시간 0인 작업을 함께 보며 임계 경로를 판별.",
+      sourceLabel: "교재 3장 CPM 네트워크",
+      width: 700,
+      height: 500,
+    },
+  ],
+  5: [
+    {
+      src: "/software/frequent-concepts/figures/testing-control-flow-graph.png",
+      alt: "분기와 반복이 포함된 프로그램 조각과 이를 노드와 간선으로 바꾼 제어 흐름 그래프",
+      caption: "화이트박스 테스트는 제어 흐름을 노드와 간선으로 읽고 경로·분기 기준으로 테스트 케이스를 만든다.",
+      sourceLabel: "교재 5장 제어 흐름 그래프",
+      width: 690,
+      height: 505,
+    },
+  ],
+  7: [
+    {
+      src: "/software/frequent-concepts/figures/architecture-pipe-filter.png",
+      alt: "입력 데이터가 파이프를 따라 필터 1과 필터 2를 거쳐 출력으로 전달되는 파이프와 필터 구조",
+      caption: "파이프와 필터 구조는 데이터 스트림을 단계별 필터가 변환하는 아키텍처 스타일.",
+      sourceLabel: "교재 7장 파이프와 필터 구조",
+      width: 685,
+      height: 255,
+    },
+  ],
+  9: [
+    {
+      src: "/software/frequent-concepts/figures/uml-actor-system-boundary.png",
+      alt: "Customer, Librarian, Database 액터가 Resource Loan System 경계 안의 BrowseResource, CheckInResource, CheckOutResource와 연결된 그림",
+      caption: "UML 분석에서는 액터가 시스템 경계 밖에 있고 유스케이스가 경계 안의 사용자 목표인지 먼저 판독.",
+      sourceLabel: "교재 9장 UML 액터와 시스템 경계",
+      width: 690,
+      height: 400,
+    },
+  ],
+  10: [
+    {
+      src: "/software/frequent-concepts/figures/usecase-include-system-boundary.png",
+      alt: "HIS System 경계 안에서 Insert EMR과 Load Old Chart가 Check Registration을 include로 포함하는 유스케이스 다이어그램",
+      caption: "include는 공통 기능을 항상 포함하는 관계이며, 액터와 시스템 경계를 함께 확인해야 한다.",
+      sourceLabel: "교재 10장 유스케이스 include와 시스템 경계",
+      width: 690,
+      height: 380,
+    },
+  ],
+  11: [
+    {
+      src: "/software/frequent-concepts/figures/activity-fork-join.png",
+      alt: "시작 노드 뒤 포크 막대에서 TV보기와 밥먹기 액션으로 나뉘고 조인 막대에서 합쳐져 종료 노드로 가는 액티비티 흐름",
+      caption: "포크는 병렬 흐름 분기, 조인은 병렬 흐름 동기화이며 결정 마름모와 구분.",
+      sourceLabel: "교재 11장 액티비티 다이어그램 포크와 조인",
+      width: 690,
+      height: 220,
+    },
+  ],
+  12: [
+    {
+      src: "/software/frequent-concepts/figures/sequence-lifeline-message.png",
+      alt: "교수, 수업신청UI, 수업관리모듈, CS강좌 객체의 라이프라인 사이에 메시지와 반환 메시지가 오가는 시퀀스 다이어그램",
+      caption: "시퀀스 다이어그램은 위에서 아래로 시간 순서를 읽고 메시지 방향과 활성화 막대를 함께 판독.",
+      sourceLabel: "교재 12장 시퀀스 다이어그램",
+      width: 680,
+      height: 340,
+    },
+  ],
+  13: [
+    {
+      src: "/software/frequent-concepts/figures/class-aggregation-composition.png",
+      alt: "Room과 Wall 사이의 흰 마름모 집합 관계와 검은 마름모 합성 관계를 나란히 비교한 클래스 다이어그램",
+      caption: "집합은 약한 전체-부분 관계, 합성은 부분 생명주기가 전체에 종속되는 강한 전체-부분 관계.",
+      sourceLabel: "교재 13장 집합과 합성",
+      width: 690,
+      height: 450,
+    },
+  ],
+  14: [
+    {
+      src: "/software/frequent-concepts/figures/state-machine-door.png",
+      alt: "문 객체가 생성 후 열림 상태가 되고 닫기, 열기, 잠그기, 풀기 이벤트에 따라 닫힘과 잠김 상태로 전이되는 상태 머신",
+      caption: "상태 머신은 단일 객체의 상태와 이벤트에 따른 전이를 모델링하므로 업무 절차 흐름과 구분.",
+      sourceLabel: "교재 14장 상태 머신 예",
+      width: 690,
+      height: 245,
+    },
+  ],
+  15: [
+    {
+      src: "/software/frequent-concepts/figures/component-provided-required-interface.png",
+      alt: "DBHelper 컴포넌트가 Query와 StoredProc 제공 인터페이스, DataSource 필요 인터페이스를 가진 그림",
+      caption: "제공 인터페이스는 컴포넌트가 외부에 제공하는 기능, 필요 인터페이스는 동작에 필요한 외부 기능.",
+      sourceLabel: "교재 15장 제공·필요 인터페이스",
+      width: 690,
+      height: 265,
+    },
+  ],
+};
+
+for (const [idText, visuals] of Object.entries(lectureVisuals)) {
+  const id = Number(idText);
+  softwareLectureData[id] = {
+    ...softwareLectureData[id],
+    visuals,
+  };
+}

@@ -169,13 +169,17 @@ export function parseOfficialExercises(markdown: string): OfficialExerciseQuesti
 }
 
 export function getOfficialExerciseData() {
-  const markdownPath = path.join(
-    process.cwd(),
-    "..",
-    "26-1",
-    "연습문제_6과목_정리",
-    "2026-1학기_6과목_연습문제_정답.md",
-  );
+  const markdownFileName = "2026-1학기_6과목_연습문제_정답.md";
+  const markdownPathCandidates = [
+    path.join(process.cwd(), "data", "official-exercises", markdownFileName),
+    path.join(process.cwd(), "..", "26-1", "연습문제_6과목_정리", markdownFileName),
+  ];
+  const markdownPath = markdownPathCandidates.find((candidate) => fs.existsSync(candidate));
+
+  if (!markdownPath) {
+    throw new Error(`Official exercise markdown not found: ${markdownPathCandidates.join(", ")}`);
+  }
+
   const markdown = fs.readFileSync(markdownPath, "utf8");
   const questions = parseOfficialExercises(markdown);
   const activeSubjects = new Set(questions.map((question) => question.subject)).size;

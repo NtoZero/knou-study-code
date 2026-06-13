@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import {
   AlertTriangle,
@@ -13,13 +14,54 @@ import {
 import SectionTitle from "@/components/common/SectionTitle";
 import SoftwareAppliedStudio from "./SoftwareAppliedStudios";
 import { softwareLectureData } from "./lectureData";
-import type { SoftwareConceptUnit, SoftwareQuizChoice } from "./types";
+import type { SoftwareConceptUnit, SoftwareLectureVisual, SoftwareQuizChoice } from "./types";
 
 type Props = {
   lectureId: number;
 };
 
 const labels = ["①", "②", "③", "④"];
+
+function SourceVisualGallery({ visuals }: { visuals?: SoftwareLectureVisual[] }) {
+  if (!visuals?.length) {
+    return null;
+  }
+
+  return (
+    <section>
+      <SectionTitle
+        title="그림으로 먼저 판독"
+        subtitle="교재·강의 도식을 보고 기호, 방향, 경계, 흐름을 먼저 고정"
+      />
+      <div className="grid gap-4 lg:grid-cols-2">
+        {visuals.map((visual) => (
+          <figure
+            key={visual.src}
+            className="overflow-hidden rounded-lg border border-emerald-200 bg-white dark:border-emerald-900 dark:bg-gray-900"
+          >
+            <div className="bg-gray-50 p-3 dark:bg-gray-950">
+              <Image
+                src={visual.src}
+                alt={visual.alt}
+                width={visual.width}
+                height={visual.height}
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                priority
+                className="h-auto w-full rounded-md border border-gray-200 bg-white object-contain dark:border-gray-800"
+              />
+            </div>
+            <figcaption className="space-y-2 p-4">
+              <div className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                {visual.sourceLabel}
+              </div>
+              <p className="text-sm leading-6 text-gray-700 dark:text-gray-300">{visual.caption}</p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function ConceptDecisionTable({ unit }: { unit: SoftwareConceptUnit }) {
   if (!unit.tableRows?.length) {
@@ -364,6 +406,7 @@ export default function SoftwareLectureReview({ lectureId }: Props) {
           ))}
         </div>
       </section>
+      <SourceVisualGallery visuals={content.visuals} />
       <ConceptFlow lectureId={lectureId} />
       <SoftwareAppliedStudio lectureId={lectureId} lab={content.lab} />
       <LectureQuiz lectureId={lectureId} />

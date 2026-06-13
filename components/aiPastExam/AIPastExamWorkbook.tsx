@@ -1,9 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BarChart3, BookOpenCheck, Filter, RotateCcw } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
 import PastExamModeDock from "@/components/pastExam/PastExamModeDock";
+import { useQuestionProgress } from "@/hooks/useQuestionProgress";
+import { pastExamIdentity } from "@/lib/studyProgress/identity";
+import { resetQuestionProgressByIds } from "@/lib/studyProgress/service";
 import { aiPastExamQuestions, aiPastExamYears } from "./data";
 import PastExamQuestionCard from "./PastExamQuestionCard";
 import type { ChoiceKey } from "./types";
@@ -19,6 +22,52 @@ export default function AIPastExamWorkbook() {
   const [selected, setSelected] = useState<Record<string, ChoiceKey>>({});
   const [answerRevealed, setAnswerRevealed] = useState<Record<string, boolean>>({});
   const [explanationExpanded, setExplanationExpanded] = useState<Record<string, boolean>>({});
+  const questionIdentities = useMemo(
+    () =>
+      aiPastExamQuestions.map((question) =>
+        pastExamIdentity({
+          question,
+          subjectSlug: "ai",
+          subjectLabel: "인공지능",
+          basePath: "/ai/past-exam",
+        }),
+      ),
+    [],
+  );
+  const identityById = useMemo(
+    () => new Map(questionIdentities.map((identity) => [identity.questionId, identity])),
+    [questionIdentities],
+  );
+  const questionById = useMemo(
+    () => new Map(aiPastExamQuestions.map((question) => [question.id, question])),
+    [],
+  );
+  const { progressById, recordAttempt, ensureIdentity, patchProgress, reload } =
+    useQuestionProgress(questionIdentities);
+
+  useEffect(() => {
+    setSelected((prev) => {
+      const next = { ...prev };
+      Object.values(progressById).forEach((progress) => {
+        if (progress.latestChoice) next[progress.questionId] = progress.latestChoice as ChoiceKey;
+      });
+      return next;
+    });
+    setAnswerRevealed((prev) => {
+      const next = { ...prev };
+      Object.values(progressById).forEach((progress) => {
+        if (progress.answerRevealed) next[progress.questionId] = true;
+      });
+      return next;
+    });
+    setExplanationExpanded((prev) => {
+      const next = { ...prev };
+      Object.values(progressById).forEach((progress) => {
+        if (progress.explanationViewed) next[progress.questionId] = true;
+      });
+      return next;
+    });
+  }, [progressById]);
 
   const yearQuestions = useMemo(
     () => aiPastExamQuestions.filter((question) => question.year === year),
@@ -73,6 +122,15 @@ export default function AIPastExamWorkbook() {
 
   function selectChoice(questionId: string, choice: ChoiceKey) {
     setSelected((prev) => ({ ...prev, [questionId]: choice }));
+    const identity = identityById.get(questionId);
+    const question = questionById.get(questionId);
+    if (!identity || !question) return;
+    void recordAttempt({
+      ...identity,
+      selectedChoice: choice,
+      isCorrect: choice === question.correctChoice,
+      mode: "practice",
+    });
   }
 
   function toggleAnswer(questionId: string) {
@@ -81,11 +139,30 @@ export default function AIPastExamWorkbook() {
     if (!nextVisible) {
       setExplanationExpanded((prev) => ({ ...prev, [questionId]: false }));
     }
+    const identity = identityById.get(questionId);
+    if (!identity) return;
+    void ensureIdentity(identity).then(() =>
+      patchProgress(questionId, {
+        answerRevealed: nextVisible,
+        explanationViewed: nextVisible ? progressById[questionId]?.explanationViewed ?? false : false,
+        lastReviewedAt: nextVisible ? new Date().toISOString() : progressById[questionId]?.lastReviewedAt,
+      }),
+    );
   }
 
   function toggleExplanation(questionId: string) {
+    const nextExpanded = !explanationExpanded[questionId];
     setAnswerRevealed((prev) => ({ ...prev, [questionId]: true }));
-    setExplanationExpanded((prev) => ({ ...prev, [questionId]: !prev[questionId] }));
+    setExplanationExpanded((prev) => ({ ...prev, [questionId]: nextExpanded }));
+    const identity = identityById.get(questionId);
+    if (!identity) return;
+    void ensureIdentity(identity).then(() =>
+      patchProgress(questionId, {
+        answerRevealed: true,
+        explanationViewed: nextExpanded,
+        lastReviewedAt: new Date().toISOString(),
+      }),
+    );
   }
 
   function setAnswerVisibilityForQuestions(questions: typeof yearQuestions, value: boolean) {
@@ -106,6 +183,17 @@ export default function AIPastExamWorkbook() {
         return next;
       });
     }
+    questions.forEach((question) => {
+      const identity = identityById.get(question.id);
+      if (!identity) return;
+      void ensureIdentity(identity).then(() =>
+        patchProgress(question.id, {
+          answerRevealed: value,
+          explanationViewed: value ? progressById[question.id]?.explanationViewed ?? false : false,
+          lastReviewedAt: value ? new Date().toISOString() : progressById[question.id]?.lastReviewedAt,
+        }),
+      );
+    });
   }
 
   function setExplanationForQuestions(questions: typeof yearQuestions, value: boolean) {
@@ -126,13 +214,26 @@ export default function AIPastExamWorkbook() {
       });
       return next;
     });
+    questions.forEach((question) => {
+      const identity = identityById.get(question.id);
+      if (!identity) return;
+      void ensureIdentity(identity).then(() =>
+        patchProgress(question.id, {
+          answerRevealed: value ? true : progressById[question.id]?.answerRevealed ?? false,
+          explanationViewed: value,
+          lastReviewedAt: value ? new Date().toISOString() : progressById[question.id]?.lastReviewedAt,
+        }),
+      );
+    });
   }
 
-  function resetYear() {
+  async function resetYear() {
     const ids = new Set(yearQuestions.map((question) => question.id));
     setSelected((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
     setAnswerRevealed((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
     setExplanationExpanded((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => !ids.has(id))));
+    await resetQuestionProgressByIds(Array.from(ids));
+    await reload();
   }
 
   return (
@@ -223,7 +324,7 @@ export default function AIPastExamWorkbook() {
 
           <button
             type="button"
-            onClick={resetYear}
+            onClick={() => void resetYear()}
             className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             <RotateCcw size={15} />
@@ -249,7 +350,7 @@ export default function AIPastExamWorkbook() {
         onHideAnswers={() => setAnswerVisibilityForQuestions(modeScopeQuestions, false)}
         onExpandExplanations={() => setExplanationForQuestions(modeScopeQuestions, true)}
         onCollapseExplanations={() => setExplanationForQuestions(modeScopeQuestions, false)}
-        onResetProgress={resetYear}
+        onResetProgress={() => void resetYear()}
       />
 
       <section className="mb-8 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">

@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import NextImage from "next/image";
 import {
   BarChart3,
   BookOpenCheck,
+  Bookmark,
   CheckCircle2,
   Eye,
   EyeOff,
@@ -21,6 +22,9 @@ import type {
   OfficialExerciseSubject,
   OfficialExerciseSubjectMeta,
 } from "./types";
+import { useQuestionProgress } from "@/hooks/useQuestionProgress";
+import { resetQuestionProgressByIds } from "@/lib/studyProgress/service";
+import type { QuestionIdentity, QuestionProgress } from "@/lib/studyProgress/types";
 
 type Props = {
   subjects: OfficialExerciseSubjectMeta[];
@@ -104,6 +108,22 @@ function heatClass(count: number) {
   return "border-gray-200 bg-gray-50 text-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-600";
 }
 
+function toQuestionIdentity(question: OfficialExerciseQuestion): QuestionIdentity {
+  return {
+    questionId: question.id,
+    source: "official-exercises",
+    subjectSlug: question.subjectSlug,
+    subjectLabel: question.subject,
+    questionTitle: `${question.subject} ${question.lectureId}강 Q${question.questionNumber}`,
+    questionPath: `/official-exercises#${question.id}`,
+    kind: question.kind,
+    lectureId: question.lectureId,
+    lectureTitle: question.lectureTitle,
+    questionNumber: question.questionNumber,
+    correctChoice: question.correctChoice,
+  };
+}
+
 export default function OfficialExercisesPage({ subjects, questions, stats }: Props) {
   const [query, setQuery] = useState("");
   const [subject, setSubject] = useState<SubjectFilter>("전체");
@@ -112,6 +132,36 @@ export default function OfficialExercisesPage({ subjects, questions, stats }: Pr
   const [answerMode, setAnswerMode] = useState<AnswerMode>("practice");
   const [selectedChoices, setSelectedChoices] = useState<Record<string, string>>({});
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const questionIdentities = useMemo(() => questions.map(toQuestionIdentity), [questions]);
+  const identityById = useMemo(
+    () => new Map(questionIdentities.map((identity) => [identity.questionId, identity])),
+    [questionIdentities],
+  );
+  const {
+    progressById,
+    ensureIdentity,
+    recordAttempt,
+    patchProgress,
+    reload,
+  } = useQuestionProgress(questionIdentities);
+
+  useEffect(() => {
+    setSelectedChoices((prev) => {
+      const next = { ...prev };
+      Object.values(progressById).forEach((progress) => {
+        if (progress.latestChoice) next[progress.questionId] = progress.latestChoice;
+      });
+      return next;
+    });
+
+    setRevealed((prev) => {
+      const next = { ...prev };
+      Object.values(progressById).forEach((progress) => {
+        if (progress.answerRevealed) next[progress.questionId] = true;
+      });
+      return next;
+    });
+  }, [progressById]);
 
   const filteredQuestions = useMemo(() => {
     return questions.filter((question) => {
@@ -146,10 +196,46 @@ export default function OfficialExercisesPage({ subjects, questions, stats }: Pr
     setKind("전체");
   }
 
-  function resetPractice() {
+  async function resetPractice() {
     setAnswerMode("practice");
     setSelectedChoices({});
     setRevealed({});
+    await resetQuestionProgressByIds(questions.map((question) => question.id));
+    await reload();
+  }
+
+  async function toggleBookmark(question: OfficialExerciseQuestion) {
+    const identity = identityById.get(question.id);
+    if (!identity) return;
+    const progress = progressById[question.id] ?? await ensureIdentity(identity);
+    await patchProgress(question.id, { bookmarked: !progress.bookmarked });
+  }
+
+  function selectChoice(question: OfficialExerciseQuestion, choice: string) {
+    setSelectedChoices((prev) => ({ ...prev, [question.id]: choice }));
+    const identity = identityById.get(question.id);
+    if (!identity) return;
+
+    void recordAttempt({
+      ...identity,
+      selectedChoice: choice,
+      isCorrect: question.correctChoice ? choice === question.correctChoice : undefined,
+      mode: "practice",
+    });
+  }
+
+  function toggleReveal(question: OfficialExerciseQuestion) {
+    const nextRevealed = !revealed[question.id];
+    setRevealed((prev) => ({ ...prev, [question.id]: nextRevealed }));
+    const identity = identityById.get(question.id);
+    if (!identity) return;
+
+    void ensureIdentity(identity).then(() =>
+      patchProgress(question.id, {
+        answerRevealed: nextRevealed,
+        lastReviewedAt: nextRevealed ? new Date().toISOString() : progressById[question.id]?.lastReviewedAt,
+      }),
+    );
   }
 
   return (
@@ -279,7 +365,7 @@ export default function OfficialExercisesPage({ subjects, questions, stats }: Pr
           </div>
           <button
             type="button"
-            onClick={resetPractice}
+            onClick={() => void resetPractice()}
             className="inline-flex w-fit items-center gap-1 rounded-md border border-gray-200 px-2.5 py-1 font-semibold text-gray-600 hover:bg-gray-100 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-900"
           >
             <RotateCcw size={13} />
@@ -294,14 +380,12 @@ export default function OfficialExercisesPage({ subjects, questions, stats }: Pr
             <QuestionCard
               key={question.id}
               question={question}
+              progress={progressById[question.id]}
               selectedChoice={selectedChoices[question.id]}
               revealed={answerMode === "answers" || Boolean(revealed[question.id])}
-              onSelect={(choice) =>
-                setSelectedChoices((prev) => ({ ...prev, [question.id]: choice }))
-              }
-              onToggleReveal={() =>
-                setRevealed((prev) => ({ ...prev, [question.id]: !prev[question.id] }))
-              }
+              onSelect={(choice) => selectChoice(question, choice)}
+              onToggleReveal={() => toggleReveal(question)}
+              onToggleBookmark={() => void toggleBookmark(question)}
             />
           ))
         ) : (
@@ -426,21 +510,25 @@ function LectureHeatmap({
 
 function QuestionCard({
   question,
+  progress,
   selectedChoice,
   revealed,
   onSelect,
   onToggleReveal,
+  onToggleBookmark,
 }: {
   question: OfficialExerciseQuestion;
+  progress?: QuestionProgress;
   selectedChoice?: string;
   revealed: boolean;
   onSelect: (choice: string) => void;
   onToggleReveal: () => void;
+  onToggleBookmark: () => void;
 }) {
   const style = subjectStyles[question.subject];
 
   return (
-    <article className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950 sm:p-5">
+    <article id={question.id} className="scroll-mt-16 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-950 sm:p-5">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -465,14 +553,29 @@ function QuestionCard({
           </h2>
         </div>
 
-        <button
-          type="button"
-          onClick={onToggleReveal}
-          className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-800 dark:text-gray-200 dark:hover:bg-gray-900"
-        >
-          {revealed ? <EyeOff size={15} /> : <Eye size={15} />}
-          {revealed ? "접기" : "정답"}
-        </button>
+        <div className="flex shrink-0 gap-2">
+          <button
+            type="button"
+            onClick={onToggleBookmark}
+            aria-pressed={Boolean(progress?.bookmarked)}
+            className={`inline-flex h-9 items-center justify-center rounded-lg border px-2.5 transition-colors ${
+              progress?.bookmarked
+                ? "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100"
+                : "border-gray-200 text-gray-500 hover:bg-gray-100 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-900"
+            }`}
+            title="북마크"
+          >
+            <Bookmark size={15} fill={progress?.bookmarked ? "currentColor" : "none"} />
+          </button>
+          <button
+            type="button"
+            onClick={onToggleReveal}
+            className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-800 dark:text-gray-200 dark:hover:bg-gray-900"
+          >
+            {revealed ? <EyeOff size={15} /> : <Eye size={15} />}
+            {revealed ? "접기" : "정답"}
+          </button>
+        </div>
       </div>
 
       {question.stimulus && question.stimulus !== "없음." && (

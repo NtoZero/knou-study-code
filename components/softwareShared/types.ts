@@ -32,6 +32,15 @@ export type SoftwareConceptUnit = {
   tableRows?: SoftwareConceptTableRow[];
 };
 
+export type SoftwareLectureVisual = {
+  src: string;
+  alt: string;
+  caption: string;
+  sourceLabel: string;
+  width: number;
+  height: number;
+};
+
 export type SoftwareLab = {
   kind:
     | "overview"
@@ -73,6 +82,7 @@ export type SoftwareLectureContent = {
   sourceLabel: string;
   intro: string;
   goals: string[];
+  visuals?: SoftwareLectureVisual[];
   audit: {
     lecture: string;
     textbook: string;

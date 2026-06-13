@@ -30,7 +30,7 @@ export default function AINavigation() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-12 left-0 z-40 h-[calc(100%-3rem)] w-64 transform border-r border-gray-200 bg-white transition-transform dark:border-gray-800 dark:bg-gray-900 lg:translate-x-0 ${
+        className={`fixed left-0 top-12 z-40 h-[calc(100%-3rem)] w-64 transform overflow-y-auto overscroll-contain border-r border-gray-200 bg-white transition-transform dark:border-gray-800 dark:bg-gray-900 lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >

@@ -98,3 +98,11 @@ npm run dev
 | `npm install` 에러 | `node_modules` 삭제 후 재설치: `rm -rf node_modules && npm install` (Windows: `rmdir /s /q node_modules`) |
 | 포트 3000 사용 중 | `npm run dev -- -p 3001` 로 다른 포트 사용 |
 | 권한 에러 (Mac) | `sudo chown -R $(whoami) ~/.npm` 실행 |
+
+---
+
+## 5. 설계 문서
+
+| 문서 | 설명 |
+|---|---|
+| [`docs/client-study-progress-plan.md`](docs/client-study-progress-plan.md) | 클라이언트 전용 학습기록·오답·재풀이·마이페이지 구현 계획 |

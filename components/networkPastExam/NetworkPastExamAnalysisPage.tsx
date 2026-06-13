@@ -20,6 +20,9 @@ import {
   networkFrequentConcepts,
   networkReconstructedQuestions,
 } from "./data";
+import { useQuestionProgress } from "@/hooks/useQuestionProgress";
+import { networkReconstructedIdentity } from "@/lib/studyProgress/identity";
+import { resetQuestionProgressByIds } from "@/lib/studyProgress/service";
 import NetworkReconstructedQuestionCard from "./NetworkReconstructedQuestionCard";
 import type {
   NetworkChoiceKey,
@@ -75,6 +78,44 @@ export default function NetworkPastExamAnalysisPage() {
   const [selected, setSelected] = useState<Record<string, NetworkChoiceKey>>({});
   const [answerRevealed, setAnswerRevealed] = useState<Record<string, boolean>>({});
   const [explanationExpanded, setExplanationExpanded] = useState<Record<string, boolean>>({});
+  const questionIdentities = useMemo(
+    () => networkReconstructedQuestions.map((question) => networkReconstructedIdentity({ question })),
+    [],
+  );
+  const identityById = useMemo(
+    () => new Map(questionIdentities.map((identity) => [identity.questionId, identity])),
+    [questionIdentities],
+  );
+  const questionById = useMemo(
+    () => new Map(networkReconstructedQuestions.map((question) => [question.id, question])),
+    [],
+  );
+  const { progressById, recordAttempt, ensureIdentity, patchProgress, reload } =
+    useQuestionProgress(questionIdentities);
+
+  useEffect(() => {
+    setSelected((prev) => {
+      const next = { ...prev };
+      Object.values(progressById).forEach((progress) => {
+        if (progress.latestChoice) next[progress.questionId] = progress.latestChoice as NetworkChoiceKey;
+      });
+      return next;
+    });
+    setAnswerRevealed((prev) => {
+      const next = { ...prev };
+      Object.values(progressById).forEach((progress) => {
+        if (progress.answerRevealed) next[progress.questionId] = true;
+      });
+      return next;
+    });
+    setExplanationExpanded((prev) => {
+      const next = { ...prev };
+      Object.values(progressById).forEach((progress) => {
+        if (progress.explanationViewed) next[progress.questionId] = true;
+      });
+      return next;
+    });
+  }, [progressById]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -147,6 +188,15 @@ export default function NetworkPastExamAnalysisPage() {
 
   function selectChoice(questionId: string, choice: NetworkChoiceKey) {
     setSelected((prev) => ({ ...prev, [questionId]: choice }));
+    const identity = identityById.get(questionId);
+    const question = questionById.get(questionId);
+    if (!identity || !question) return;
+    void recordAttempt({
+      ...identity,
+      selectedChoice: choice,
+      isCorrect: choice === question.correctChoice,
+      mode: "practice",
+    });
   }
 
   function toggleAnswer(questionId: string) {
@@ -155,11 +205,30 @@ export default function NetworkPastExamAnalysisPage() {
     if (!nextVisible) {
       setExplanationExpanded((prev) => ({ ...prev, [questionId]: false }));
     }
+    const identity = identityById.get(questionId);
+    if (!identity) return;
+    void ensureIdentity(identity).then(() =>
+      patchProgress(questionId, {
+        answerRevealed: nextVisible,
+        explanationViewed: nextVisible ? progressById[questionId]?.explanationViewed ?? false : false,
+        lastReviewedAt: nextVisible ? new Date().toISOString() : progressById[questionId]?.lastReviewedAt,
+      }),
+    );
   }
 
   function toggleExplanation(questionId: string) {
+    const nextExpanded = !explanationExpanded[questionId];
     setAnswerRevealed((prev) => ({ ...prev, [questionId]: true }));
-    setExplanationExpanded((prev) => ({ ...prev, [questionId]: !prev[questionId] }));
+    setExplanationExpanded((prev) => ({ ...prev, [questionId]: nextExpanded }));
+    const identity = identityById.get(questionId);
+    if (!identity) return;
+    void ensureIdentity(identity).then(() =>
+      patchProgress(questionId, {
+        answerRevealed: true,
+        explanationViewed: nextExpanded,
+        lastReviewedAt: new Date().toISOString(),
+      }),
+    );
   }
 
   function setAnswerVisibilityForQuestions(questions: NetworkReconstructedQuestion[], value: boolean) {
@@ -180,6 +249,17 @@ export default function NetworkPastExamAnalysisPage() {
         return next;
       });
     }
+    questions.forEach((question) => {
+      const identity = identityById.get(question.id);
+      if (!identity) return;
+      void ensureIdentity(identity).then(() =>
+        patchProgress(question.id, {
+          answerRevealed: value,
+          explanationViewed: value ? progressById[question.id]?.explanationViewed ?? false : false,
+          lastReviewedAt: value ? new Date().toISOString() : progressById[question.id]?.lastReviewedAt,
+        }),
+      );
+    });
   }
 
   function setExplanationForQuestions(questions: NetworkReconstructedQuestion[], value: boolean) {
@@ -200,12 +280,25 @@ export default function NetworkPastExamAnalysisPage() {
       });
       return next;
     });
+    questions.forEach((question) => {
+      const identity = identityById.get(question.id);
+      if (!identity) return;
+      void ensureIdentity(identity).then(() =>
+        patchProgress(question.id, {
+          answerRevealed: value ? true : progressById[question.id]?.answerRevealed ?? false,
+          explanationViewed: value,
+          lastReviewedAt: value ? new Date().toISOString() : progressById[question.id]?.lastReviewedAt,
+        }),
+      );
+    });
   }
 
-  function resetProgress() {
+  async function resetProgress() {
     setSelected({});
     setAnswerRevealed({});
     setExplanationExpanded({});
+    await resetQuestionProgressByIds(networkReconstructedQuestions.map((question) => question.id));
+    await reload();
   }
 
   function resetFilters() {
@@ -333,7 +426,7 @@ export default function NetworkPastExamAnalysisPage() {
 
           <button
             type="button"
-            onClick={resetProgress}
+            onClick={() => void resetProgress()}
             className="inline-flex items-center justify-center gap-2 rounded-lg border border-rose-200 px-3 py-2 text-sm font-semibold text-rose-700 transition-colors hover:bg-rose-50 dark:border-rose-900 dark:text-rose-100 dark:hover:bg-rose-950/30"
           >
             <RotateCcw size={15} />
@@ -360,7 +453,7 @@ export default function NetworkPastExamAnalysisPage() {
         onHideAnswers={() => setAnswerVisibilityForQuestions(modeScopeQuestions, false)}
         onExpandExplanations={() => setExplanationForQuestions(modeScopeQuestions, true)}
         onCollapseExplanations={() => setExplanationForQuestions(modeScopeQuestions, false)}
-        onResetProgress={resetProgress}
+        onResetProgress={() => void resetProgress()}
       />
 
       <section className="mb-8 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">

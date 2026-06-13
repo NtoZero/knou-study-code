@@ -3,46 +3,42 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { BookOpenCheck, Flame, RotateCcw } from "lucide-react";
-import { softwareLectures } from "@/lib/constants";
 import PastExamModeDock from "@/components/pastExam/PastExamModeDock";
 import { useQuestionProgress } from "@/hooks/useQuestionProgress";
 import { pastExamIdentity } from "@/lib/studyProgress/identity";
 import { resetQuestionProgressByIds } from "@/lib/studyProgress/service";
-import {
-  softwarePastExamQuestions,
-  softwarePastExamYears,
-} from "./data";
+import { javaLectures } from "@/lib/constants";
+import { javaPastExamQuestions, javaPastExamYears } from "./data";
 import PastExamQuestionCard from "./PastExamQuestionCard";
-import type { SoftwareChoiceKey, SoftwarePastExamQuestion, SoftwarePastExamYear } from "./types";
+import type { JavaChoiceKey, JavaPastExamQuestion, JavaPastExamYear } from "./types";
 
 type StatusFilter = "all" | "unanswered" | "revealed" | "correct" | "wrong";
 type Scope = "visible" | "year";
 
 function parseYear(value: string | null) {
   const year = Number(value);
-  return softwarePastExamYears.includes(year as SoftwarePastExamYear)
-    ? (year as SoftwarePastExamYear)
-    : null;
+  return javaPastExamYears.includes(year as JavaPastExamYear) ? (year as JavaPastExamYear) : null;
 }
 
-export default function SoftwarePastExamWorkbook() {
+export default function JavaPastExamWorkbook() {
   const pendingHashRef = useRef<string | null>(null);
-  const [year, setYear] = useState<SoftwarePastExamYear>(2019);
+  const [year, setYear] = useState<JavaPastExamYear>(2019);
   const [lectureId, setLectureId] = useState<number | "all">("all");
   const [conceptTag, setConceptTag] = useState("all");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [scope, setScope] = useState<Scope>("visible");
-  const [selected, setSelected] = useState<Record<string, SoftwareChoiceKey>>({});
+  const [selected, setSelected] = useState<Record<string, JavaChoiceKey>>({});
   const [answerRevealed, setAnswerRevealed] = useState<Record<string, boolean>>({});
   const [explanationExpanded, setExplanationExpanded] = useState<Record<string, boolean>>({});
+
   const questionIdentities = useMemo(
     () =>
-      softwarePastExamQuestions.map((question) =>
+      javaPastExamQuestions.map((question) =>
         pastExamIdentity({
           question,
-          subjectSlug: "software",
-          subjectLabel: "소프트웨어공학",
-          basePath: "/software/past-exam",
+          subjectSlug: "java",
+          subjectLabel: "Java프로그래밍",
+          basePath: "/java/past-exam",
         }),
       ),
     [],
@@ -51,18 +47,14 @@ export default function SoftwarePastExamWorkbook() {
     () => new Map(questionIdentities.map((identity) => [identity.questionId, identity])),
     [questionIdentities],
   );
-  const questionById = useMemo(
-    () => new Map(softwarePastExamQuestions.map((question) => [question.id, question])),
-    [],
-  );
-  const { progressById, recordAttempt, ensureIdentity, patchProgress, reload } =
-    useQuestionProgress(questionIdentities);
+  const questionById = useMemo(() => new Map(javaPastExamQuestions.map((question) => [question.id, question])), []);
+  const { progressById, recordAttempt, ensureIdentity, patchProgress, reload } = useQuestionProgress(questionIdentities);
 
   useEffect(() => {
     setSelected((prev) => {
       const next = { ...prev };
       Object.values(progressById).forEach((progress) => {
-        if (progress.latestChoice) next[progress.questionId] = progress.latestChoice as SoftwareChoiceKey;
+        if (progress.latestChoice) next[progress.questionId] = progress.latestChoice as JavaChoiceKey;
       });
       return next;
     });
@@ -82,10 +74,13 @@ export default function SoftwarePastExamWorkbook() {
     });
   }, [progressById]);
 
-  const yearQuestions = useMemo(
-    () => softwarePastExamQuestions.filter((question) => question.year === year),
-    [year],
-  );
+  useEffect(() => {
+    const linkedYear = parseYear(new URLSearchParams(window.location.search).get("year"));
+    pendingHashRef.current = window.location.hash ? window.location.hash.slice(1) : null;
+    if (linkedYear) setYear(linkedYear);
+  }, []);
+
+  const yearQuestions = useMemo(() => javaPastExamQuestions.filter((question) => question.year === year), [year]);
 
   const lectureOptions = useMemo(() => {
     const ids = new Set<number>();
@@ -114,12 +109,6 @@ export default function SoftwarePastExamWorkbook() {
   }, [answerRevealed, conceptTag, lectureId, selected, status, yearQuestions]);
 
   useEffect(() => {
-    const linkedYear = parseYear(new URLSearchParams(window.location.search).get("year"));
-    pendingHashRef.current = window.location.hash ? window.location.hash.slice(1) : null;
-    if (linkedYear) setYear(linkedYear);
-  }, []);
-
-  useEffect(() => {
     const targetId = pendingHashRef.current;
     if (!targetId) return;
     const timer = window.setTimeout(() => {
@@ -134,14 +123,14 @@ export default function SoftwarePastExamWorkbook() {
 
   const answeredCount = yearQuestions.filter((question) => selected[question.id]).length;
   const answerRevealedCount = yearQuestions.filter((question) => answerRevealed[question.id]).length;
-  const visibleAnswerRevealedCount = filteredQuestions.filter((question) => answerRevealed[question.id]).length;
   const explanationExpandedCount = yearQuestions.filter((question) => explanationExpanded[question.id]).length;
-  const visibleExplanationExpandedCount = filteredQuestions.filter((question) => explanationExpanded[question.id]).length;
   const correctCount = yearQuestions.filter((question) => answerRevealed[question.id] && selected[question.id] === question.correctChoice).length;
   const wrongCount = yearQuestions.filter((question) => answerRevealed[question.id] && selected[question.id] && selected[question.id] !== question.correctChoice).length;
+  const visibleAnswerRevealedCount = filteredQuestions.filter((question) => answerRevealed[question.id]).length;
+  const visibleExplanationExpandedCount = filteredQuestions.filter((question) => explanationExpanded[question.id]).length;
   const scopeQuestions = scope === "visible" ? filteredQuestions : yearQuestions;
 
-  function setAnswerVisibilityForQuestions(questions: SoftwarePastExamQuestion[], value: boolean) {
+  function setAnswerVisibilityForQuestions(questions: JavaPastExamQuestion[], value: boolean) {
     setAnswerRevealed((prev) => {
       const next = { ...prev };
       questions.forEach((question) => {
@@ -171,7 +160,7 @@ export default function SoftwarePastExamWorkbook() {
     });
   }
 
-  function setExplanationForQuestions(questions: SoftwarePastExamQuestion[], value: boolean) {
+  function setExplanationForQuestions(questions: JavaPastExamQuestion[], value: boolean) {
     if (value) {
       setAnswerRevealed((prev) => {
         const next = { ...prev };
@@ -201,7 +190,7 @@ export default function SoftwarePastExamWorkbook() {
     });
   }
 
-  function selectChoice(questionId: string, choice: SoftwareChoiceKey) {
+  function selectChoice(questionId: string, choice: JavaChoiceKey) {
     setSelected((prev) => ({ ...prev, [questionId]: choice }));
     const identity = identityById.get(questionId);
     const question = questionById.get(questionId);
@@ -255,79 +244,99 @@ export default function SoftwarePastExamWorkbook() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 pb-28 pt-8 sm:pt-10 lg:pb-10">
-      <header className="mb-8 rounded-lg border border-emerald-200 bg-white p-5 shadow-sm dark:border-emerald-900 dark:bg-gray-950 sm:p-6">
+      <header className="mb-8 rounded-lg border border-amber-200 bg-white p-5 shadow-sm dark:border-amber-900 dark:bg-gray-950 sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900 dark:bg-amber-950 dark:text-amber-100">
               <BookOpenCheck size={14} />
-              2017-2019 1학기 기말
+              Java프로그래밍 기출분석
             </div>
-            <h1 className="text-2xl font-bold sm:text-3xl">소프트웨어공학 기출분석</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-950 dark:text-gray-50">
+              2017-2019 기말 75문항 코드 판독 문제집
+            </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600 dark:text-gray-300">
-              105개 문항을 연도, 강의, 개념 태그로 좁혀 풀고 정답과 선택지별 해설을 확인합니다.
-              보기는 세로 목록으로 배치해 긴 UML·테스트 문항도 모바일에서 이어 읽을 수 있게 구성했습니다.
+              배열, 상속, 제네릭, 스트림, 컬렉션, 스레드, JDBC 문항을 직접 풀고 코드 패널로 실행 조건을 다시 확인.
             </p>
-            <Link
-              href="/software/frequent-concepts"
-              className="mt-4 inline-flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-bold text-amber-700 hover:bg-amber-100 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100"
-            >
-              <Flame size={16} />
-              빈출 개념 보기
-            </Link>
           </div>
-          <div className="grid min-w-0 grid-cols-2 gap-2 text-sm sm:grid-cols-4 lg:min-w-[460px]">
-            <ProgressBox label="선택" value={`${answeredCount}/35`} tone="emerald" />
-            <ProgressBox label="확인" value={`${answerRevealedCount}/35`} tone="amber" />
-            <ProgressBox label="맞힘" value={`${correctCount}`} tone="blue" />
-            <ProgressBox label="재검토" value={`${wrongCount}`} tone="rose" />
-          </div>
+          <Link
+            href="/java/frequent-concepts"
+            className="inline-flex items-center gap-2 rounded-lg bg-amber-700 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-800"
+          >
+            <Flame size={16} />
+            Java 빈출 개념
+          </Link>
+        </div>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-4">
+          {[
+            ["풀이", `${answeredCount}/${yearQuestions.length}`],
+            ["정답 확인", `${answerRevealedCount}/${yearQuestions.length}`],
+            ["해설", `${explanationExpandedCount}/${yearQuestions.length}`],
+            ["맞힘/오답", `${correctCount}/${wrongCount}`],
+          ].map(([label, value]) => (
+            <div key={label} className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-900">
+              <div className="text-xs text-gray-500 dark:text-gray-400">{label}</div>
+              <div className="mt-1 text-xl font-bold text-gray-950 dark:text-gray-50">{value}</div>
+            </div>
+          ))}
         </div>
       </header>
 
       <section className="mb-6 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
-        <div className="grid gap-3 md:grid-cols-4">
-          <Select label="연도" value={String(year)} onChange={(value) => setYear(Number(value) as SoftwarePastExamYear)}>
-            {softwarePastExamYears.map((item) => (
-              <option key={item} value={item}>{item}년</option>
-            ))}
-          </Select>
-          <Select label="강의" value={String(lectureId)} onChange={(value) => setLectureId(value === "all" ? "all" : Number(value))}>
-            <option value="all">전체 강의</option>
-            {lectureOptions.map((id) => (
-              <option key={id} value={id}>{id}강 {softwareLectures[id - 1]?.title}</option>
-            ))}
-          </Select>
-          <Select label="개념" value={conceptTag} onChange={setConceptTag}>
-            <option value="all">전체 개념</option>
-            {conceptOptions.map((tag) => (
-              <option key={tag} value={tag}>{tag}</option>
-            ))}
-          </Select>
-          <Select label="상태" value={status} onChange={(value) => setStatus(value as StatusFilter)}>
-            <option value="all">전체</option>
-            <option value="unanswered">미풀이</option>
-            <option value="revealed">정답 확인</option>
-            <option value="correct">맞힘</option>
-            <option value="wrong">재검토</option>
-          </Select>
+        <div className="grid gap-3 md:grid-cols-5">
+          <label className="text-sm font-semibold">
+            연도
+            <select value={year} onChange={(event) => setYear(Number(event.target.value) as JavaPastExamYear)} className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
+              {javaPastExamYears.map((item) => (
+                <option key={item} value={item}>{item}년</option>
+              ))}
+            </select>
+          </label>
+          <label className="text-sm font-semibold">
+            강의
+            <select value={lectureId} onChange={(event) => setLectureId(event.target.value === "all" ? "all" : Number(event.target.value))} className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
+              <option value="all">전체 강의</option>
+              {lectureOptions.map((id) => (
+                <option key={id} value={id}>{id}강 {javaLectures.find((lecture) => lecture.id === id)?.title}</option>
+              ))}
+            </select>
+          </label>
+          <label className="text-sm font-semibold">
+            개념
+            <select value={conceptTag} onChange={(event) => setConceptTag(event.target.value)} className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
+              <option value="all">전체 개념</option>
+              {conceptOptions.map((tag) => (
+                <option key={tag} value={tag}>{tag}</option>
+              ))}
+            </select>
+          </label>
+          <label className="text-sm font-semibold">
+            상태
+            <select value={status} onChange={(event) => setStatus(event.target.value as StatusFilter)} className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
+              <option value="all">전체</option>
+              <option value="unanswered">미풀이</option>
+              <option value="revealed">정답 확인</option>
+              <option value="correct">맞힘</option>
+              <option value="wrong">오답</option>
+            </select>
+          </label>
+          <label className="text-sm font-semibold">
+            일괄 범위
+            <select value={scope} onChange={(event) => setScope(event.target.value as Scope)} className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
+              <option value="visible">현재 필터</option>
+              <option value="year">선택 연도 전체</option>
+            </select>
+          </label>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button type="button" onClick={() => setAnswerVisibilityForQuestions(scopeQuestions, true)} className="rounded-lg border border-amber-200 px-3 py-2 text-sm font-semibold text-amber-900 hover:bg-amber-50 dark:border-amber-900 dark:text-amber-100 dark:hover:bg-amber-950/30">정답 모두 보기</button>
+          <button type="button" onClick={() => setAnswerVisibilityForQuestions(scopeQuestions, false)} className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-900">정답 숨기기</button>
+          <button type="button" onClick={() => setExplanationForQuestions(scopeQuestions, true)} className="rounded-lg border border-amber-200 px-3 py-2 text-sm font-semibold text-amber-900 hover:bg-amber-50 dark:border-amber-900 dark:text-amber-100 dark:hover:bg-amber-950/30">해설 모두 열기</button>
+          <button type="button" onClick={resetYear} className="inline-flex items-center gap-2 rounded-lg border border-rose-200 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50 dark:border-rose-900 dark:text-rose-200 dark:hover:bg-rose-950/30"><RotateCcw size={14} />선택 연도 초기화</button>
         </div>
       </section>
 
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="text-sm text-gray-600 dark:text-gray-300">
-          현재 표시 {filteredQuestions.length}문항
-        </div>
-        <button
-          type="button"
-          onClick={() => void resetYear()}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-900"
-        >
-          <RotateCcw size={15} />
-          연도 풀이 초기화
-        </button>
-      </div>
-
-      <div className="space-y-4">
+      <main className="space-y-4">
         {filteredQuestions.map((question) => (
           <PastExamQuestionCard
             key={question.id}
@@ -340,12 +349,12 @@ export default function SoftwarePastExamWorkbook() {
             onToggleExplanation={toggleExplanation}
           />
         ))}
-      </div>
+      </main>
 
       <PastExamModeDock
         tone="emerald"
         scope={scope}
-        totalScopeLabel="연도 전체"
+        totalScopeLabel="선택 연도"
         visibleCount={filteredQuestions.length}
         totalCount={yearQuestions.length}
         answeredCount={answeredCount}
@@ -360,49 +369,8 @@ export default function SoftwarePastExamWorkbook() {
         onHideAnswers={() => setAnswerVisibilityForQuestions(scopeQuestions, false)}
         onExpandExplanations={() => setExplanationForQuestions(scopeQuestions, true)}
         onCollapseExplanations={() => setExplanationForQuestions(scopeQuestions, false)}
-        onResetProgress={() => void resetYear()}
+        onResetProgress={resetYear}
       />
     </div>
-  );
-}
-
-function ProgressBox({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "blue" | "rose" }) {
-  const style = {
-    emerald: "bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-100",
-    amber: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-100",
-    blue: "bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-100",
-    rose: "bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-100",
-  }[tone];
-
-  return (
-    <div className={`rounded-lg px-3 py-2 ${style}`}>
-      <div className="text-xs font-bold opacity-80">{label}</div>
-      <div className="mt-1 text-lg font-black">{value}</div>
-    </div>
-  );
-}
-
-function Select({
-  label,
-  value,
-  onChange,
-  children,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1 block text-xs font-bold text-gray-500">{label}</span>
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-800 dark:bg-gray-900"
-      >
-        {children}
-      </select>
-    </label>
   );
 }
