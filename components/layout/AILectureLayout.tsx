@@ -38,8 +38,8 @@ export default function AILectureLayout({ lectureId, children }: Props) {
 
       {/* Content */}
       <div className="space-y-12">
-        <AIPastExamCoverage lectureId={lectureId} />
         {children}
+        <AIPastExamCoverage lectureId={lectureId} />
       </div>
 
       {/* Prev / Next */}

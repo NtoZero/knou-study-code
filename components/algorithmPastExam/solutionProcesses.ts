@@ -462,6 +462,58 @@ export const ALGORITHM_PAST_EXAM_SOLUTION_PROCESSES = {
     },
     checkpoint: "MST는 가장 작은 간선만 무조건 고르는 문제가 아니라, 사이클을 만들지 않는 간선만 누적한다.",
   },
+  "2018-1-q16": {
+    title: "작업 스케줄링 첫 배정 찾기",
+    overview: "작업 스케줄링 문항은 작업 선택 문제처럼 종료 시간을 먼저 보지 않고, 시작 시간이 빠른 순서로 작업을 기계에 배정하는 절차를 따른다.",
+    steps: [
+      { title: "문제 유형 확인", body: "문항은 최대 호환 작업 집합을 묻는 작업 선택이 아니라, 주어진 작업들을 기계에 배정하는 작업 스케줄링 문제라고 명시한다." },
+      { title: "시작 시간 비교", body: "표에서 t₅=(0,7), t₄=(1,4), t₁=(2,5), t₈=(5,8) 순서로 시작 시간이 빠르다." },
+      { title: "첫 배정 확정", body: "가장 먼저 처리할 작업은 시작 시간이 0인 t₅이므로 첫 번째로 기계에 할당되는 작업은 t₅이다." },
+    ],
+    visual: {
+      kind: "table",
+      title: "시작 시간 기준 스케줄링",
+      frames: [
+        {
+          title: "1. 표에서 시작 시간 분리",
+          caption: "작업 스케줄링은 각 작업의 왼쪽 값, 즉 시작 시간을 먼저 비교한다.",
+          table: {
+            columns: ["작업", "구간", "시작", "종료"],
+            rows: [
+              { cells: ["t₁", "(2,5)", "2", "5"] },
+              { cells: ["t₂", "(6,9)", "6", "9"] },
+              { cells: ["t₃", "(4,9)", "4", "9"] },
+              { cells: ["t₄", "(1,4)", "1", "4"], variant: "active" },
+              { cells: ["t₅", "(0,7)", "0", "7"], variant: "answer" },
+              { cells: ["t₆", "(9,10)", "9", "10"] },
+              { cells: ["t₇", "(7,10)", "7", "10"] },
+              { cells: ["t₈", "(5,8)", "5", "8"] },
+            ],
+          },
+        },
+        {
+          title: "2. 보기만 시작 시간순으로 정렬",
+          caption: "보기 후보 중에서도 t₅가 가장 왼쪽 시간축에서 출발한다.",
+          array: [
+            { label: "start 0", value: "t₅", variant: "answer" },
+            { label: "start 1", value: "t₄", variant: "active" },
+            { label: "start 2", value: "t₁" },
+            { label: "start 5", value: "t₈" },
+          ],
+        },
+        {
+          title: "3. 첫 기계 배정",
+          caption: "시간 0에 시작하는 t₅를 첫 기계에 올린 뒤 나머지 작업을 계속 배정한다.",
+          array: [
+            { label: "machine 1", value: "t₅ (0→7)", variant: "answer" },
+            { label: "next", value: "t₄ (1→4)", variant: "active" },
+            { label: "later", value: "t₁/t₈" },
+          ],
+        },
+      ],
+    },
+    checkpoint: "작업 선택은 종료 시간, 작업 스케줄링은 시작 시간순 처리라는 차이를 먼저 구분해야 한다.",
+  },
   "2019-1-q19": {
     title: "작업 선택 첫 작업 고르기",
     overview: "작업 선택 문제는 종료 시간이 빠른 작업부터 보는 욕심쟁이 절차를 화면에 두는 것이 가장 빠르다.",

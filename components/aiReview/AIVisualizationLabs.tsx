@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import {
   Eye,
   GitBranch,
@@ -15,6 +15,13 @@ import {
 import SectionTitle from "@/components/common/SectionTitle";
 
 type Tone = "cyan" | "emerald" | "rose" | "violet" | "amber";
+type LabTheme = "teal" | "lime" | "sky" | "pink" | "amber" | "violet" | "emerald" | "rose" | "indigo";
+type LabThemeStyle = CSSProperties & {
+  "--lab-accent": string;
+  "--lab-accent-soft": string;
+  "--lab-border": string;
+  "--lab-muted": string;
+};
 
 const toneClasses: Record<Tone, string> = {
   cyan: "bg-cyan-500",
@@ -22,6 +29,18 @@ const toneClasses: Record<Tone, string> = {
   rose: "bg-rose-500",
   violet: "bg-violet-500",
   amber: "bg-amber-500",
+};
+
+const labThemeStyles: Record<LabTheme, LabThemeStyle> = {
+  teal: { "--lab-accent": "#0f766e", "--lab-accent-soft": "#ccfbf1", "--lab-border": "#99f6e4", "--lab-muted": "#f0fdfa" },
+  lime: { "--lab-accent": "#4d7c0f", "--lab-accent-soft": "#d9f99d", "--lab-border": "#bef264", "--lab-muted": "#f7fee7" },
+  sky: { "--lab-accent": "#0369a1", "--lab-accent-soft": "#bae6fd", "--lab-border": "#7dd3fc", "--lab-muted": "#f0f9ff" },
+  pink: { "--lab-accent": "#be185d", "--lab-accent-soft": "#fbcfe8", "--lab-border": "#f9a8d4", "--lab-muted": "#fdf2f8" },
+  amber: { "--lab-accent": "#b45309", "--lab-accent-soft": "#fde68a", "--lab-border": "#fcd34d", "--lab-muted": "#fffbeb" },
+  violet: { "--lab-accent": "#6d28d9", "--lab-accent-soft": "#ddd6fe", "--lab-border": "#c4b5fd", "--lab-muted": "#f5f3ff" },
+  emerald: { "--lab-accent": "#047857", "--lab-accent-soft": "#a7f3d0", "--lab-border": "#6ee7b7", "--lab-muted": "#ecfdf5" },
+  rose: { "--lab-accent": "#be123c", "--lab-accent-soft": "#fecdd3", "--lab-border": "#fda4af", "--lab-muted": "#fff1f2" },
+  indigo: { "--lab-accent": "#4338ca", "--lab-accent-soft": "#c7d2fe", "--lab-border": "#a5b4fc", "--lab-muted": "#eef2ff" },
 };
 
 function fmt(value: number) {
@@ -48,17 +67,22 @@ function LabFrame({
   title,
   subtitle,
   icon,
+  theme = "teal",
   children,
 }: {
   title: string;
   subtitle: string;
   icon: ReactNode;
+  theme?: LabTheme;
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-teal-200 bg-white p-6 shadow-sm dark:border-teal-900 dark:bg-gray-900">
+    <section
+      style={labThemeStyles[theme]}
+      className="rounded-lg border border-[color:var(--lab-border)] bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+    >
       <div className="mb-5 flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[var(--lab-accent-soft)] text-[var(--lab-accent)] dark:bg-gray-950">
           {icon}
         </div>
         <SectionTitle title={title} subtitle={subtitle} />
@@ -70,8 +94,8 @@ function LabFrame({
 
 function Panel({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950">
-      <div className="mb-3 text-sm font-bold text-teal-700 dark:text-teal-300">{title}</div>
+    <div className="rounded-lg border border-[color:var(--lab-border)] bg-[var(--lab-muted)] p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="mb-3 text-sm font-bold text-[var(--lab-accent)] dark:text-gray-100">{title}</div>
       {children}
     </div>
   );
@@ -105,7 +129,7 @@ function Slider({
         max={max}
         step={step}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="w-full accent-teal-500"
+        className="w-full accent-[var(--lab-accent)]"
       />
     </label>
   );
@@ -150,8 +174,8 @@ function Toggle({
       onClick={onClick}
       className={`rounded-md border px-3 py-2 text-xs font-bold transition ${
         active
-          ? "border-teal-500 bg-teal-500 text-white"
-          : "border-gray-200 bg-white text-gray-600 hover:border-teal-300 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+          ? "border-[color:var(--lab-accent)] bg-[var(--lab-accent)] text-white"
+          : "border-gray-200 bg-white text-gray-600 hover:border-[color:var(--lab-border)] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
       }`}
     >
       {children}
@@ -167,7 +191,7 @@ function StepList({ steps, active }: { steps: string[]; active: number }) {
           key={step}
           className={`rounded-md border px-3 py-2 text-xs leading-5 ${
             index <= active
-              ? "border-teal-200 bg-teal-50 text-teal-800 dark:border-teal-900 dark:bg-teal-950/50 dark:text-teal-200"
+              ? "border-[color:var(--lab-border)] bg-white text-[var(--lab-accent)] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100"
               : "border-gray-200 bg-white text-gray-500 dark:border-gray-800 dark:bg-gray-900"
           }`}
         >
@@ -186,43 +210,674 @@ function triangular(x: number, left: number, peak: number, right: number) {
   return (right - x) / (right - peak);
 }
 
-function FuzzyLab() {
-  const [x, setX] = useState(5);
-  const [muB, setMuB] = useState(0.55);
-  const muA = triangular(x, 1, 4, 8);
-  const union = Math.max(muA, muB);
-  const intersection = Math.min(muA, muB);
-  const complement = 1 - muA;
-  const implication = Math.min(1, 1 - muA + muB);
-  const defuzz = union + intersection === 0 ? 0 : (union * 75 + intersection * 35) / (union + intersection);
+function FuzzyMembershipSketch({
+  appleCount,
+  age,
+  water,
+  twoish,
+  young,
+  high,
+  slightlyHighFact,
+}: {
+  appleCount: number;
+  age: number;
+  water: number;
+  twoish: number;
+  young: number;
+  high: number;
+  slightlyHighFact: number;
+}) {
+  const appleX = 42 + appleCount * 52;
+  const ageX = 40 + ((age - 5) / 55) * 220;
+  const waterX = 40 + ((water - 1.6) / 1.6) * 220;
 
   return (
-    <LabFrame title="퍼지집합 연산과 추론 계산" subtitle="소속도 값을 바꾸며 max/min/보수와 비퍼지화 결과를 확인" icon={<SlidersHorizontal size={18} />}>
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Panel title="소속함수">
-          <Slider label="입력 x" value={x} min={0} max={10} step={0.1} onChange={setX} />
-          <Bar label="μA(x)" value={muA} tone="cyan" />
-          <Bar label="μB(x)" value={muB} tone="amber" />
-          <Slider label="μB 직접 조정" value={muB} min={0} max={1} step={0.05} onChange={setMuB} />
-        </Panel>
-        <Panel title="연산표">
+    <div className="rounded-lg border border-[color:var(--lab-border)] bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <div className="text-sm font-bold text-[var(--lab-accent)]">소속함수 곡선으로 보는 모호성</div>
+          <div className="mt-1 text-xs leading-5 text-gray-600 dark:text-gray-300">
+            crisp한 포함 여부가 아니라, 같은 대상이 여러 언어적 집합에 어느 정도 속하는지 비교.
+          </div>
+        </div>
+        <div className="rounded-md bg-[var(--lab-muted)] px-3 py-2 text-xs font-bold text-[var(--lab-accent)]">
+          μ 값 추적
+        </div>
+      </div>
+      <svg viewBox="0 0 320 154" className="h-44 w-full rounded-md bg-[var(--lab-muted)]">
+        <line x1="30" y1="128" x2="292" y2="128" stroke="#94a3b8" strokeWidth="1" />
+        <line x1="30" y1="18" x2="30" y2="128" stroke="#94a3b8" strokeWidth="1" />
+        <text x="8" y="20" className="fill-gray-500 text-[9px]">μ</text>
+        <text x="282" y="145" className="fill-gray-500 text-[9px]">대상</text>
+
+        <polyline points="52,128 104,22 156,76 208,128" fill="none" stroke="#65a30d" strokeWidth="4" strokeLinecap="round" />
+        <circle cx={appleX} cy={128 - twoish * 106} r="6" fill="#65a30d" />
+        <text x="54" y="118" className="fill-gray-700 text-[10px] dark:fill-gray-200">두어 개</text>
+
+        <polyline points="40,22 100,22 260,128" fill="none" stroke="#0284c7" strokeWidth="3" strokeLinecap="round" />
+        <circle cx={ageX} cy={128 - young * 106} r="5" fill="#0284c7" />
+        <text x="105" y="42" className="fill-gray-700 text-[10px] dark:fill-gray-200">젊은 나이</text>
+
+        <polyline points="40,128 110,128 260,22" fill="none" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
+        <circle cx={waterX} cy={128 - high * 106} r="5" fill="#f59e0b" />
+        <circle cx={waterX} cy={128 - slightlyHighFact * 106} r="5" fill="#be185d" />
+        <text x="186" y="62" className="fill-gray-700 text-[10px] dark:fill-gray-200">수위가 높다</text>
+      </svg>
+    </div>
+  );
+}
+
+function VisionPipelineSketch({
+  threshold,
+  mode,
+  quantLevels,
+}: {
+  threshold: number;
+  mode: 4 | 8;
+  quantLevels: number;
+}) {
+  const quantize = (value: number) => Math.floor(value / (256 / quantLevels)) * (256 / quantLevels);
+  const steps = [
+    { label: "원 영상", note: "화소 밝기 행렬" },
+    { label: "양자화", note: `${quantLevels}단계 계조` },
+    { label: "분할", note: `${threshold} 이상 객체` },
+    { label: "연결성", note: `${mode}-이웃 판별` },
+  ];
+
+  return (
+    <div className="rounded-lg border border-[color:var(--lab-border)] bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        {steps.map((step, index) => (
+          <div key={step.label} className="flex items-center gap-2">
+            <div className="rounded-md bg-[var(--lab-muted)] px-3 py-2">
+              <div className="text-xs font-bold text-[var(--lab-accent)]">{step.label}</div>
+              <div className="text-[10px] text-gray-500 dark:text-gray-400">{step.note}</div>
+            </div>
+            {index < steps.length - 1 && <span className="text-[var(--lab-accent)]">→</span>}
+          </div>
+        ))}
+      </div>
+      <div className="grid gap-4 md:grid-cols-[1fr_1fr_1fr_0.8fr]">
+        <div className="grid grid-cols-4 gap-1">
+          {visionMatrix.flat().map((value, index) => (
+            <div
+              key={`raw-${index}`}
+              className="flex aspect-square items-center justify-center rounded text-[10px] font-mono text-white"
+              style={{ backgroundColor: `rgb(${value}, ${value}, ${value})` }}
+            >
+              {value}
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-4 gap-1">
+          {visionMatrix.flat().map((value, index) => {
+            const level = quantize(value);
+            return (
+              <div
+                key={`quant-${index}`}
+                className="flex aspect-square items-center justify-center rounded text-[10px] font-mono text-white"
+                style={{ backgroundColor: `rgb(${level}, ${level}, ${level})` }}
+              >
+                {level}
+              </div>
+            );
+          })}
+        </div>
+        <div className="grid grid-cols-4 gap-1">
+          {visionMatrix.flat().map((value, index) => (
+            <div
+              key={`mask-${index}`}
+              className={`flex aspect-square items-center justify-center rounded text-[10px] font-bold ${
+                value >= threshold ? "bg-[var(--lab-accent)] text-white" : "bg-gray-200 text-gray-500 dark:bg-gray-800"
+              }`}
+            >
+              {value >= threshold ? "1" : "0"}
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-3 gap-1 self-center">
+          {Array.from({ length: 9 }).map((_, index) => {
+            const row = Math.floor(index / 3);
+            const col = index % 3;
+            const isCenter = row === 1 && col === 1;
+            const isNeighbor = mode === 8 || row === 1 || col === 1;
+            return (
+              <div
+                key={`neighbor-${index}`}
+                className={`flex aspect-square items-center justify-center rounded-md border text-[10px] font-bold ${
+                  isCenter
+                    ? "border-[color:var(--lab-accent)] bg-[var(--lab-accent)] text-white"
+                    : isNeighbor
+                      ? "border-[color:var(--lab-border)] bg-[var(--lab-muted)] text-[var(--lab-accent)]"
+                      : "border-gray-200 bg-white text-gray-300 dark:border-gray-800 dark:bg-gray-900"
+                }`}
+              >
+                {isCenter ? "p" : isNeighbor ? "n" : ""}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScatterCanvas({
+  qx,
+  qy,
+  samples,
+  nearest,
+}: {
+  qx: number;
+  qy: number;
+  samples: Array<{ x: number; y: number; cls: string }>;
+  nearest: Array<{ x: number; y: number; cls: string; distance: number }>;
+}) {
+  const isNearest = (sample: { x: number; y: number; cls: string }) =>
+    nearest.some((item) => item.x === sample.x && item.y === sample.y && item.cls === sample.cls);
+  const sx = (x: number) => 36 + (x / 9) * 236;
+  const sy = (y: number) => 142 - (y / 7) * 112;
+
+  return (
+    <div className="rounded-lg border border-[color:var(--lab-border)] bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="mb-3 text-sm font-bold text-[var(--lab-accent)]">특징공간 지도</div>
+      <svg viewBox="0 0 300 168" className="h-52 w-full rounded-md bg-[var(--lab-muted)]">
+        <line x1="30" y1="146" x2="280" y2="146" stroke="#94a3b8" />
+        <line x1="30" y1="18" x2="30" y2="146" stroke="#94a3b8" />
+        <text x="264" y="162" className="fill-gray-500 text-[10px]">x1</text>
+        <text x="8" y="24" className="fill-gray-500 text-[10px]">x2</text>
+        {samples.map((sample, index) => (
+          <g key={`${sample.cls}-${sample.x}-${sample.y}-${index}`}>
+            <circle
+              cx={sx(sample.x)}
+              cy={sy(sample.y)}
+              r={isNearest(sample) ? 10 : 7}
+              fill={sample.cls === "A" ? "#10b981" : "#f43f5e"}
+              opacity={isNearest(sample) ? 1 : 0.65}
+              stroke={isNearest(sample) ? "#111827" : "transparent"}
+              strokeWidth="2"
+            />
+            <text x={sx(sample.x) - 3} y={sy(sample.y) + 4} className="fill-white text-[9px] font-bold">
+              {sample.cls}
+            </text>
+          </g>
+        ))}
+        <circle cx={sx(qx)} cy={sy(qy)} r="12" fill="#7c3aed" stroke="#fff" strokeWidth="3" />
+        <text x={sx(qx) - 3} y={sy(qy) + 4} className="fill-white text-[10px] font-bold">Q</text>
+        {nearest.map((sample) => (
+          <line
+            key={`line-${sample.x}-${sample.y}-${sample.cls}`}
+            x1={sx(qx)}
+            y1={sy(qy)}
+            x2={sx(sample.x)}
+            y2={sy(sample.y)}
+            stroke="#7c3aed"
+            strokeDasharray="4 4"
+            strokeWidth="1.5"
+            opacity="0.7"
+          />
+        ))}
+      </svg>
+      <div className="mt-2 text-xs leading-5 text-gray-600 dark:text-gray-300">
+        굵은 테두리는 k-NN 투표에 들어간 이웃이며, Q에서 이어지는 점선이 실제 거리 비교 대상.
+      </div>
+    </div>
+  );
+}
+
+function ConfusionMatrixCanvas({
+  tp,
+  fp,
+  fn,
+  tn,
+  metricCells,
+}: {
+  tp: number;
+  fp: number;
+  fn: number;
+  tn: number;
+  metricCells: string[];
+}) {
+  const cells = [
+    { id: "tp", title: "TP", label: "실제 양성 / 예측 양성", value: tp },
+    { id: "fn", title: "FN", label: "실제 양성 / 예측 음성", value: fn },
+    { id: "fp", title: "FP", label: "실제 음성 / 예측 양성", value: fp },
+    { id: "tn", title: "TN", label: "실제 음성 / 예측 음성", value: tn },
+  ];
+
+  return (
+    <div className="rounded-lg border border-[color:var(--lab-border)] bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="text-sm font-bold text-[var(--lab-accent)]">분할표 좌표계</div>
+        <div className="text-[10px] font-bold text-gray-500">행: 실제값 / 열: 예측값</div>
+      </div>
+      <div className="grid grid-cols-[74px_1fr_1fr] gap-2 text-xs">
+        <div />
+        <div className="rounded-md bg-[var(--lab-muted)] p-2 text-center font-bold text-[var(--lab-accent)]">예측 양성</div>
+        <div className="rounded-md bg-[var(--lab-muted)] p-2 text-center font-bold text-[var(--lab-accent)]">예측 음성</div>
+        <div className="flex items-center justify-center rounded-md bg-[var(--lab-muted)] p-2 text-center font-bold text-[var(--lab-accent)]">
+          실제 양성
+        </div>
+        {cells.slice(0, 2).map((cell) => (
+          <div
+            key={cell.id}
+            className={`min-h-28 rounded-lg border p-3 ${
+              metricCells.includes(cell.id)
+                ? "border-[color:var(--lab-accent)] bg-[var(--lab-muted)]"
+                : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+            }`}
+          >
+            <div className="text-base font-black text-gray-900 dark:text-gray-50">{cell.title}</div>
+            <div className="mt-1 text-[10px] leading-4 text-gray-500 dark:text-gray-400">{cell.label}</div>
+            <div className="mt-2 font-mono text-2xl font-black text-[var(--lab-accent)]">{cell.value}</div>
+          </div>
+        ))}
+        <div className="flex items-center justify-center rounded-md bg-[var(--lab-muted)] p-2 text-center font-bold text-[var(--lab-accent)]">
+          실제 음성
+        </div>
+        {cells.slice(2).map((cell) => (
+          <div
+            key={cell.id}
+            className={`min-h-28 rounded-lg border p-3 ${
+              metricCells.includes(cell.id)
+                ? "border-[color:var(--lab-accent)] bg-[var(--lab-muted)]"
+                : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+            }`}
+          >
+            <div className="text-base font-black text-gray-900 dark:text-gray-50">{cell.title}</div>
+            <div className="mt-1 text-[10px] leading-4 text-gray-500 dark:text-gray-400">{cell.label}</div>
+            <div className="mt-2 font-mono text-2xl font-black text-[var(--lab-accent)]">{cell.value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LossTraceCanvas({
+  trace,
+  traceStep,
+}: {
+  trace: Array<{ w0: number; w1: number; mse: number }>;
+  traceStep: number;
+}) {
+  const maxMse = Math.max(...trace.map((step) => step.mse), 0.001);
+  const points = trace
+    .map((step, index) => {
+      const x = 34 + (index / (trace.length - 1)) * 232;
+      const y = 134 - (step.mse / maxMse) * 104;
+      return `${x},${y}`;
+    })
+    .join(" ");
+  const selected = trace[traceStep];
+  const selectedX = 34 + (traceStep / (trace.length - 1)) * 232;
+  const selectedY = 134 - (selected.mse / maxMse) * 104;
+
+  return (
+    <div className="rounded-lg border border-[color:var(--lab-border)] bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="mb-3 text-sm font-bold text-[var(--lab-accent)]">비용함수 하강 경로</div>
+      <svg viewBox="0 0 300 158" className="h-52 w-full rounded-md bg-[var(--lab-muted)]">
+        <line x1="28" y1="136" x2="274" y2="136" stroke="#94a3b8" />
+        <line x1="28" y1="22" x2="28" y2="136" stroke="#94a3b8" />
+        <polyline points={points} fill="none" stroke="#7c3aed" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        {trace.map((step, index) => {
+          const x = 34 + (index / (trace.length - 1)) * 232;
+          const y = 134 - (step.mse / maxMse) * 104;
+          return <circle key={index} cx={x} cy={y} r={index === traceStep ? 6 : 3} fill={index === traceStep ? "#be185d" : "#7c3aed"} />;
+        })}
+        <text x="232" y="152" className="fill-gray-500 text-[10px]">iteration</text>
+        <text x="5" y="24" className="fill-gray-500 text-[10px]">MSE</text>
+        <text x={selectedX + 8} y={Math.max(18, selectedY - 8)} className="fill-gray-700 text-[10px] dark:fill-gray-200">
+          k={traceStep}, {fmt(selected.mse)}
+        </text>
+      </svg>
+      <div className="mt-2 grid gap-2 text-xs md:grid-cols-3">
+        <Stat label="현재 w0" value={selected.w0} />
+        <Stat label="현재 w1" value={selected.w1} />
+        <Stat label="현재 MSE" value={selected.mse} />
+      </div>
+    </div>
+  );
+}
+
+function NeuronSignalCanvas({
+  x1,
+  x2,
+  w1,
+  w2,
+  bias,
+  u,
+  output,
+}: {
+  x1: number;
+  x2: number;
+  w1: number;
+  w2: number;
+  bias: number;
+  u: number;
+  output: number;
+}) {
+  const inputs = [
+    { label: "x1", value: x1, weight: w1, y: 44 },
+    { label: "x2", value: x2, weight: w2, y: 92 },
+    { label: "b", value: 1, weight: bias, y: 140 },
+  ];
+
+  return (
+    <div className="rounded-lg border border-[color:var(--lab-border)] bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="mb-3 text-sm font-bold text-[var(--lab-accent)]">뉴런 신호 흐름</div>
+      <svg viewBox="0 0 360 182" className="h-56 w-full rounded-md bg-[var(--lab-muted)]">
+        {inputs.map((input) => (
+          <g key={input.label}>
+            <circle cx="44" cy={input.y} r="18" fill="#fff" stroke="#94a3b8" />
+            <text x="35" y={input.y + 4} className="fill-gray-700 text-[11px] font-bold dark:fill-gray-200">{input.label}</text>
+            <line x1="62" y1={input.y} x2="170" y2="92" stroke={input.weight >= 0 ? "#059669" : "#e11d48"} strokeWidth={Math.max(2, Math.abs(input.weight) * 3)} />
+            <text x="88" y={input.y - 5} className="fill-gray-600 text-[10px] dark:fill-gray-300">
+              {fmt(input.value)}×{fmt(input.weight)}
+            </text>
+          </g>
+        ))}
+        <circle cx="190" cy="92" r="34" fill="#fff" stroke="#10b981" strokeWidth="3" />
+        <text x="178" y="88" className="fill-gray-800 text-[13px] font-bold dark:fill-gray-100">Σ</text>
+        <text x="171" y="106" className="fill-gray-600 text-[10px] dark:fill-gray-300">u={fmt(u)}</text>
+        <line x1="224" y1="92" x2="286" y2="92" stroke="#10b981" strokeWidth="3" markerEnd="url(#neuron-arrow)" />
+        <rect x="286" y="68" width="54" height="48" rx="10" fill="#fff" stroke="#10b981" strokeWidth="2" />
+        <text x="299" y="87" className="fill-gray-800 text-[12px] font-bold dark:fill-gray-100">f(u)</text>
+        <text x="299" y="104" className="fill-gray-600 text-[10px] dark:fill-gray-300">y={fmt(output)}</text>
+        <defs>
+          <marker id="neuron-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#10b981" />
+          </marker>
+        </defs>
+      </svg>
+      <div className="mt-2 text-xs leading-5 text-gray-600 dark:text-gray-300">
+        초록 연결은 흥분성, 빨간 연결은 금지 연결. 선 두께는 가중치 절댓값을 반영.
+      </div>
+    </div>
+  );
+}
+
+function BackpropCanvas({ bpStep }: { bpStep: number }) {
+  const nodes = [
+    { id: "x", label: "입력", x: 48, y: 84 },
+    { id: "h", label: "은닉", x: 146, y: 48 },
+    { id: "o", label: "출력", x: 244, y: 84 },
+    { id: "c", label: "손실", x: 244, y: 138 },
+  ];
+  const active = {
+    x: bpStep >= 0,
+    h: bpStep === 0 || bpStep >= 3,
+    o: bpStep >= 0,
+    c: bpStep >= 1,
+  };
+
+  return (
+    <div className="rounded-lg border border-[color:var(--lab-border)] bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="mb-3 text-sm font-bold text-[var(--lab-accent)]">순전파와 역전파 방향</div>
+      <svg viewBox="0 0 300 176" className="h-52 w-full rounded-md bg-[var(--lab-muted)]">
+        <defs>
+          <marker id="bp-forward" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#e11d48" />
+          </marker>
+          <marker id="bp-backward" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#0f766e" />
+          </marker>
+        </defs>
+        <path d="M66 84 C96 40 116 34 128 46" fill="none" stroke="#e11d48" strokeWidth={bpStep <= 1 ? 4 : 2} markerEnd="url(#bp-forward)" />
+        <path d="M164 52 C198 48 214 58 226 78" fill="none" stroke="#e11d48" strokeWidth={bpStep <= 1 ? 4 : 2} markerEnd="url(#bp-forward)" />
+        <path d="M244 102 L244 120" fill="none" stroke="#e11d48" strokeWidth={bpStep === 1 ? 4 : 2} markerEnd="url(#bp-forward)" />
+        <path d="M229 130 C194 120 176 96 160 66" fill="none" stroke="#0f766e" strokeWidth={bpStep >= 2 ? 4 : 2} strokeDasharray="5 4" markerEnd="url(#bp-backward)" />
+        <path d="M130 60 C98 64 82 76 66 84" fill="none" stroke="#0f766e" strokeWidth={bpStep >= 3 ? 4 : 2} strokeDasharray="5 4" markerEnd="url(#bp-backward)" />
+        {nodes.map((node) => (
+          <g key={node.id}>
+            <circle
+              cx={node.x}
+              cy={node.y}
+              r="22"
+              fill={active[node.id as keyof typeof active] ? "#fff1f2" : "#fff"}
+              stroke={active[node.id as keyof typeof active] ? "#e11d48" : "#94a3b8"}
+              strokeWidth={active[node.id as keyof typeof active] ? 3 : 1}
+            />
+            <text x={node.x - 13} y={node.y + 4} className="fill-gray-800 text-[11px] font-bold dark:fill-gray-100">{node.label}</text>
+          </g>
+        ))}
+        <text x="32" y="160" className="fill-gray-600 text-[10px] dark:fill-gray-300">빨강: 순전파 계산</text>
+        <text x="160" y="160" className="fill-gray-600 text-[10px] dark:fill-gray-300">초록 점선: 오차 역전파</text>
+      </svg>
+    </div>
+  );
+}
+
+function ConvolutionCanvas({
+  inputSize,
+  filter,
+  stride,
+  padding,
+  outputSize,
+  gradient,
+  activeNeurons,
+}: {
+  inputSize: number;
+  filter: number;
+  stride: number;
+  padding: number;
+  outputSize: number;
+  gradient: number;
+  activeNeurons: number;
+}) {
+  const normalizedFilter = clamp(filter / Math.max(1, inputSize), 0.12, 0.8);
+  const filterCells = Math.max(1, Math.min(4, filter));
+
+  return (
+    <div className="rounded-lg border border-[color:var(--lab-border)] bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="text-sm font-bold text-[var(--lab-accent)]">합성곱 수용야와 깊은 층 신호</div>
+        <div className="rounded-md bg-[var(--lab-muted)] px-3 py-2 text-xs font-bold text-[var(--lab-accent)]">
+          Sout={outputSize > 0 ? outputSize : "불가"}
+        </div>
+      </div>
+      <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr_0.9fr]">
+        <div className="relative aspect-square rounded-lg bg-[var(--lab-muted)] p-4">
+          <div className="absolute inset-4 grid grid-cols-7 gap-1">
+            {Array.from({ length: 49 }).map((_, index) => (
+              <div key={index} className="rounded-sm bg-white/80 dark:bg-gray-900" />
+            ))}
+          </div>
+          <div
+            className="absolute rounded-md border-4 border-[color:var(--lab-accent)] bg-white/60"
+            style={{
+              left: `${22 + padding * 2}%`,
+              top: `${20 + stride * 3}%`,
+              width: `${normalizedFilter * 58}%`,
+              height: `${normalizedFilter * 58}%`,
+            }}
+          >
+            <div className="grid h-full w-full gap-0.5 p-1" style={{ gridTemplateColumns: `repeat(${filterCells}, minmax(0, 1fr))` }}>
+              {Array.from({ length: filterCells * filterCells }).map((_, index) => (
+                <div key={index} className="rounded-sm bg-[var(--lab-accent)]/60" />
+              ))}
+            </div>
+          </div>
+          <div className="absolute bottom-2 left-3 text-[10px] font-bold text-gray-600 dark:text-gray-300">
+            입력 {inputSize}×{inputSize}, padding {padding}, stride {stride}
+          </div>
+        </div>
+        <div className="flex flex-col justify-between rounded-lg bg-[var(--lab-muted)] p-3">
+          <div className="text-xs font-bold text-[var(--lab-accent)]">경사 전달</div>
           <div className="space-y-2">
-            <Stat label="A∪B=max" value={union} />
-            <Stat label="A∩B=min" value={intersection} />
-            <Stat label="A보수=1-A" value={complement} />
-            <Stat label="a→b=min(1,1-a+b)" value={implication} />
+            {[0.82, 0.55, 0.34, 0.2, 0.12, gradient].map((value, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <div className="h-2 rounded-full bg-[var(--lab-accent)] transition-all" style={{ width: `${Math.max(4, clamp(value, 0, 1) * 100)}%` }} />
+                <span className="w-10 font-mono text-[10px]">{fmt(value)}</span>
+              </div>
+            ))}
+          </div>
+          <div className="text-[10px] leading-4 text-gray-600 dark:text-gray-300">
+            층을 거슬러 갈수록 미분값의 곱이 작아지는지 확인.
+          </div>
+        </div>
+        <div className="rounded-lg bg-[var(--lab-muted)] p-3">
+          <div className="mb-2 text-xs font-bold text-[var(--lab-accent)]">드롭아웃 마스크</div>
+          <div className="grid grid-cols-4 gap-1">
+            {Array.from({ length: 12 }).map((_, index) => (
+              <div
+                key={index}
+                className={`aspect-square rounded ${index < activeNeurons ? "bg-[var(--lab-accent)]" : "bg-gray-300 dark:bg-gray-800"}`}
+              />
+            ))}
+          </div>
+          <p className="mt-3 text-[10px] leading-4 text-gray-600 dark:text-gray-300">
+            훈련 시 일부 뉴런을 빼고, 평가 시에는 전체 네트워크를 사용.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SequenceArchitectureCanvas({ time, token, attention }: { time: number; token: number; attention: number[][] }) {
+  const tokens = ["나는", "야구를", "좋아해"];
+
+  return (
+    <div className="rounded-lg border border-[color:var(--lab-border)] bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+      <div className="mb-3 text-sm font-bold text-[var(--lab-accent)]">깊은 모델 구조 비교</div>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-lg bg-[var(--lab-muted)] p-3">
+          <div className="mb-3 text-xs font-bold text-[var(--lab-accent)]">ResNet skip</div>
+          <div className="relative h-28">
+            <div className="absolute left-2 top-12 h-4 w-12 rounded bg-white text-center text-[10px] leading-4 dark:bg-gray-900">x</div>
+            <div className="absolute left-24 top-8 h-12 w-20 rounded border border-[color:var(--lab-border)] bg-white text-center text-[10px] leading-12 dark:bg-gray-900">F(x)</div>
+            <div className="absolute right-4 top-12 h-4 w-16 rounded bg-[var(--lab-accent)] text-center text-[10px] leading-4 text-white">F(x)+x</div>
+            <div className="absolute left-14 top-14 h-0.5 w-10 bg-[var(--lab-accent)]" />
+            <div className="absolute left-44 top-14 h-0.5 w-10 bg-[var(--lab-accent)]" />
+            <div className="absolute left-8 top-20 h-8 w-44 rounded-b-full border-b-2 border-l-2 border-r-2 border-[color:var(--lab-accent)]" />
+          </div>
+        </div>
+        <div className="rounded-lg bg-[var(--lab-muted)] p-3">
+          <div className="mb-3 text-xs font-bold text-[var(--lab-accent)]">RNN unroll</div>
+          <div className="flex items-center gap-2">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <div className={`rounded-md border px-3 py-4 text-xs font-bold ${index <= time ? "border-[color:var(--lab-accent)] bg-white text-[var(--lab-accent)]" : "border-gray-200 bg-white text-gray-400 dark:border-gray-800 dark:bg-gray-900"}`}>
+                  h{index}
+                </div>
+                {index < 4 && <span className="text-[var(--lab-accent)]">→</span>}
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 text-[10px] leading-4 text-gray-600 dark:text-gray-300">
+            BPTT는 선택한 시점 h{time}에서 과거 방향으로 펼친 그래프를 따라 전파.
+          </div>
+        </div>
+        <div className="rounded-lg bg-[var(--lab-muted)] p-3">
+          <div className="mb-3 text-xs font-bold text-[var(--lab-accent)]">Self-attention</div>
+          <div className="grid grid-cols-3 gap-1">
+            {attention[token].map((value, index) => (
+              <div key={tokens[index]} className="rounded-md bg-white p-2 text-center dark:bg-gray-900">
+                <div className="text-[10px] font-bold">{tokens[index]}</div>
+                <div className="mx-auto mt-2 h-16 w-4 rounded-full bg-gray-200 dark:bg-gray-800">
+                  <div className="mt-auto rounded-full bg-[var(--lab-accent)]" style={{ height: `${value * 100}%` }} />
+                </div>
+                <div className="mt-1 font-mono text-[10px]">{fmt(value)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FuzzyLab() {
+  const [appleCount, setAppleCount] = useState(2);
+  const [age, setAge] = useState(25);
+  const [water, setWater] = useState(2.6);
+  const classicalTwoOrThree = appleCount === 2 || appleCount === 3 ? 1 : 0;
+  const twoish = appleCount === 2 ? 1 : appleCount === 3 ? 0.5 : 0;
+  const young = age <= 10 ? 1 : age >= 50 ? 0 : (50 - age) / 40;
+  const veryYoung = age <= 15 ? 1 : age >= 35 ? 0 : (35 - age) / 20;
+  const high = water <= 2 ? 0 : water >= 3 ? 1 : water - 2;
+  const low = water <= 1.8 ? 1 : water >= 2.8 ? 0 : 2.8 - water;
+  const slightlyHighFact = triangular(water, 2.1, 2.6, 3.1);
+  const openAlpha = Math.min(high, slightlyHighFact);
+  const closeAlpha = Math.min(low, slightlyHighFact);
+  const combined = Math.max(openAlpha, closeAlpha);
+  const valveAngle = openAlpha + closeAlpha === 0 ? 0 : (openAlpha * 70 + closeAlpha * 25) / (openAlpha + closeAlpha);
+
+  return (
+    <LabFrame title="퍼지이론 사례 흐름 실험실" subtitle="두어 개, 젊은 나이, 수위-밸브 제어를 따라 소속함수와 추론 순서를 확인" icon={<SlidersHorizontal size={18} />} theme="lime">
+      <div className="mb-4">
+        <FuzzyMembershipSketch
+          appleCount={appleCount}
+          age={age}
+          water={water}
+          twoish={twoish}
+          young={young}
+          high={high}
+          slightlyHighFact={slightlyHighFact}
+        />
+      </div>
+      <div className="grid gap-4 xl:grid-cols-3">
+        <Panel title="1. '두어 개'를 집합으로 표현">
+          <div className="mb-3 flex flex-wrap gap-2">
+            {[1, 2, 3, 4].map((count) => (
+              <Toggle key={count} active={appleCount === count} onClick={() => setAppleCount(count)}>
+                {count}개
+              </Toggle>
+            ))}
+          </div>
+          <Bar label="고전집합 {2,3}" value={classicalTwoOrThree} tone="cyan" />
+          <Bar label="퍼지집합 '두어 개'" value={twoish} tone="emerald" />
+          <div className="rounded-md bg-white p-3 text-xs leading-5 text-gray-600 dark:bg-gray-900 dark:text-gray-300">
+            고전집합은 2와 3을 모두 포함으로 처리하지만, 퍼지집합은 2에 더 높은 소속도를 줄 수 있다.
           </div>
         </Panel>
-        <Panel title="추론 단계">
+
+        <Panel title="2. '젊은 나이' 소속함수">
+          <Slider label="나이" value={age} min={5} max={60} step={1} onChange={setAge} />
+          <Bar label="젊은 나이" value={young} tone="cyan" />
+          <Bar label="매우 젊은 나이" value={veryYoung} tone="violet" />
+          <div className="rounded-md bg-white p-3 text-xs leading-5 text-gray-600 dark:bg-gray-900 dark:text-gray-300">
+            같은 나이라도 '젊다'와 '매우 젊다'에 동시에 다른 정도로 소속될 수 있다.
+          </div>
+        </Panel>
+
+        <Panel title="3. 수위-밸브 퍼지추론">
+          <Slider label="현재 수위(m)" value={water} min={1.6} max={3.2} step={0.1} onChange={setWater} />
+          <Bar label="조건 A: 수위가 높다" value={high} tone="amber" />
+          <Bar label="사실 A': 수위가 조금 높다" value={slightlyHighFact} tone="cyan" />
+          <Bar label="규칙1 발화 α" value={openAlpha} tone="emerald" />
+          <Bar label="규칙2 발화" value={closeAlpha} tone="rose" />
+          <div className="space-y-2">
+            <Stat label="결론 종합 max" value={combined} />
+            <Stat label="비퍼지화 예시" value={`${fmt(valveAngle)}도 열기`} />
+          </div>
+        </Panel>
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+        <Panel title="Mamdani 추론 순서">
           <StepList
             active={3}
             steps={[
-              `입력 퍼지화: μA=${fmt(muA)}, μB=${fmt(muB)}`,
-              `규칙 강도: min(μA, μB)=${fmt(intersection)}`,
-              `결론 결합: max 계열 값 ${fmt(union)}`,
-              `비퍼지화 예시 출력 ${fmt(defuzz)}`,
+              `퍼지화: 현재 수위 ${fmt(water)}m를 언어적 레이블의 소속도로 변환`,
+              `부분 정합: min(높다 ${fmt(high)}, 조금 높다 ${fmt(slightlyHighFact)}) = ${fmt(openAlpha)}`,
+              "결론 제한: '밸브를 연다' 소속함수에서 α보다 큰 부분을 잘라 냄",
+              `결론 종합과 비퍼지화: 열린 정도를 하나의 값 ${fmt(valveAngle)}도로 변환`,
             ]}
           />
+        </Panel>
+        <Panel title="연습문제 그림 맥락">
+          <div className="rounded-md border border-gray-200 bg-white p-2 dark:border-gray-800 dark:bg-gray-900">
+            <img
+              src="/official-exercises/img/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5_07%EA%B0%95_Q03.jpg"
+              alt="수위와 밸브 퍼지추론 연습문제 시각 자료"
+              className="max-h-64 w-full rounded object-contain"
+            />
+          </div>
+          <p className="mt-3 text-xs leading-5 text-gray-600 dark:text-gray-300">
+            그림형 문제에서는 조건부와 관측 사실이 겹치는 최대값 α를 먼저 찾고, 결론부 소속함수를 그 높이로 제한한 뒤 보기와 대조한다.
+          </p>
         </Panel>
       </div>
     </LabFrame>
@@ -244,7 +899,10 @@ function Vision8Lab() {
   const quantize = (value: number) => Math.floor(value / (256 / quantLevels)) * (256 / quantLevels);
 
   return (
-    <LabFrame title="픽셀 연결성과 임계값 분할" subtitle="밝기 행렬을 직접 이진화하고 4-이웃/8-이웃 기준 차이를 판별" icon={<Grid3X3 size={18} />}>
+    <LabFrame title="픽셀 연결성과 임계값 분할" subtitle="밝기 행렬을 직접 이진화하고 4-이웃/8-이웃 기준 차이를 판별" icon={<Grid3X3 size={18} />} theme="sky">
+      <div className="mb-4">
+        <VisionPipelineSketch threshold={threshold} mode={mode} quantLevels={quantLevels} />
+      </div>
       <div className="grid gap-4 lg:grid-cols-3">
         <Panel title="처리 단계">
           <StepList active={2} steps={["영상 취득", "전처리", "영상 분할", "정규화", "영상 표현", "분석"]} />
@@ -345,8 +1003,9 @@ function Vision9Lab() {
   const voteB = nearest.length - voteA;
 
   return (
-    <LabFrame title="특징공간 거리와 분류 판정" subtitle="질의 특징 벡터를 움직이며 거리 기반 분류와 베이즈 판정을 비교" icon={<Target size={18} />}>
-      <div className="grid gap-4 lg:grid-cols-3">
+    <LabFrame title="특징공간 거리와 분류 판정" subtitle="질의 특징 벡터를 움직이며 거리 기반 분류와 베이즈 판정을 비교" icon={<Target size={18} />} theme="pink">
+      <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr_1fr]">
+        <ScatterCanvas qx={qx} qy={qy} samples={samples} nearest={nearest} />
         <Panel title="질의 특징 벡터">
           <Slider label="x1" value={qx} min={0} max={9} step={1} onChange={setQx} />
           <Slider label="x2" value={qy} min={0} max={7} step={1} onChange={setQy} />
@@ -490,7 +1149,10 @@ function ML10Lab() {
     hypothesisCounts.tp + hypothesisCounts.fn === 0 ? 0 : hypothesisCounts.tp / (hypothesisCounts.tp + hypothesisCounts.fn);
 
   return (
-    <LabFrame title="분할표와 학습 유형 판별" subtitle="TP/FN/FP/TN 값을 바꿔 정밀도·재현율·F1·정확도를 검산" icon={<GitBranch size={18} />}>
+    <LabFrame title="분할표와 학습 유형 판별" subtitle="TP/FN/FP/TN 값을 바꿔 정밀도·재현율·F1·정확도를 검산" icon={<GitBranch size={18} />} theme="amber">
+      <div className="mb-4">
+        <ConfusionMatrixCanvas tp={tp} fp={fp} fn={fn} tn={tn} metricCells={metricCells} />
+      </div>
       <div className="grid gap-4 lg:grid-cols-4">
         <Panel title="학습 유형 조건">
           <StepList active={3} steps={["레이블 있음: 지도학습", "입력만 있음: 비지도학습", "보상 있음: 강화학습", "기존 모델 미세조정: 전이학습"]} />
@@ -643,7 +1305,10 @@ function ML11Lab() {
   const probabilities = softmax(logits);
 
   return (
-    <LabFrame title="선형회귀와 경사하강 갱신" subtitle="가중치와 학습률을 바꿔 MSE와 다음 업데이트 값을 계산" icon={<Sigma size={18} />}>
+    <LabFrame title="선형회귀와 경사하강 갱신" subtitle="가중치와 학습률을 바꿔 MSE와 다음 업데이트 값을 계산" icon={<Sigma size={18} />} theme="violet">
+      <div className="mb-4">
+        <LossTraceCanvas trace={trace} traceStep={traceStep} />
+      </div>
       <div className="grid gap-4 lg:grid-cols-4">
         <Panel title="선형가설">
           <Slider label="w0" value={w0} min={-1} max={3} step={0.1} onChange={setW0} />
@@ -723,7 +1388,10 @@ function NN12Lab() {
   const output = fn === "step" ? (u >= 0 ? 1 : 0) : fn === "sigmoid" ? sigmoid(u) : fn === "tanh" ? Math.tanh(u) : Math.max(0, u);
 
   return (
-    <LabFrame title="뉴런 계산과 XOR 한계" subtitle="가중합, 활성함수, 흥분성/금지 연결, 선형 분리 한계를 함께 확인" icon={<Network size={18} />}>
+    <LabFrame title="뉴런 계산과 XOR 한계" subtitle="가중합, 활성함수, 흥분성/금지 연결, 선형 분리 한계를 함께 확인" icon={<Network size={18} />} theme="emerald">
+      <div className="mb-4">
+        <NeuronSignalCanvas x1={x1} x2={x2} w1={w1} w2={w2} bias={bias} u={u} output={output} />
+      </div>
       <div className="grid gap-4 lg:grid-cols-3">
         <Panel title="뉴런 입력">
           <Slider label="x1" value={x1} min={-3} max={3} step={1} onChange={setX1} />
@@ -781,7 +1449,10 @@ function NN13Lab() {
   ];
 
   return (
-    <LabFrame title="역전파와 모멘텀 갱신" subtitle="순전파 뒤 출력층에서 은닉층 방향으로 체인 룰과 Δw를 추적" icon={<RotateCcw size={18} />}>
+    <LabFrame title="역전파와 모멘텀 갱신" subtitle="순전파 뒤 출력층에서 은닉층 방향으로 체인 룰과 Δw를 추적" icon={<RotateCcw size={18} />} theme="rose">
+      <div className="mb-4">
+        <BackpropCanvas bpStep={bpStep} />
+      </div>
       <div className="grid gap-4 lg:grid-cols-3">
         <Panel title="역전파 단계">
           <Slider label="추적 단계" value={bpStep} min={0} max={4} step={1} onChange={setBpStep} />
@@ -823,7 +1494,18 @@ function DL14Lab() {
   const activeNeurons = Math.round(12 * (1 - dropout));
 
   return (
-    <LabFrame title="경사 소멸과 CNN 출력 크기" subtitle="층 수·미분값·stride·padding을 바꿔 딥러닝 계산 기준을 검산" icon={<Layers size={18} />}>
+    <LabFrame title="경사 소멸과 CNN 출력 크기" subtitle="층 수·미분값·stride·padding을 바꿔 딥러닝 계산 기준을 검산" icon={<Layers size={18} />} theme="indigo">
+      <div className="mb-4">
+        <ConvolutionCanvas
+          inputSize={inputSize}
+          filter={filter}
+          stride={stride}
+          padding={padding}
+          outputSize={outputSize}
+          gradient={gradient}
+          activeNeurons={activeNeurons}
+        />
+      </div>
       <div className="grid gap-4 lg:grid-cols-3">
         <Panel title="경사 소멸">
           <Slider label="층 수" value={layers} min={1} max={12} step={1} onChange={setLayers} />
@@ -882,7 +1564,10 @@ function DL15Lab() {
   const gruUpdate = sigmoid(0.8 * gateInput + 0.4 * prevState);
 
   return (
-    <LabFrame title="ResNet·RNN·Attention 구조 추적" subtitle="잔차 합산, 시간 펼침, self-attention 가중치를 시험 기준으로 확인" icon={<Eye size={18} />}>
+    <LabFrame title="ResNet·RNN·Attention 구조 추적" subtitle="잔차 합산, 시간 펼침, self-attention 가중치를 시험 기준으로 확인" icon={<Eye size={18} />} theme="teal">
+      <div className="mb-4">
+        <SequenceArchitectureCanvas time={time} token={token} attention={attention} />
+      </div>
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
         <Panel title="ResNet 잔차 블록">
           <Slider label="F(x)" value={fx} min={-4} max={4} step={0.1} onChange={setFx} />

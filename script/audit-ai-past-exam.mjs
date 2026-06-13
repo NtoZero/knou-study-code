@@ -116,6 +116,17 @@ if (!Array.isArray(aiPastExamQuestions)) {
       failures.push(`${question.id}: 학습자용 basis/wrongRule/sourceBasis 필드가 남아 있습니다.`);
     }
 
+    for (const image of question.images ?? []) {
+      if (!image.src || !image.alt || !image.aiDescriptionHidden) {
+        failures.push(`${question.id}: 이미지 src/alt/hidden 설명이 누락되었습니다.`);
+        continue;
+      }
+      const publicPath = image.src.startsWith("/") ? image.src.slice(1) : image.src;
+      if (!fs.existsSync(path.join(root, "public", publicPath))) {
+        failures.push(`${question.id}: 이미지 파일이 public 경로에 없습니다 (${image.src}).`);
+      }
+    }
+
     for (const pattern of bannedLearnerPatterns) {
       if (pattern.test(question.answerExplanation ?? "")) {
         failures.push(`${question.id}: answerExplanation에 금지 표현이 있습니다 (${pattern}).`);
@@ -163,3 +174,4 @@ console.log("- explicit answerExplanation fields: ok");
 console.log("- per-choice reason fields: ok");
 console.log("- no duplicated per-choice reasons within a question: ok");
 console.log("- no shared explanation helper/internal learner labels: ok");
+console.log("- required visual assets exist: ok");

@@ -52,6 +52,7 @@ export default function PastExamQuestionCard({
     onToggleExplanation !== undefined;
   const isCorrect = selected === question.correctChoice;
   const selectedChoice = question.choices.find((choice) => choice.key === selected);
+  const correctChoice = question.choices.find((choice) => choice.key === question.correctChoice);
   const visuals = question.images ?? [];
   const handleToggleAnswer = () => (onToggleAnswer ?? onReveal)?.(question.id);
   const handleToggleExplanation = () => (onToggleExplanation ?? onReveal)?.(question.id);
@@ -163,7 +164,7 @@ export default function PastExamQuestionCard({
               정답: {question.correctChoice}번
             </div>
             <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-200">
-              <strong>{question.lectureRefs[0].concept}</strong> 근거: {question.basis}
+              <strong>{question.lectureRefs[0].concept}</strong>: {correctChoice?.explanation.reason ?? question.basis}
             </p>
           </div>
         )}

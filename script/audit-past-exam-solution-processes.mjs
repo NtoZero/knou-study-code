@@ -34,6 +34,8 @@ const bannedLearnerPatterns = [
 
 const allowedKinds = new Set(["array", "formula", "graph", "network", "sequence", "stack", "table", "tree"]);
 const bannedSelectedChoicePatterns = [
+  /정답 근거:/,
+  /오답 근거:/,
   /정의·절차·계산 조건과 (일치|맞지)/,
   /판별 기준:/,
   /강의·교재 기준:/,
@@ -45,6 +47,7 @@ const expectedAlgorithmIds = new Set([
   "2017-1-q12",
   "2017-1-q24",
   "2017-1-q28",
+  "2018-1-q16",
   "2018-1-q25",
   "2018-1-q28",
   "2018-1-q30",
@@ -207,6 +210,31 @@ function auditSelectedAlgorithmChoiceReasons(question, failures) {
   }
 }
 
+function auditAlgorithmChoiceReasonBaseline(question, failures) {
+  if (!Array.isArray(question.choices) || question.choices.length !== 4) {
+    failures.push(`Algorithm ${question.id}: 선택지 4개를 확인할 수 없습니다.`);
+    return;
+  }
+
+  const seenReasons = new Set();
+  for (const choice of question.choices) {
+    const reason = choice.explanation?.reason ?? "";
+    if (reason.trim().length < 28) {
+      failures.push(`Algorithm ${question.id} ${choice.label}: 선택지 해설이 너무 짧습니다.`);
+    }
+    for (const pattern of bannedSelectedChoicePatterns) {
+      if (pattern.test(reason)) {
+        failures.push(`Algorithm ${question.id} ${choice.label}: 선택지 해설에 기본 생성 문구가 남아 있습니다 (${pattern}).`);
+      }
+    }
+    const normalizedReason = normalize(reason);
+    if (seenReasons.has(normalizedReason)) {
+      failures.push(`Algorithm ${question.id} ${choice.label}: 같은 문항 안에서 선택지 해설이 중복됩니다.`);
+    }
+    seenReasons.add(normalizedReason);
+  }
+}
+
 const failures = [];
 const seenLongTexts = new Map();
 const { aiPastExamQuestions } = loadModule(path.join(root, "components/aiPastExam/data.ts"));
@@ -222,6 +250,7 @@ if (!Array.isArray(algorithmPastExamQuestions) || algorithmPastExamQuestions.len
 for (const question of aiPastExamQuestions ?? []) auditQuestion("AI", question, failures, seenLongTexts);
 for (const question of algorithmPastExamQuestions ?? []) {
   auditQuestion("Algorithm", question, failures, seenLongTexts);
+  auditAlgorithmChoiceReasonBaseline(question, failures);
   auditSelectedAlgorithmChoiceReasons(question, failures);
 }
 
@@ -259,4 +288,5 @@ if (failures.length > 0) {
 console.log("- selected procedural questions only: ok");
 console.log("- 1/2/3 guided steps and visual frames: ok");
 console.log("- no banned boilerplate in solution processes: ok");
+console.log("- all algorithm choice explanations are non-duplicated and boilerplate-free: ok");
 console.log("- selected algorithm choice explanations are specific: ok");

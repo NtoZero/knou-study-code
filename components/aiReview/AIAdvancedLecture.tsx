@@ -3,9 +3,11 @@
 import { useState } from "react";
 import {
   BrainCircuit,
+  BookOpen,
   CheckCircle2,
   GitBranch,
   Layers,
+  Route,
   Target,
 } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
@@ -67,13 +69,37 @@ type ConceptFocus = {
   items: ConceptFocusItem[];
 };
 
+type LectureOpening = {
+  source: string;
+  problem: string;
+  definition: string;
+  firstExample: string;
+  bridge: string;
+  checkpoints: string[];
+};
+
+type SourceProgressStep = {
+  label: string;
+  source: string;
+  why: string;
+  example: string;
+  practice: string;
+};
+
 const advancedLectures: Record<number, AdvancedLectureData> = {
   7: {
     id: 7,
     title: "퍼지이론",
     subtitle: "소속함수에서 퍼지추론과 비퍼지화까지 계산 기준을 연결",
-    flow: ["퍼지집합 정의", "소속함수와 연산", "퍼지논리 연산자", "퍼지규칙 평가", "결론 결합과 비퍼지화"],
+    flow: ["퍼지이론의 필요성", "퍼지집합 정의", "소속함수와 연산", "퍼지논리 연산자", "퍼지규칙 평가", "결론 결합과 비퍼지화"],
     concepts: [
+      {
+        title: "퍼지이론의 출발점",
+        core: "퍼지이론은 인간이 쓰는 애매하고 불확실한 표현을 0과 1 사이의 정도 값으로 나타내어 컴퓨터가 추론과 제어에 활용하게 하는 이론이다.",
+        details: ["고전논리는 대상이 집합에 속하거나 속하지 않는 두 경우로 나눈다.", "현실의 '높다', '젊다', '두어 개', '조금 빠르다' 같은 표현은 경계가 딱 끊어지지 않는다.", "퍼지이론은 이런 경계의 흐림을 버리지 않고 소속도와 언어적 변수로 보존한다."],
+        example: "'사과 두어 개'는 2개만 정답이고 3개는 오답이라고 자르기보다, 2개는 강하게, 3개는 어느 정도 '두어 개'에 가깝다고 표현한다.",
+        wrongRule: "퍼지이론을 단순 확률 계산이나 대충 애매한 말로 보면 틀린다. 핵심은 모호한 개념을 소속도 함수와 규칙 계산으로 엄밀하게 다루는 데 있다.",
+      },
       {
         title: "퍼지집합과 소속함수",
         core: "퍼지집합은 원소의 포함 여부를 0 또는 1로 자르지 않고 소속도 μA(x)로 나타낸다.",
@@ -653,6 +679,354 @@ const advancedLectures: Record<number, AdvancedLectureData> = {
       { title: "Transformer", prompt: "Transformer가 RNN 대신 인코더와 디코더 구현에 사용하는 핵심 메커니즘은?", choices: ["self-attention", "단위 계단 함수", "해밍 거리", "퍼지 합집합"], answer: 0, basis: "근거: Transformer는 RNN 대신 self-attention 메커니즘을 사용한다.", wrongRule: "오답 기준: 활성함수, 거리, 퍼지 연산은 Transformer 구조의 핵심 대체 메커니즘이 아니다.", examSkill: "구조 비교", internalSource: "15강 Transformer" },
     ],
   },
+};
+
+const lectureOpenings: Record<number, LectureOpening> = {
+  7: {
+    source: "강의 7강 1절 퍼지이론의 개념",
+    problem: "고전집합과 고전논리는 참/거짓, 포함/비포함처럼 경계를 선명하게 나눈다. 하지만 현실의 지식은 '두어 개', '젊다', '수위가 조금 높다'처럼 경계가 흐린 표현으로 주어지는 경우가 많다.",
+    definition: "퍼지이론은 이런 모호한 표현을 버리지 않고, 대상이 어떤 개념에 부합하는 정도를 0부터 1 사이의 소속도로 나타내어 추론과 제어에 활용하는 이론이다.",
+    firstExample: "'사과 두어 개'에서 2개는 매우 잘 맞고 3개도 어느 정도 맞지만 5개는 거의 맞지 않는다. 이 차이를 소속함수로 표현하면 자연어 표현이 계산 가능한 대상이 된다.",
+    bridge: "따라서 7강은 먼저 퍼지이론이 왜 필요한지 이해한 뒤, 퍼지집합과 소속함수, 퍼지논리 연산, IF-THEN 규칙, 비퍼지화 순서로 확장된다.",
+    checkpoints: ["소속도는 확률이 아니라 개념 부합 정도", "고전집합은 퍼지집합의 특수한 경우", "퍼지추론은 자연어 규칙을 계산 절차로 바꾸는 과정"],
+  },
+  8: {
+    source: "강의 8강 컴퓨터 시각의 개념",
+    problem: "카메라가 얻은 영상은 사람이 바로 이해하는 장면이 아니라 픽셀 값의 배열이다. 잡음, 조명, 해상도, 객체와 배경의 섞임 때문에 바로 인식할 수 없다.",
+    definition: "컴퓨터 시각은 영상 데이터를 취득한 뒤 전처리, 분할, 표현, 분석 단계를 거쳐 컴퓨터가 장면이나 객체를 해석하게 하는 기술 체계이다.",
+    firstExample: "문서 영상에서 글자를 읽으려면 먼저 이미지를 얻고, 잡음을 줄이고, 글자 영역을 배경에서 나누고, 획이나 윤곽 같은 특징으로 표현해야 한다.",
+    bridge: "그래서 8강은 디지털 영상이 어떻게 픽셀로 표현되는지에서 시작해 표본화·양자화, 필터링, 연결성, 영상 분할로 이어진다.",
+    checkpoints: ["영상은 좌표와 화소 값의 이산 데이터", "전처리와 분할의 목적은 다름", "4-이웃과 8-이웃은 연결 판정을 바꿈"],
+  },
+  9: {
+    source: "강의 9강 정규화와 패턴인식",
+    problem: "분할된 영상이 있어도 위치, 크기, 회전, 밝기 조건이 다르면 같은 대상도 서로 다른 데이터처럼 보인다. 원본 픽셀 전체를 그대로 비교하면 인식이 흔들린다.",
+    definition: "패턴인식은 대상에서 식별에 필요한 특징을 뽑아 특징공간에 표현하고, 거리나 확률 기준으로 어느 부류에 속하는지 결정하는 과정이다.",
+    firstExample: "손글씨 숫자를 같은 크기로 맞춘 뒤 획 방향이나 영역별 픽셀 분포를 특징벡터로 만들면, 가까운 표본이나 높은 사후확률을 기준으로 숫자를 분류할 수 있다.",
+    bridge: "따라서 9강은 정규화로 비교 조건을 맞추고, 특징 추출, 거리측정자, 베이즈 분류기와 k-NN으로 넘어간다.",
+    checkpoints: ["정규화는 분할이 아니라 비교 조건 보정", "특징 수는 특징공간 차원", "거리 기반과 확률 기반 분류는 판단 기준이 다름"],
+  },
+  10: {
+    source: "강의 10강 머신러닝의 개념",
+    problem: "규칙을 사람이 모두 작성하면 새로운 데이터와 예외 상황을 처리하기 어렵다. 컴퓨터가 표본에서 규칙을 찾아 새 입력에 적용하는 방법이 필요하다.",
+    definition: "머신러닝은 경험 데이터로부터 모델이나 규칙을 학습하고, 학습하지 않은 입력에 대해 예측·분류·의사결정을 수행하게 하는 방법이다.",
+    firstExample: "날씨와 경기 진행 사례를 보고 새로운 날씨 조건에서 경기를 진행할지 예측하는 과정은, 표본에서 일반화 가능한 규칙을 얻는 귀납적 학습이다.",
+    bridge: "10강은 레이블과 보상 여부에 따른 학습 유형에서 출발해 귀납적 학습, 분할표 평가, 결정트리 분기 기준으로 이어진다.",
+    checkpoints: ["지도·비지도·강화·전이학습 조건 구분", "암기와 일반화 구분", "TP/FP/FN/TN은 오류 유형을 나눔"],
+  },
+  11: {
+    source: "강의 11강 회귀·분류·군집화",
+    problem: "데이터에서 관계를 찾으려면 예측값과 실제값의 차이를 줄이거나, 확률적 결정경계를 만들거나, 정답 없이 비슷한 표본끼리 묶어야 한다.",
+    definition: "회귀와 로지스틱 회귀, 군집화는 가중치와 비용함수 또는 중심 벡터를 사용해 데이터의 관계와 구조를 학습하는 대표 기계학습 방법이다.",
+    firstExample: "공부 시간과 점수 표본으로 직선 예측식을 만들 때, 모든 점을 억지로 지나기보다 MSE가 작아지도록 w0와 w1을 갱신한다.",
+    bridge: "그래서 11강은 선형가설과 오차, 경사하강법, 로지스틱 회귀의 확률 출력, k-평균 반복 절차를 순서대로 다룬다.",
+    checkpoints: ["MSE는 오차 제곱 평균", "경사하강은 기울기의 반대 방향 갱신", "k-평균은 레이블 없이 중심을 반복 갱신"],
+  },
+  12: {
+    source: "강의 12강 인공 신경망의 개념",
+    problem: "선형 모델만으로는 복잡한 입력-출력 관계를 표현하기 어렵다. 여러 계산 단위를 연결해 가중치를 조정하는 구조가 필요하다.",
+    definition: "인공 신경망은 뉴런을 본뜬 계산 단위가 입력의 가중합과 활성함수를 거쳐 출력을 만들고, 학습으로 연결 가중치를 바꾸는 모델이다.",
+    firstExample: "입력 x1, x2가 각각 가중치 w1, w2와 곱해지고 바이어스가 더해진 뒤 활성함수를 통과하면 하나의 뉴런 출력이 된다.",
+    bridge: "12강은 뉴런 계산에서 시작해 활성함수, 신경망 구조, 데이터 분할과 갱신 단위, 퍼셉트론 학습과 XOR 한계로 진행된다.",
+    checkpoints: ["가중합과 활성함수의 순서", "훈련·검증·테스트 데이터 역할", "단층 퍼셉트론은 선형분리 한계가 있음"],
+  },
+  13: {
+    source: "강의 13강 오차역전파와 신경망 학습",
+    problem: "은닉층이 있는 신경망은 출력층처럼 목표값이 직접 주어지지 않는다. 각 가중치가 최종 오차에 얼마나 기여했는지 뒤로 추적해야 한다.",
+    definition: "오차역전파는 순전파로 출력을 계산한 뒤 손실의 기울기를 출력층에서 은닉층 방향으로 전달해 각 가중치 변화량을 구하는 학습 방법이다.",
+    firstExample: "최종 출력이 정답보다 크면 출력층 오차항을 계산하고, 이 오차가 연결 가중치를 거쳐 은닉층 오차항으로 전달된다.",
+    bridge: "13강은 은닉층 학습 문제에서 출발해 체인 룰, 모멘텀, RBM/DBN 구조, SOM과 LVQ 경쟁학습 비교로 확장된다.",
+    checkpoints: ["순전파와 역전파 방향 구분", "모멘텀은 이전 변화량을 반영", "SOM은 비지도, LVQ는 지도 경쟁학습"],
+  },
+  14: {
+    source: "강의 14강 딥러닝과 CNN",
+    problem: "층을 깊게 쌓으면 표현력은 커지지만 경사 소멸, 과적합, 계산량 증가 같은 학습 문제가 생긴다. 영상에서는 지역 특징을 효율적으로 잡는 구조도 필요하다.",
+    definition: "딥러닝은 여러 은닉층을 가진 신경망으로 계층적 특징 표현을 학습하며, CNN은 합성곱과 풀링으로 영상의 지역 특징을 단계적으로 추출한다.",
+    firstExample: "합성곱 필터는 입력 영상의 작은 영역을 훑으며 특징맵을 만들고, stride와 padding에 따라 출력 크기가 달라진다.",
+    bridge: "14강은 심층 신경망의 난점과 학습 개선책을 먼저 잡고, 드롭아웃과 CNN의 합성곱·풀링·출력 크기 계산으로 이어진다.",
+    checkpoints: ["깊이가 항상 성능 향상을 보장하지 않음", "드롭아웃은 훈련과 평가 동작이 다름", "CNN 출력 크기는 stride와 padding으로 검산"],
+  },
+  15: {
+    source: "강의 15강 심층 구조와 순차 모델",
+    problem: "아주 깊은 CNN은 학습이 어려워지고, 문장이나 시계열처럼 순서가 있는 데이터는 일반 피드포워드 구조만으로 맥락을 유지하기 어렵다.",
+    definition: "15강의 핵심 모델들은 잔차 연결, 순환 상태, 게이트, attention을 사용해 깊이와 시간, 토큰 관계에서 생기는 학습 문제를 해결한다.",
+    firstExample: "ResNet은 F(x)에 입력 x를 더해 깊은 층에서도 정보와 경사가 흐르게 하고, RNN은 이전 은닉상태를 현재 계산에 넣어 시퀀스를 처리한다.",
+    bridge: "이 강의는 ResNet의 잔차 연결에서 시작해 RNN/BPTT, LSTM과 GRU의 게이트, Transformer의 self-attention과 위치 정보로 이어진다.",
+    checkpoints: ["잔차 블록은 H(x)=F(x)+x", "BPTT는 시간의 역방향으로 경사 전달", "self-attention에는 위치 정보 보완이 필요"],
+  },
+};
+
+const lectureSourceProgressions: Record<number, SourceProgressStep[]> = {
+  7: [
+    {
+      label: "모호한 표현을 계산 대상으로 만들기",
+      source: "강의 7강 1절 퍼지이론의 개념",
+      why: "정확한 숫자로 바꾸기 어려운 인간의 표현과 지식을 컴퓨터가 다루게 하려는 출발점이다.",
+      example: "'사과 두어 개', '비가 올 가능성이 매우 높다'처럼 확률 하나로 고정하기 어려운 표현을 다룬다.",
+      practice: "소속도를 사건 발생 확률이 아니라 개념에 부합하는 정도로 설명할 수 있어야 한다.",
+    },
+    {
+      label: "퍼지집합과 소속함수",
+      source: "교재 7.2 퍼지집합",
+      why: "고전집합의 0/1 포함 여부를 0부터 1 사이의 소속함수로 확장한다.",
+      example: "'두어 개'는 2에 1.0, 3에 0.5를 줄 수 있고, '젊은 나이'는 나이에 따라 소속도가 변한다.",
+      practice: "고전집합, 퍼지집합, 소속함수, 자연어 표현의 관계를 순서대로 연결한다.",
+    },
+    {
+      label: "연산과 고전 법칙의 예외",
+      source: "교재 7.3, 7.4 퍼지집합·퍼지논리 연산",
+      why: "합집합, 교집합, 여집합, 논리곱, 논리합, 함의를 실제 값으로 계산해야 연습문제를 풀 수 있다.",
+      example: "합집합은 max, 교집합은 min, 보수는 1-a이며, a∨~a와 a∧~a는 고전논리처럼 항상 1과 0이 아니다.",
+      practice: "연산표에서 각 원소별 소속도를 계산하고 배중률·모순율 예외를 판별한다.",
+    },
+    {
+      label: "언어적 변수와 퍼지추론",
+      source: "교재 7.5 퍼지추론",
+      why: "조건부와 결론부에 언어적 변수를 넣고, 완전히 일치하지 않는 사실에서도 근사 결론을 얻는다.",
+      example: "'수위가 높으면 밸브를 연다'와 '수위가 조금 높다'를 비교해 규칙 강도와 결론 소속함수를 만든다.",
+      practice: "퍼지화, 규칙 평가, 결론 종합, 비퍼지화의 순서를 그림 없이도 말할 수 있어야 한다.",
+    },
+  ],
+  8: [
+    {
+      label: "영상이 들어와 해석되기까지",
+      source: "강의 8강 컴퓨터 시각의 개념",
+      why: "컴퓨터 시각은 영상을 바로 인식하지 않고 취득, 전처리, 분할, 표현, 분석 단계를 거친다.",
+      example: "문서나 물체 영상은 센서로 취득된 뒤 잡음 제거와 영역 분리를 거쳐 특징으로 표현된다.",
+      practice: "전처리, 분할, 표현, 분석이 각각 무엇을 맡는지 단계 순서로 구분한다.",
+    },
+    {
+      label: "디지털 영상과 화소",
+      source: "강의 8강 디지털 영상",
+      why: "연속 영상을 표본화와 양자화를 거쳐 픽셀 행렬로 바꾸는 과정이 뒤 필터와 분할의 입력이 된다.",
+      example: "흑백 영상은 좌표마다 밝기값을 갖고, 컬러 영상은 RGB 성분으로 픽셀을 표현한다.",
+      practice: "표본화와 양자화의 역할을 바꾸지 않고 설명한다.",
+    },
+    {
+      label: "전처리와 필터링",
+      source: "강의 8강 전처리",
+      why: "잡음과 명암 문제를 줄여야 뒤의 분할과 인식이 안정된다.",
+      example: "평균 필터는 잡음을 완화하지만 경계를 흐릴 수 있고, 중간값 필터는 점 잡음에 비교된다.",
+      practice: "평활화, 경계 강조, 중간값 필터가 어떤 상황에서 쓰이는지 구분한다.",
+    },
+    {
+      label: "연결성과 영상 분할",
+      source: "강의 8강 영상 분할",
+      why: "객체와 배경 또는 영역을 나누려면 이웃 기준과 임계값, 영역 기반 기준을 적용해야 한다.",
+      example: "대각선 접촉은 4-이웃에서는 끊기고 8-이웃에서는 연결될 수 있다.",
+      practice: "임계값을 바꾸며 이진화 결과와 연결 영역 판정을 함께 검산한다.",
+    },
+  ],
+  9: [
+    {
+      label: "정규화로 비교 조건 맞추기",
+      source: "강의 9강 정규화",
+      why: "위치, 크기, 회전, 밝기 차이가 크면 분류기는 패턴 차이보다 촬영 조건 차이를 보게 된다.",
+      example: "손글씨 숫자를 같은 크기와 위치로 맞춘 뒤 획 구조를 비교한다.",
+      practice: "정규화와 8강의 영상 분할을 혼동하지 않는다.",
+    },
+    {
+      label: "특징과 특징공간",
+      source: "강의 9강 영상의 표현",
+      why: "원영상을 그대로 비교하기보다 식별에 필요한 특징을 벡터나 기호로 표현한다.",
+      example: "그물망 특징, HOG, PCA는 서로 다른 방식으로 영상 패턴을 특징화한다.",
+      practice: "특징 요소 수가 특징공간 차원이 된다는 점을 문제에 적용한다.",
+    },
+    {
+      label: "거리측정자로 가까움 정의",
+      source: "강의 9강 거리측정자",
+      why: "최근접 이웃이나 패턴 비교는 어떤 거리 기준을 쓰는지에 따라 결과가 달라진다.",
+      example: "해밍 거리는 불 값 특징 차이에, 마할라노비스 거리는 분산과 축 성격을 고려하는 데 연결된다.",
+      practice: "비음성, 동일성, 대칭성, 삼각부등식 같은 거리 조건을 판별한다.",
+    },
+    {
+      label: "확률·거리 기반 분류",
+      source: "강의 9강 패턴인식",
+      why: "특징공간에서 베이즈 분류기는 사후확률을, k-NN은 가까운 표본의 클래스를 기준으로 결정한다.",
+      example: "p(C1|x)와 p(C2|x)를 비교하거나, 가장 가까운 학습 표본의 클래스를 따른다.",
+      practice: "사전확률, 우도, 사후확률과 거리 기반 결정을 섞지 않는다.",
+    },
+  ],
+  10: [
+    {
+      label: "학습 유형부터 구분하기",
+      source: "강의 10강 학습의 유형",
+      why: "레이블, 무레이블 데이터, 보상, 기존 모델 활용 여부가 학습 방법을 가른다.",
+      example: "지도학습은 입력-정답 쌍, 강화학습은 행동에 대한 보상, 전이학습은 기존 학습 결과 활용이 핵심이다.",
+      practice: "문제 문장에서 레이블과 보상 조건을 먼저 찾는다.",
+    },
+    {
+      label: "귀납적 학습과 일반화",
+      source: "강의 10강 귀납적 학습",
+      why: "학습표본에서 새 입력에도 적용할 규칙을 만드는 것이 학습의 핵심이다.",
+      example: "날씨와 경기 진행 사례를 보고 새로운 날씨 조건의 결정을 예측한다.",
+      practice: "암기와 일반화를 구분하고, 훈련 밖 입력에서 오류가 생길 수 있음을 설명한다.",
+    },
+    {
+      label: "분할표와 평가 지표",
+      source: "강의 10강 분류기 평가",
+      why: "정확도만 보면 놓치는 실패 유형을 TP, FP, FN, TN과 정밀도, 재현율, F1으로 나눠 본다.",
+      example: "실제 양성을 음성으로 예측하면 FN이고, 예측 양성 중 실제 양성 비율은 정밀도이다.",
+      practice: "정밀도와 재현율의 분모를 바꾸지 않는다.",
+    },
+    {
+      label: "결정트리 분기 기준",
+      source: "강의 10강 결정트리 학습",
+      why: "좋은 속성은 감으로 고르는 것이 아니라 노드의 불순도 감소로 판단한다.",
+      example: "분할 후 자식 노드가 한 클래스에 가까워질수록 좋은 분기 후보가 된다.",
+      practice: "엔트로피, 지니 불순도, 정보이득의 역할을 분기 선택과 연결한다.",
+    },
+  ],
+  11: [
+    {
+      label: "선형가설과 오차",
+      source: "강의 11강 선형회귀",
+      why: "회귀는 관측값을 모두 지나는 직선을 찾는 것이 아니라 비용함수를 줄이는 가중치를 찾는다.",
+      example: "공부 시간과 점수 표본으로 HL(x)=w0+w1x 형태의 예측 직선을 학습한다.",
+      practice: "예측값, 실제값, 오차, MSE의 계산 순서를 말한다.",
+    },
+    {
+      label: "경사하강 갱신",
+      source: "강의 11강 경사하강법",
+      why: "가중치는 비용함수 기울기의 음의 방향으로 이동하며 학습률이 이동 크기를 정한다.",
+      example: "기울기가 양수면 가중치를 줄이는 방향으로 갱신해 비용을 낮춘다.",
+      practice: "갱신 부호와 학습률 적용을 계산 문제에서 확인한다.",
+    },
+    {
+      label: "로지스틱 회귀와 분류",
+      source: "강의 11강 로지스틱 회귀",
+      why: "회귀라는 이름을 갖지만 시그모이드나 소프트맥스로 클래스 확률을 만든다.",
+      example: "이진 분류는 기준 확률로 양성/음성을 정하고, 다항 분류는 소프트맥스 확률을 비교한다.",
+      practice: "선형회귀의 연속값 출력과 로지스틱 회귀의 분류 출력을 구분한다.",
+    },
+    {
+      label: "k-평균 반복",
+      source: "강의 11강 군집화",
+      why: "정답 레이블 없이 가까운 평균벡터에 할당하고 중심을 갱신하는 반복 절차를 이해해야 한다.",
+      example: "초기 중심을 정하고 표본을 가까운 중심에 배정한 뒤 군집 평균으로 중심을 바꾼다.",
+      practice: "k값과 초기 중심에 따라 결과가 달라질 수 있음을 설명한다.",
+    },
+  ],
+  12: [
+    {
+      label: "뉴런에서 계산 모델로",
+      source: "강의 12강 인공 신경망의 개념",
+      why: "신경망은 정보가 연결 가중치에 분산 저장되고 학습으로 가중치가 조정된다는 관점에서 출발한다.",
+      example: "뉴런은 입력 신호를 받아 가중합과 활성함수를 거쳐 출력을 만든다.",
+      practice: "입력, 가중치, 바이어스, 활성함수, 출력의 순서를 설명한다.",
+    },
+    {
+      label: "활성함수와 연결 형태",
+      source: "강의 12강 활성함수와 신경망 구조",
+      why: "계단, 시그모이드, tanh, ReLU는 출력 범위와 미분 가능성이 달라 학습 방식에 영향을 준다.",
+      example: "ReLU는 음수는 0, 양수는 그대로 내보내는 함수이다.",
+      practice: "피드포워드와 순환 연결, 층내/층간 연결을 구분한다.",
+    },
+    {
+      label: "학습 데이터와 갱신 단위",
+      source: "강의 12강 신경망 학습",
+      why: "훈련, 검증, 테스트 집합의 역할과 SGD, 배치, 미니배치 갱신 단위를 분리해야 한다.",
+      example: "훈련 집합으로 가중치를 바꾸고 검증 집합으로 설정을 조정한 뒤 테스트 집합으로 최종 성능을 본다.",
+      practice: "데이터 분할 역할과 학습 단위를 섞지 않는다.",
+    },
+    {
+      label: "퍼셉트론과 XOR 한계",
+      source: "강의 12강 퍼셉트론 학습",
+      why: "단층 퍼셉트론은 선형 결정경계를 만들기 때문에 XOR 같은 비선형 분리는 직접 해결하기 어렵다.",
+      example: "AND, OR는 하나의 직선으로 나눌 수 있지만 XOR은 그렇지 않다.",
+      practice: "퍼셉트론 갱신식과 선형분리 한계를 함께 설명한다.",
+    },
+  ],
+  13: [
+    {
+      label: "은닉층 학습 문제",
+      source: "강의 13강 오차역전파",
+      why: "다층 퍼셉트론은 은닉층의 목표 출력이 직접 주어지지 않아 오차를 뒤로 나누어 전달해야 한다.",
+      example: "출력층 오차가 은닉층 가중치 갱신에도 반영된다.",
+      practice: "순전파와 역전파의 방향을 반대로 말하지 않는다.",
+    },
+    {
+      label: "체인 룰과 모멘텀",
+      source: "강의 13강 BP 학습",
+      why: "오차역전파는 연쇄법칙으로 각 가중치 기울기를 계산하고, 모멘텀은 이전 변화량을 일부 반영한다.",
+      example: "출력층 델타와 은닉층 델타는 계산에 쓰는 오차 항이 다르다.",
+      practice: "학습률과 모멘텀을 같은 값으로 설명하지 않는다.",
+    },
+    {
+      label: "RBM과 DBN 구조",
+      source: "강의 13강 제한 볼츠만 머신",
+      why: "RBM은 가시층과 은닉층 사이 연결만 남기는 제한 구조이며, DBN은 RBM을 층으로 쌓는다.",
+      example: "한 RBM의 은닉 출력이 다음 RBM의 가시 입력이 된다.",
+      practice: "RBM에 층 내부 연결이 있다고 설명하지 않는다.",
+    },
+    {
+      label: "SOM과 LVQ 비교",
+      source: "강의 13강 자기조직화 지도와 LVQ",
+      why: "둘 다 대표 벡터를 다루지만 SOM은 비지도 경쟁학습, LVQ는 클래스 정보를 쓰는 지도학습이다.",
+      example: "LVQ는 승자 노드 클래스가 맞으면 입력 쪽으로, 틀리면 입력에서 멀어지게 이동한다.",
+      practice: "레이블 사용 여부를 기준으로 두 방법을 구분한다.",
+    },
+  ],
+  14: [
+    {
+      label: "깊어질수록 생기는 학습 난점",
+      source: "강의 14강 딥러닝 개요",
+      why: "심층 신경망은 표현력이 크지만 경사 소멸, 과적합, 데이터 부족, 계산량 증가를 함께 다뤄야 한다.",
+      example: "체인 룰로 작은 미분값이 반복 곱해지면 입력층 방향의 경사가 급격히 작아질 수 있다.",
+      practice: "깊으면 무조건 좋다는 설명 대신 학습 난점을 함께 말한다.",
+    },
+    {
+      label: "활성함수와 초기화 개선",
+      source: "강의 14강 학습 개선",
+      why: "ReLU 계열 활성함수와 자비에르·카이밍 초기화는 깊은 신경망 학습을 안정화하는 장치이다.",
+      example: "ReLU는 양수 영역의 기울기를 유지하고, 카이밍 초기화는 ReLU 계열에서 팬-인을 고려한다.",
+      practice: "초기 가중치를 모두 같은 값으로 두면 왜 문제가 되는지 설명한다.",
+    },
+    {
+      label: "규제와 드롭아웃",
+      source: "강의 14강 과적합 완화",
+      why: "훈련 데이터에 지나치게 맞는 모델을 막기 위해 가중치 규제와 드롭아웃을 사용한다.",
+      example: "드롭아웃은 훈련 중 일부 뉴런을 임시 제거하고 평가 때는 전체 뉴런을 사용한다.",
+      practice: "훈련 시점과 평가 시점의 드롭아웃 동작을 구분한다.",
+    },
+    {
+      label: "CNN의 지역 특징과 출력 크기",
+      source: "강의 14강 합성곱 신경망",
+      why: "합성곱층, 풀링층, 완전연결층의 역할과 stride, padding 계산이 시험형 문제로 이어진다.",
+      example: "입력 28, 필터 5, padding 2, stride 1이면 출력 크기는 28이다.",
+      practice: "출력 크기 공식에서 padding을 2배로 반영하고 stride를 분모에 둔다.",
+    },
+  ],
+  15: [
+    {
+      label: "깊은 CNN과 잔차 연결",
+      source: "강의 15강 심층 CNN",
+      why: "깊은 CNN은 계층적 특징을 학습하지만 깊이 때문에 잔차 연결 같은 구조가 중요해진다.",
+      example: "ResNet은 H(x)=F(x)+x로 입력을 몇 개 층 뒤 출력에 더한다.",
+      practice: "채널 수가 다르면 1x1 합성곱으로 덧셈 규격을 맞춘다.",
+    },
+    {
+      label: "RNN과 시간 펼침",
+      source: "강의 15강 순환 신경망",
+      why: "순차 데이터는 이전 상태가 현재 계산에 영향을 주므로 은닉상태와 시간축 역전파를 이해해야 한다.",
+      example: "문장 앞 단어의 정보가 뒤 단어 예측에 영향을 줄 수 있다.",
+      practice: "BPTT가 시간 단계의 역순으로 경사를 전달한다는 점을 확인한다.",
+    },
+    {
+      label: "LSTM과 GRU",
+      source: "강의 15강 개선된 RNN",
+      why: "기본 RNN의 장기 의존성 문제를 게이트 구조로 완화한다.",
+      example: "LSTM은 장기기억과 단기기억을 구분하고, GRU는 이를 단순화한 상태 벡터를 쓴다.",
+      practice: "게이트가 정보를 유지·삭제하는 장치임을 설명한다.",
+    },
+    {
+      label: "Attention과 Transformer",
+      source: "강의 15강 Transformer",
+      why: "Transformer는 RNN 대신 self-attention으로 토큰 관계를 병렬 계산하고 위치 정보를 별도로 더한다.",
+      example: "번역에서 현재 단어가 원문 어느 단어와 관련이 큰지 attention weight로 반영한다.",
+      practice: "self-attention과 positional encoding의 역할을 분리해 설명한다.",
+    },
+  ],
 };
 
 const lectureConceptFocus: Record<number, ConceptFocus[]> = {
@@ -1610,6 +1984,122 @@ function AnswerFeedback({
   );
 }
 
+function LectureOpeningSection({ lectureId }: { lectureId: number }) {
+  const opening = lectureOpenings[lectureId];
+  if (!opening) return null;
+
+  return (
+    <section className="rounded-lg border border-violet-200 bg-white p-6 shadow-sm dark:border-violet-900 dark:bg-gray-900">
+      <div className="mb-4 flex items-center gap-2 text-sm font-bold text-violet-700 dark:text-violet-300">
+        <BrainCircuit size={18} />
+        개념 출발점
+      </div>
+      <SectionTitle
+        title="왜 이 개념이 필요한가"
+        subtitle="강의가 실제로 시작하는 문제의식, 정의, 첫 예시를 먼저 고정"
+      />
+      <div className="mt-4 flex items-center gap-2 rounded-md bg-violet-50 px-3 py-2 text-xs font-semibold text-violet-800 dark:bg-violet-950 dark:text-violet-200">
+        <BookOpen size={14} />
+        {opening.source}
+      </div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-[1.1fr_1fr]">
+        <div className="rounded-lg border border-violet-100 bg-violet-50 p-4 dark:border-violet-900 dark:bg-violet-950/30">
+          <div className="mb-2 text-xs font-bold text-violet-700 dark:text-violet-300">1. 왜 나왔나</div>
+          <p className="text-sm leading-6 text-gray-700 dark:text-gray-200">{opening.problem}</p>
+        </div>
+        <div className="rounded-lg border border-indigo-100 bg-white p-4 dark:border-indigo-900 dark:bg-gray-950">
+          <div className="mb-2 text-xs font-bold text-indigo-700 dark:text-indigo-300">2. 무엇인가</div>
+          <p className="text-sm leading-6 text-gray-700 dark:text-gray-200">{opening.definition}</p>
+        </div>
+        <div className="rounded-lg border border-sky-100 bg-white p-4 dark:border-sky-900 dark:bg-gray-950">
+          <div className="mb-2 text-xs font-bold text-sky-700 dark:text-sky-300">3. 처음 보는 예시</div>
+          <p className="text-sm leading-6 text-gray-700 dark:text-gray-200">{opening.firstExample}</p>
+        </div>
+        <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-4 dark:border-emerald-900 dark:bg-emerald-950/30">
+          <div className="mb-2 text-xs font-bold text-emerald-700 dark:text-emerald-300">4. 다음 개념으로 연결</div>
+          <p className="text-sm leading-6 text-gray-700 dark:text-gray-200">{opening.bridge}</p>
+        </div>
+      </div>
+      <div className="mt-4 grid gap-2 md:grid-cols-3">
+        {opening.checkpoints.map((checkpoint) => (
+          <div key={checkpoint} className="rounded-md border border-gray-200 bg-white px-3 py-2 text-xs leading-5 text-gray-600 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300">
+            <CheckCircle2 size={14} className="mr-2 inline text-emerald-600" />
+            {checkpoint}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SourceProgressionSection({ lectureId }: { lectureId: number }) {
+  const [active, setActive] = useState(0);
+  const steps = lectureSourceProgressions[lectureId] ?? [];
+  const step = steps[active];
+
+  if (!step) return null;
+
+  return (
+    <section className="rounded-lg border border-lime-200 bg-white p-6 shadow-sm dark:border-lime-900 dark:bg-gray-900">
+      <SectionTitle
+        title="교재 전개 순서 점검"
+        subtitle="출발점에서 공식·절차·문제풀이로 이어지는 경로를 다시 확인"
+      />
+      <div className="mt-4 grid gap-5 lg:grid-cols-[300px_1fr]">
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-950">
+          <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-lime-700 dark:text-lime-300">
+            <Route size={15} />
+            Lecture route
+          </div>
+          <div className="space-y-2">
+            {steps.map((item, index) => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => setActive(index)}
+                className={`w-full rounded-md border px-3 py-2 text-left text-xs leading-5 transition ${
+                  active === index
+                    ? "border-lime-500 bg-lime-50 text-lime-900 dark:bg-lime-950 dark:text-lime-100"
+                    : "border-gray-200 bg-white text-gray-600 hover:border-lime-300 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+                }`}
+              >
+                <span className="mr-2 font-mono font-bold">{index + 1}</span>
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-950">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span className="rounded-md bg-lime-100 px-2 py-1 text-[11px] font-bold text-lime-800 dark:bg-lime-950 dark:text-lime-200">
+              {active + 1}/{steps.length}
+            </span>
+            <span className="text-lg font-bold">{step.label}</span>
+          </div>
+          <div className="mb-4 flex items-center gap-2 rounded-md bg-white px-3 py-2 text-xs font-semibold text-gray-600 dark:bg-gray-900 dark:text-gray-300">
+            <BookOpen size={14} className="text-lime-600" />
+            {step.source}
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="rounded-md border border-lime-100 bg-white p-3 text-sm leading-6 dark:border-lime-900 dark:bg-gray-900">
+              <div className="mb-1 text-xs font-bold text-lime-700 dark:text-lime-300">왜 먼저 배우나</div>
+              {step.why}
+            </div>
+            <div className="rounded-md border border-sky-100 bg-white p-3 text-sm leading-6 dark:border-sky-900 dark:bg-gray-900">
+              <div className="mb-1 text-xs font-bold text-sky-700 dark:text-sky-300">대표 예시</div>
+              {step.example}
+            </div>
+            <div className="rounded-md border border-emerald-100 bg-white p-3 text-sm leading-6 dark:border-emerald-900 dark:bg-gray-900">
+              <div className="mb-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">문제 풀이 연결</div>
+              {step.practice}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ConceptLadder({ lecture }: { lecture: AdvancedLectureData }) {
   const [active, setActive] = useState(0);
   const concept = lecture.concepts[active];
@@ -1898,7 +2388,9 @@ export function AIAdvancedLecture({ lectureId }: { lectureId: number }) {
         </div>
         <SectionTitle title={lecture.title} subtitle={lecture.subtitle} />
       </section>
+      <LectureOpeningSection lectureId={lectureId} />
       <ConceptLadder lecture={lecture} />
+      <SourceProgressionSection lectureId={lectureId} />
       <FlowAndDependencies lecture={lecture} />
       <ConceptFocusSection lectureId={lectureId} />
       <AIVisualizationLab lectureId={lectureId} />
