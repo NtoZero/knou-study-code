@@ -49,26 +49,58 @@ function readSource(filePath) {
   return fs.readFileSync(filePath, "utf8");
 }
 
-function evaluateDataModule() {
-  const source = readSource(dataPath);
+// data.ts는 ./explanations 등 다른 .ts 모듈을 런타임 import하므로,
+// 상대 경로 .ts 의존성을 재귀적으로 transpile해서 평가하는 로더를 둔다.
+const tsModuleCache = new Map();
+
+function loadTsModule(filePath) {
+  const resolved = resolveTsPath(filePath);
+  if (tsModuleCache.has(resolved)) {
+    return tsModuleCache.get(resolved).exports;
+  }
+
+  const source = readSource(resolved);
   const output = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
       target: ts.ScriptTarget.ES2022,
       esModuleInterop: true,
     },
-    fileName: dataPath,
+    fileName: resolved,
   }).outputText;
 
   const module = { exports: {} };
+  tsModuleCache.set(resolved, module);
+
+  const localRequire = (request) => {
+    if (request.startsWith(".")) {
+      return loadTsModule(path.resolve(path.dirname(resolved), request));
+    }
+    return require(request);
+  };
+
   const context = vm.createContext({
     exports: module.exports,
     module,
     console,
-    require,
+    require: localRequire,
   });
-  new vm.Script(output, { filename: dataPath }).runInContext(context);
+  new vm.Script(output, { filename: resolved }).runInContext(context);
   return module.exports;
+}
+
+function resolveTsPath(filePath) {
+  const candidates = [filePath, `${filePath}.ts`, path.join(filePath, "index.ts")];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
+      return candidate;
+    }
+  }
+  return filePath;
+}
+
+function evaluateDataModule() {
+  return loadTsModule(dataPath);
 }
 
 function assertCardRendersImages() {
@@ -150,9 +182,65 @@ function assertQuestionImages(questions) {
   }
 }
 
+const bannedPhrases = [
+  "기준을 충족하므로",
+  "기준에 부합하므로",
+  "조건 중 하나가 맞지 않아",
+  "정답 후보에서 제외",
+  "이 문항에서는 제외",
+  "판단 기준과 맞지 않는다",
+  "정의와 적용 조건을 가장 정확하게 만족한다",
+  "정답 조건을 충족하지 않는다",
+  "위 기준과 다르다",
+];
+
+function assertExplanations(questions) {
+  if (!Array.isArray(questions)) return;
+
+  for (const question of questions) {
+    const reasons = (question.choices ?? []).map((choice) => choice?.explanation?.reason ?? "");
+
+    // 1) 모든 선택지 해설 + 정답 박스(basis)에 상용구가 남아 있으면 실패.
+    for (const text of [...reasons, question.basis ?? ""]) {
+      for (const phrase of bannedPhrases) {
+        if (text.includes(phrase)) {
+          fail(`${question.id}: 금지 상용구 "${phrase}" 가 해설에 남아 있습니다.`);
+        }
+      }
+    }
+
+    // 2) 각 선택지 해설이 비어 있거나 너무 짧으면 실패.
+    question.choices?.forEach((choice) => {
+      const reason = choice?.explanation?.reason ?? "";
+      if (reason.trim().length < 15) {
+        fail(`${question.id} ${choice?.key}번: 선택지 해설이 비었거나 너무 짧습니다.`);
+      }
+      if (!choice?.explanation?.conceptBasis || choice.explanation.conceptBasis.trim().length < 4) {
+        fail(`${question.id} ${choice?.key}번: conceptBasis 근거가 없습니다.`);
+      }
+    });
+
+    // 3) 4개 선택지 해설이 서로 다른 문장이어야 한다(동일 골격 반복 방지).
+    const uniqueReasons = new Set(reasons.map((reason) => reason.trim()));
+    if (reasons.length > 0 && uniqueReasons.size < reasons.length) {
+      fail(`${question.id}: 선택지 해설이 서로 중복됩니다(동일 문장 반복).`);
+    }
+
+    // 4) 정답 박스(basis)가 학습자용 정답 해설이어야 하며 매핑 라벨이 아니어야 한다.
+    const basis = question.basis ?? "";
+    if (basis.trim().length < 20) {
+      fail(`${question.id}: 정답 해설(basis)이 비었거나 너무 짧습니다.`);
+    }
+    if (/sourceBasis|교재 대응 장|문항 초점|정답표/.test(basis)) {
+      fail(`${question.id}: 정답 해설에 제작용 라벨이 노출됩니다.`);
+    }
+  }
+}
+
 assertCardRendersImages();
 const { softwarePastExamQuestions } = evaluateDataModule();
 assertQuestionImages(softwarePastExamQuestions);
+assertExplanations(softwarePastExamQuestions);
 
 if (failures.length > 0) {
   console.error("Software past-exam image audit failed:");
@@ -162,4 +250,6 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`Software past-exam image audit passed: ${softwarePastExamQuestions.length} questions checked.`);
+console.log(
+  `Software past-exam audit passed: ${softwarePastExamQuestions.length} questions checked (images + 해설 상용구·근거).`,
+);

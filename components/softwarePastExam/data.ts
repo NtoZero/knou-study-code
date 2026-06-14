@@ -4,6 +4,7 @@ import type {
   SoftwarePastExamQuestion,
   SoftwarePastExamYear,
 } from "./types";
+import { softwarePastExamExplanations } from "./explanations";
 
 const labels: Record<SoftwareChoiceKey, string> = {
   "1": "①",
@@ -293,15 +294,16 @@ const visualByQuestion: Partial<Record<string, SoftwarePastExamImage[]>> = {
   ],
 };
 
-function basisFor(spec: Spec) {
-  const concept = lectureConcept[spec.lectureId];
-  return `강의와 교재의 ${concept} 개념에서는 정의, 적용 대상, 표기 조건을 함께 보아야 한다. 이 문항은 ${spec.tag}의 조건을 묻는다.`;
-}
-
 function makeQuestion(spec: Spec): SoftwarePastExamQuestion {
   const concept = lectureConcept[spec.lectureId];
-  const correctText = spec.choices[Number(spec.correct) - 1];
   const id = `software-${spec.year}-${spec.number}`;
+
+  // 해설 근거는 모두 26-1/소프트웨어공학 강의록·교재·정리하기에서 확인한 수작업 문장이다.
+  // 상용구 자동 생성은 사용하지 않는다. (components/softwarePastExam/explanations/)
+  const explanationSet = softwarePastExamExplanations[id];
+  if (!explanationSet) {
+    throw new Error(`소프트웨어 기출 해설이 누락된 문항: ${id}`);
+  }
 
   return {
     id,
@@ -314,17 +316,18 @@ function makeQuestion(spec: Spec): SoftwarePastExamQuestion {
     choices: spec.choices.map((text, idx) => {
       const key = String(idx + 1) as SoftwareChoiceKey;
       const verdict = key === spec.correct ? "correct" : "wrong";
+      const choiceExplanation = explanationSet.choices[key];
+      if (!choiceExplanation) {
+        throw new Error(`${id} ${key}번 선택지 해설이 누락되었습니다.`);
+      }
       return {
         key,
         label: labels[key],
         text,
         explanation: {
           verdict,
-          reason:
-            verdict === "correct"
-              ? `${correctText}은/는 ${spec.tag}의 정의와 적용 조건을 가장 정확하게 만족한다.`
-              : `오답: ${text}은/는 ${concept} 단원에서 묻는 ${spec.tag}의 판단 기준과 맞지 않는다.`,
-          conceptBasis: basisFor(spec),
+          reason: choiceExplanation.reason,
+          conceptBasis: choiceExplanation.conceptBasis,
         },
       };
     }),
@@ -338,7 +341,7 @@ function makeQuestion(spec: Spec): SoftwarePastExamQuestion {
       },
     ],
     conceptTags: [spec.tag, concept],
-    basis: basisFor(spec),
+    basis: explanationSet.answer,
     examSkill: `${spec.tag}의 정의, 절차, 그림 표기, 오답 선택지의 범위 차이를 판별한다.`,
     answerSourceInternal: `${spec.year} 1학기 정답표 소프트웨어공학 행`,
     questionSourceInternal: `${spec.year} 1학기 소프트웨어공학 기출 PDF ${spec.number}번`,
