@@ -340,7 +340,7 @@ function makeQuestion(spec: Spec): SoftwarePastExamQuestion {
         concept,
       },
     ],
-    conceptTags: [spec.tag, concept],
+    conceptTags: Array.from(new Set([spec.tag, concept])),
     basis: explanationSet.answer,
     examSkill: `${spec.tag}의 정의, 절차, 그림 표기, 오답 선택지의 범위 차이를 판별한다.`,
     answerSourceInternal: `${spec.year} 1학기 정답표 소프트웨어공학 행`,
