@@ -7,6 +7,7 @@ import ErrorAndValidation from "@/components/ml1/ErrorAndValidation";
 import MLTopicsExplorer from "@/components/ml1/MLTopicsExplorer";
 import LearningTypesOverfitting from "@/components/ml1/LearningTypesOverfitting";
 import Lecture1Quiz from "@/components/ml1/Lecture1Quiz";
+import LectureCheckpoints from "@/components/mlShared/LectureCheckpoints";
 
 export default function MLLecture1() {
   return (
@@ -18,6 +19,7 @@ export default function MLLecture1() {
       <ErrorAndValidation />
       <MLTopicsExplorer />
       <LearningTypesOverfitting />
+      <LectureCheckpoints lectureId={1} accentText="text-cyan-500" />
       <Lecture1Quiz />
     </MLLectureLayout>
   );

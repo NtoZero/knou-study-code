@@ -334,7 +334,7 @@ export const lecture2Terms: GlossaryTerm[] = [
       {
         expr:
           "y(x) = \\arg\\min_i \\left[(x-\\mu_i)^T \\Sigma_i^{-1}(x-\\mu_i) + \\ln|\\Sigma_i|\\right]",
-        note: "로그를 취하면 최대 찾기가 최소 찾기로 바뀜",
+        note: "앞의 −½을 떼면서 최대 찾기가 최소 찾기로 바뀜. 로그 자체는 순서를 바꾸지 않는다",
       },
     ],
     prereqs: [
@@ -354,7 +354,7 @@ export const lecture2Terms: GlossaryTerm[] = [
     lectures: [2],
     basis: "강의록 2강 베이즈 분류기: 구현",
     emphasis:
-      "로그를 취하면 argmax가 argmin으로 뒤집힌다. 지수 앞의 음수 부호 때문이며, 이후 세 가지 경우의 결정규칙이 모두 argmin으로 쓰이는 이유가 여기에 있다.",
+      "로그는 단조 증가 함수라 어느 클래스가 큰지의 순서를 바꾸지 않는다. 강의록도 로그를 씌운 뒤 y(x) = argmaxᵢ lᵢ(x)를 그대로 쓴다. argmin으로 바뀌는 것은 그 다음 단계에서 앞의 −½을 떼기 때문이며, 이후 세 가지 경우의 결정규칙이 모두 argmin인 이유가 여기에 있다.",
     aliases: ["Gaussian", "정규분포", "normal distribution", "가우시안 분포"],
   },
   {

@@ -458,8 +458,9 @@ export default function LogisticRegressionLab() {
           </div>
         </div>
         <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-          오즈비(승산비)는 입력 x가 클래스 C1에 속할 확률과 C2에 속할 확률의 비율. P(y = 1|x)는 x가 C2에 속할 확률,
-          1 − P(y = 1|x)는 C1에 속할 확률.
+          오즈비(승산비)는 한 입력 x가 두 클래스에 속할 확률의 비율. P(y = 1|x)는 x가 C2에 속할 확률,
+          1 − P(y = 1|x)는 C1에 속할 확률이므로 식은 P(C2) / P(C1) 형태가 된다. 강의록 문장은 C1·C2 순서로 읽히지만
+          판정은 식을 기준으로 하므로, 오즈비가 1보다 크면 C2다.
         </p>
       </div>
 

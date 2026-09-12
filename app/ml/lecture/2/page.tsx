@@ -6,6 +6,7 @@ import CovarianceDecisionBoundary from "@/components/ml2/CovarianceDecisionBound
 import KNNSimulator from "@/components/ml2/KNNSimulator";
 import BayesVsKNNCompare from "@/components/ml2/BayesVsKNNCompare";
 import Lecture2Quiz from "@/components/ml2/Lecture2Quiz";
+import LectureCheckpoints from "@/components/mlShared/LectureCheckpoints";
 
 export default function MLLecture2() {
   return (
@@ -16,6 +17,7 @@ export default function MLLecture2() {
       <CovarianceDecisionBoundary />
       <KNNSimulator />
       <BayesVsKNNCompare />
+      <LectureCheckpoints lectureId={2} accentText="text-violet-500" />
       <Lecture2Quiz />
     </MLLectureLayout>
   );

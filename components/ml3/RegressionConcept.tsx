@@ -4,26 +4,14 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SectionTitle from "@/components/common/SectionTitle";
 import { ArrowDown, ArrowRight, Quote } from "lucide-react";
+import { SALES_HISTORY, SALES_FORECAST, SALES_CAPTION } from "@/lib/mlSalesForecast";
 
 /* ------------------------------------------------------------------ */
 /* 판매 예측 (시계열 예측 응용)                                          */
 /* ------------------------------------------------------------------ */
 
-type SalesPoint = { year: number; a: number; b: number };
-
-const SALES: SalesPoint[] = [
-  { year: 2010, a: 22, b: 10 },
-  { year: 2011, a: 26, b: 12 },
-  { year: 2012, a: 29, b: 11 },
-  { year: 2013, a: 33, b: 13 },
-  { year: 2014, a: 36, b: 12 },
-  { year: 2015, a: 40, b: 14 },
-  { year: 2016, a: 43, b: 13 },
-  { year: 2017, a: 47, b: 15 },
-  { year: 2018, a: 50, b: 14 },
-];
-
-const FORECAST = { year: 2019.8, a: 53, b: 15 };
+const SALES = SALES_HISTORY;
+const FORECAST = SALES_FORECAST;
 
 function SalesForecastChart() {
   const W = 420;
@@ -419,6 +407,7 @@ export default function RegressionConcept() {
             시간에 따라 데이터가 변하는 것을 분석하고 과거 데이터로 앞으로의 값을 예측.
           </p>
           <SalesForecastChart />
+          <p className="mt-1 text-[11px] text-gray-400">{SALES_CAPTION}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {["주가 예측", "환율 예측", "시장 예측", "판매 예측"].map((t) => (
               <span

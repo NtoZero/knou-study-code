@@ -4,6 +4,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SectionTitle from "@/components/common/SectionTitle";
 import { ArrowRight, Check, X } from "lucide-react";
+import { SALES_HISTORY, SALES_FORECAST, SALES_CAPTION } from "@/lib/mlSalesForecast";
 
 /* ── 결정론적 데이터 생성 ──────────────────────────────── */
 
@@ -210,14 +211,14 @@ const salesSeries = [
   {
     name: "상품A",
     color: "#0891b2",
-    values: [22, 26, 29, 33, 37, 41, 45, 48, 51],
-    forecast: 53,
+    values: SALES_HISTORY.map((d) => d.a),
+    forecast: SALES_FORECAST.a,
   },
   {
     name: "상품B",
     color: "#f59e0b",
-    values: [9, 10, 11, 11, 12, 13, 13, 14, 14],
-    forecast: 15,
+    values: SALES_HISTORY.map((d) => d.b),
+    forecast: SALES_FORECAST.b,
   },
 ];
 
@@ -802,7 +803,7 @@ export default function MLTopicsExplorer() {
                       </g>
                     ))}
                     <text x="40" y="24" fontSize="10" fill="#0e7490" fontWeight="bold">
-                      2019.8 예측 — 상품A : 53 / 상품B : 15
+                      2019.8 예측 — 상품A : {SALES_FORECAST.a} / 상품B : {SALES_FORECAST.b}
                     </text>
                   </svg>
                 </div>
@@ -818,6 +819,7 @@ export default function MLTopicsExplorer() {
                 <p className="mt-1 text-xs text-gray-500">
                   2010년부터 2018년까지의 과거 판매 데이터를 이용해 2019년 8월의 판매량을 추정.
                 </p>
+                <p className="mt-1 text-[11px] text-gray-400">{SALES_CAPTION}</p>
               </div>
               <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
                 <div>

@@ -80,7 +80,7 @@ const flowNodes: FlowNode[] = [
       "g(x_new) ≥ 0 이면 y_new = 0.",
       "g(x_new) < 0 이면 y_new = 1.",
       "출력은 실수값이 아니라 이산적인 클래스 레이블.",
-      "레이블을 붙이는 방식은 문제마다 달라, 뒤의 베이즈 분류기에서는 같은 이진 분류를 y(x) = 1 / −1 로 표기함. 어느 쪽이든 판별함수의 부호 하나로 두 클래스를 가른다는 점은 같으며, 0·1 과 1·−1 을 섞어 쓰지 않도록 주의.",
+      "레이블을 붙이는 방식은 문제마다 다르다. 1강의 2차원 분류 예제는 g(x) ≥ 0 을 C1 으로 두었고, 여기 입출력 관계에서는 g(x_new) ≥ 0 을 y_new = 0 으로 둔다. 뒤의 베이즈 분류기는 같은 이진 분류를 y(x) = 1 / −1 로 표기한다. 어느 쪽이든 판별함수의 부호 하나로 두 클래스를 가른다는 점은 같으니, 한 문항 안에서 두 표기를 섞어 쓰지 않는 것이 중요하다.",
     ],
     tone: "slate",
   },
@@ -112,6 +112,13 @@ const classifierList = [
   "랜덤 포레스트",
   "SVM",
   "신경망(MLP, CNN, LSTM)",
+];
+
+/** 분류기 목록에 섞여 들어오기 쉬운 것들 — 실제로는 특징추출 방법이다 */
+const notClassifiers = [
+  { name: "PCA", full: "주성분분석", why: "정보 손실을 최소화하며 차원을 줄이는 특징추출 방법" },
+  { name: "LDA", full: "선형판별분석", why: "분류에 필요한 정보를 최대한 유지하며 차원을 줄이는 특징추출 방법" },
+  { name: "t-SNE", full: "", why: "데이터 시각화에 주로 쓰이는 특징추출 방법" },
 ];
 
 const applications = [
@@ -204,6 +211,32 @@ export default function ClassificationOverview() {
               {c}
             </span>
           ))}
+        </div>
+
+        <div className="mt-4 border-t border-dashed border-gray-200 pt-3 dark:border-gray-700">
+          <p className="mb-2 text-sm font-medium text-gray-500">
+            분류기가 아닌 것 — 목록에 섞여 들어오기 쉬움
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {notClassifiers.map((c) => (
+              <span
+                key={c.name}
+                className="rounded-full bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 line-through decoration-rose-400 dark:bg-rose-950/50 dark:text-rose-300"
+              >
+                {c.name}
+                {c.full && ` (${c.full})`}
+              </span>
+            ))}
+          </div>
+          <ul className="mt-2 space-y-1">
+            {notClassifiers.map((c) => (
+              <li key={c.name} className="text-xs leading-5 text-gray-600 dark:text-gray-300">
+                <strong className="text-gray-800 dark:text-gray-100">{c.name}</strong> — {c.why}.
+                분류기가 아니라 1강에서 다룬 데이터 표현 쪽 방법이므로, 분류 방법을 나열한
+                선택지에 들어가면 그 선택지가 틀린 것이다.
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
