@@ -77,16 +77,16 @@ const history: HistoryEvent[] = [
     detail: "최초의 신경망 모델인 퍼셉트론이 등장.",
   },
   {
-    year: "1950~60년대",
+    year: "퍼셉트론 이후",
     title: "GPS (General Problem Solver)",
     detail:
       "일반적인 모든 문제를 푸는 기계를 만들려는 시도였으나 어려워 실패. 이후 문제의 범위를 좁히는 방향으로 연구가 전환됨.",
   },
   {
-    year: "1960~70년대",
+    year: "GPS 이후",
     title: "덴드랄(DENDRAL) · 마이신(MYCIN)",
     detail:
-      "문제의 범위를 좁혀 특정 분야에 한정한 전문가 시스템이 개발됨. 화학 구조 해석(덴드랄), 감염 진단(마이신)이 대표 사례.",
+      "문제의 범위를 좁혀 특정한 하나의 분야에 한정한 전문가 시스템이 개발됨. 인공지능의 역사를 정리한 그림에서 GPS 다음에 놓이는 항목.",
   },
   {
     year: "1974~1980",
@@ -455,7 +455,7 @@ export default function AIMLDLRelation() {
           충분히 많은, 보통은 잘 정리되지 않은 데이터 덩어리가 기계에 주어졌을 때, 기계가 그 데이터로부터
           일반적인 규칙을 스스로 찾아내는 것이 머신러닝.
         </p>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {[
             {
               title: "점들 사이의 경계 찾기",
@@ -492,7 +492,7 @@ export default function AIMLDLRelation() {
 
       {/* 기존 방법 vs 머신러닝 */}
       <h3 className="mb-3 text-base font-bold">문제 풀이를 위한 접근 방법: 기존 방법 vs 머신러닝</h3>
-      <div className="mb-4 grid gap-3 sm:grid-cols-2">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
           <p className="mb-2 text-sm font-bold text-gray-700 dark:text-gray-200">기존 문제 풀이 방법</p>
           <div className="flex flex-wrap items-center gap-1.5 text-xs">
@@ -551,7 +551,7 @@ export default function AIMLDLRelation() {
         명시적인 지식 표현이나 프로그램을 만드는 것이 어렵거나 불가능한 경우 —{" "}
         <strong>다양한 데이터의 변형(variation, transformation)</strong>을 다루기 위한 방법.
       </p>
-      <div className="mb-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {variations.map((v) => (
           <div
             key={v.label}
@@ -576,7 +576,7 @@ export default function AIMLDLRelation() {
       {/* 포함 관계 */}
       <h3 className="mb-1 text-base font-bold">인공지능 ⊃ 머신러닝 ⊃ 딥러닝</h3>
       <p className="mb-4 text-sm text-gray-500">원을 눌러 각 영역의 대표 시스템을 확인.</p>
-      <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_1fr]">
         <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
           <svg viewBox="0 0 420 300" className="w-full max-w-full" role="img" aria-label="인공지능 머신러닝 딥러닝 포함 관계">
             <ellipse

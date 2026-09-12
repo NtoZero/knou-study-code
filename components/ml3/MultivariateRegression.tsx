@@ -247,7 +247,7 @@ export default function MultivariateRegression() {
       />
 
       {/* 개념 + 초평면 */}
-      <div className="mb-8 grid gap-4 lg:grid-cols-2">
+      <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-orange-200 bg-orange-50 p-5 dark:border-orange-800 dark:bg-orange-950">
           <p className="text-sm text-gray-700 dark:text-gray-200">
             입력이 여러 개의 값으로 구성되는 경우, 하나의 입력 x를 <strong>n차원 입력 벡터</strong>
@@ -283,7 +283,7 @@ export default function MultivariateRegression() {
           입력 차원 n과 데이터 개수 N을 바꾸면 각 행렬의 shape이 어떻게 달라지는지 확인.
         </p>
 
-        <div className="mb-4 grid gap-4 sm:grid-cols-2">
+        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
             <span className="flex items-center justify-between text-xs font-medium text-gray-600 dark:text-gray-300">
               <span>입력 차원 n</span>
@@ -337,7 +337,7 @@ export default function MultivariateRegression() {
           </table>
         </div>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="overflow-x-auto rounded-lg border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
             <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">하나의 데이터에 대한 행렬 표현</p>
             <p className="min-w-max font-mono text-xs text-gray-800 dark:text-gray-100">
@@ -495,6 +495,13 @@ export default function MultivariateRegression() {
           나이(x₁)·몸무게(x₂)로 수축기 혈압(y)을 예측. 혈압 값을 바꾸면 3 × 3 역행렬부터 다시 계산됨.
         </p>
 
+        {!fit && (
+          <div className="rounded-lg border border-rose-300 bg-rose-50 p-4 text-xs text-rose-700 dark:border-rose-700 dark:bg-rose-950 dark:text-rose-300">
+            XᵀX 의 역행렬이 존재하지 않아 w = (XᵀX)⁻¹Xᵀy 를 계산할 수 없음. 입력 열이 서로 비례하거나 데이터 개수가
+            파라미터 개수보다 적으면 이런 상태가 됨. 데이터를 초기화하면 다시 계산됨.
+          </div>
+        )}
+
         {fit && (
           <>
             <div className="mb-4 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
@@ -541,7 +548,7 @@ export default function MultivariateRegression() {
               </table>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
               <MatrixCard title="XᵀX  (3 × 3)" m={fit.XtX} digits={0} />
               <MatrixCard title="(XᵀX)⁻¹  (3 × 3)" m={fit.inv} digits={5} />
               <MatrixCard title="Xᵀy  (3 × 1)" m={fit.Xty} digits={0} />
@@ -549,7 +556,7 @@ export default function MultivariateRegression() {
 
             <div className="mt-4 rounded-lg border-2 border-orange-400 bg-orange-50 p-4 dark:border-orange-600 dark:bg-orange-950">
               <p className="text-xs text-gray-500 dark:text-gray-400">w = (XᵀX)⁻¹Xᵀy</p>
-              <div className="mt-2 grid gap-2 sm:grid-cols-3">
+              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {["w₀ (절편)", "w₁ (나이)", "w₂ (몸무게)"].map((label, i) => (
                   <div key={label} className="rounded-lg bg-white p-3 text-center dark:bg-gray-900">
                     <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>

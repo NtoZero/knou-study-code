@@ -80,6 +80,7 @@ const flowNodes: FlowNode[] = [
       "g(x_new) ≥ 0 이면 y_new = 0.",
       "g(x_new) < 0 이면 y_new = 1.",
       "출력은 실수값이 아니라 이산적인 클래스 레이블.",
+      "레이블을 붙이는 방식은 문제마다 달라, 뒤의 베이즈 분류기에서는 같은 이진 분류를 y(x) = 1 / −1 로 표기함. 어느 쪽이든 판별함수의 부호 하나로 두 클래스를 가른다는 점은 같으며, 0·1 과 1·−1 을 섞어 쓰지 않도록 주의.",
     ],
     tone: "slate",
   },
@@ -175,7 +176,7 @@ export default function ClassificationOverview() {
       </div>
 
       {/* 적용 예 */}
-      <div className="mb-6 grid gap-3 sm:grid-cols-2">
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
         {applications.map((app) => (
           <div
             key={app.name}
@@ -210,7 +211,7 @@ export default function ClassificationOverview() {
       <h3 className="mb-3 text-base font-bold">분류기의 입출력 관계</h3>
       <p className="mb-4 text-sm text-gray-500">각 단계를 눌러 무슨 일이 일어나는지 확인.</p>
 
-      <div className="mb-4 grid gap-2 sm:grid-cols-3">
+      <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
         {flowNodes.map((node, i) => {
           const tone = toneClass[node.tone];
           const active = activeNode === node.id;
@@ -266,7 +267,7 @@ export default function ClassificationOverview() {
           <Target size={16} className="text-violet-600 dark:text-violet-400" />
           <p className="font-bold">학습 목표 &mdash; 최적의 결정경계를 찾는 것</p>
         </div>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <div className="rounded-lg bg-white p-3 text-sm dark:bg-gray-900">
             <span className="font-medium text-violet-600 dark:text-violet-400">&lsquo;최적&rsquo;의 의미 ①</span>
             <p className="mt-1 text-gray-600 dark:text-gray-400">분류율의 최대화</p>
@@ -284,7 +285,7 @@ export default function ClassificationOverview() {
         이 분기가 2강 전체의 구조 &mdash; 확률 기반은 베이즈 분류기로, 데이터 기반은 K-최근접이웃 분류기로 이어짐.
       </p>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {approaches.map((a) => {
           const tone = toneClass[a.tone];
           const open = activeApproach === a.key;

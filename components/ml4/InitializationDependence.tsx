@@ -5,12 +5,7 @@ import { AlertTriangle } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
 import StepControls from "@/components/common/StepControls";
 import KMeansCanvas from "./KMeansCanvas";
-import {
-  KMEANS_DATA,
-  farthestPointInit,
-  runKMeans,
-  type Point,
-} from "./kmeansCore";
+import { KMEANS_DATA, bestKMeans, runKMeans, type Point } from "./kmeansCore";
 
 interface Preset {
   id: string;
@@ -103,12 +98,17 @@ export default function InitializationDependence() {
     setPlaying(false);
   }, [leftId, rightId]);
 
+  /**
+   * K마다 초기값 하나로만 돌리면 초기값 의존성 때문에 K가 커졌는데 J가 오히려 커지는
+   * 경우가 생긴다. 강의에서 소개한 "여러 번 수행하고 좋은 결과를 선택하는 방법"으로
+   * 각 K의 최선값을 쓴다.
+   */
   const kChart = useMemo(
     () =>
-      [1, 2, 3, 4, 5, 6].map((k) => {
-        const result = runKMeans(KMEANS_DATA, farthestPointInit(KMEANS_DATA, k));
-        return { k, J: result.finalObjective };
-      }),
+      [1, 2, 3, 4, 5, 6].map((k) => ({
+        k,
+        J: bestKMeans(KMEANS_DATA, k).finalObjective,
+      })),
     []
   );
   const maxKJ = Math.max(...kChart.map((d) => d.J));
@@ -158,7 +158,13 @@ export default function InitializationDependence() {
           <div className="rounded-lg bg-gray-50 p-2 dark:bg-gray-800">
             <p className="text-[11px] text-gray-500">J</p>
             <p className="text-sm font-bold">
-              {frame.objective === null ? "—" : frame.objective.toFixed(1)}
+              {(() => {
+                const j =
+                  frame.phase === "update"
+                    ? frame.objectiveAfterUpdate
+                    : frame.objective;
+                return j === null ? "—" : j.toFixed(1);
+              })()}
             </p>
           </div>
         </div>
@@ -207,7 +213,7 @@ export default function InitializationDependence() {
         </div>
       </div>
 
-      <div className="mb-6 grid gap-4 sm:grid-cols-2">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {renderSide(left, runLeft, setLeftId)}
         {renderSide(right, runRight, setRightId)}
       </div>
@@ -222,7 +228,7 @@ export default function InitializationDependence() {
       {/* 초기값 설정 방법 */}
       <div className="mb-10">
         <h3 className="mb-3 text-base font-bold">초기값을 설정하는 방법들</h3>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {INIT_METHODS.map((m) => (
             <div
               key={m.title}
@@ -244,7 +250,7 @@ export default function InitializationDependence() {
       {/* K값 선택 */}
       <div>
         <h3 className="mb-3 text-base font-bold">⑶ 적절한 K값을 어떻게 선택할 것인가</h3>
-        <div className="mb-4 grid gap-3 sm:grid-cols-2">
+        <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
             <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
               적절한 K값의 선정은 주어진 문제에 지극히 의존함. 데이터에 따라 그때그때 정할
@@ -287,10 +293,11 @@ export default function InitializationDependence() {
               className="mt-0.5 shrink-0 text-amber-600 dark:text-amber-400"
             />
             <p className="text-xs leading-relaxed text-amber-800 dark:text-amber-200">
-              J는 K가 커질수록 계속 줄어듦. 데이터 개수만큼 K를 키우면 J는 0이 되므로,
-              J값만 보고 K를 정할 수는 없음. 이 데이터에서는 K = 3에서 J가 크게 떨어지고
-              그 뒤로는 완만해지는데, 이런 비교는 어디까지나 참고일 뿐이며 적절한 K는
-              문제에 따라 정해야 함.
+              각 K마다 초기값을 여러 번 바꿔 수행한 뒤 가장 좋은 결과를 고른 값. J는 K가
+              커질수록 계속 줄어듦. 데이터 개수만큼 K를 키우면 J는 0이 되므로, J값만 보고
+              K를 정할 수는 없음. 이 데이터에서는 K = 3에서 J가 크게 떨어지고 그 뒤로는
+              완만해지는데, 이런 비교는 어디까지나 참고일 뿐이며 적절한 K는 문제에 따라
+              정해야 함.
             </p>
           </div>
         </div>

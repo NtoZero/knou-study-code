@@ -258,7 +258,14 @@ export default function LogisticRegressionLab() {
             {boundary !== null && boundary > XMIN && boundary < XMAX && (
               <g>
                 <line x1={sx(boundary)} y1={PT} x2={sx(boundary)} y2={sy(0)} stroke="#8b5cf6" strokeWidth="1.5" strokeDasharray="5 4" />
-                <text x={sx(boundary) + 4} y={PT + 10} fontSize="9" fill="#8b5cf6" fontWeight="bold">
+                <text
+                  x={sx(boundary) + (sx(boundary) > W - 70 ? -4 : 4)}
+                  y={PT + 10}
+                  fontSize="9"
+                  textAnchor={sx(boundary) > W - 70 ? "end" : "start"}
+                  fill="#8b5cf6"
+                  fontWeight="bold"
+                >
                   mx + b = 0
                 </text>
               </g>
@@ -304,7 +311,7 @@ export default function LogisticRegressionLab() {
           </div>
         </div>
 
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
             <span className="flex items-center justify-between text-xs font-medium text-gray-600 dark:text-gray-300">
               <span>m (기울기)</span>
@@ -397,7 +404,7 @@ export default function LogisticRegressionLab() {
           />
         </label>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             label="사후확률 P(y = 1|x)"
             value={probe.p.toFixed(4)}
@@ -464,7 +471,7 @@ export default function LogisticRegressionLab() {
         <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
           두 곡선을 나란히 놓고 P = 0.5를 기준으로 좌우 모양을 비교.
         </p>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 dark:border-rose-800 dark:bg-rose-950">
             <p className="mb-1 text-xs font-semibold text-rose-700 dark:text-rose-300">오즈비 P/(1−P) — 비대칭</p>
             <svg viewBox={`0 0 ${CW} ${CH}`} className="w-full" role="img" aria-label="오즈비 곡선">
@@ -521,7 +528,7 @@ export default function LogisticRegressionLab() {
           데이터 D = {"{"}(xᵢ, yᵢ){"}"}ᵢ₌₁,⋯,ₙ, yᵢ ∈ {"{"}0, 1{"}"}. y = 0이면 C1, y = 1이면 C2.
         </p>
 
-        <div className="mb-4 grid gap-4 lg:grid-cols-2">
+        <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
             <p className="mb-2 text-xs font-semibold text-gray-700 dark:text-gray-200">베르누이 분포</p>
             <p className="text-xs text-gray-600 dark:text-gray-300">
@@ -550,7 +557,7 @@ export default function LogisticRegressionLab() {
           </div>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div
             className={`rounded-lg border-2 p-4 text-center transition-colors ${
               nearOptimum

@@ -64,7 +64,7 @@ export default function ResidualCriterionLab() {
         <p className="mt-3 text-center font-mono text-xl font-bold text-orange-700 dark:text-orange-300">
           y = w₁x + w₀ + e
         </p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           {[
             ["w₁", "기울기", "입력 x 앞에 붙은 계수"],
             ["w₀", "절편", "x가 0일 때의 값"],
@@ -122,7 +122,7 @@ export default function ResidualCriterionLab() {
           </button>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <div className="rounded-lg border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
             <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="잔차 시각화">
               <line x1={PAD} y1={H - PAD} x2={W - 10} y2={H - PAD} stroke="currentColor" className="text-gray-300 dark:text-gray-600" />

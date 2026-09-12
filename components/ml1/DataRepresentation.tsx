@@ -164,7 +164,7 @@ export default function DataRepresentation() {
       />
 
       {/* 열벡터 표기 규칙 */}
-      <div className="mb-6 grid gap-4 lg:grid-cols-[auto_1fr]">
+      <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-[auto_1fr]">
         <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-5 dark:border-cyan-900 dark:bg-cyan-950/40">
           <p className="mb-3 text-sm font-bold text-cyan-900 dark:text-cyan-100">
             n 차원 열벡터의 표기
@@ -337,7 +337,7 @@ export default function DataRepresentation() {
 
       <motion.div key={`${seed}-${sampleSize}-${fourPanels}`} initial={{ opacity: 0.4 }} animate={{ opacity: 1 }}>
         {fourPanels ? (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {panelSamples.map((pts, i) => (
               <ScatterPlot
                 key={i}

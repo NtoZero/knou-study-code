@@ -97,6 +97,43 @@ const badCentroids: [number, number][] = [
   [0.0, 0.5],
 ];
 
+/**
+ * 클러스터 내의 분산을 실제로 최소로 만드는 대표 벡터.
+ * 데이터를 만들 때 쓴 중심에서 출발해 K-평균 반복(소속 판정 → 평균 갱신)으로 수렴시킨 값이며,
+ * 각 대표 벡터는 자기 클러스터에 속한 데이터의 평균과 일치한다.
+ */
+const bestCentroids: [number, number][] = (() => {
+  let cent = clusterCenters.map((c) => [c[0], c[1]] as [number, number]);
+  for (let iter = 0; iter < 60; iter++) {
+    const acc = cent.map(() => [0, 0, 0]);
+    clusterData.forEach((p) => {
+      let best = 0;
+      let bestD = Infinity;
+      cent.forEach((c, i) => {
+        const d = (p.x - c[0]) ** 2 + (p.y - c[1]) ** 2;
+        if (d < bestD) {
+          bestD = d;
+          best = i;
+        }
+      });
+      acc[best][0] += p.x;
+      acc[best][1] += p.y;
+      acc[best][2] += 1;
+    });
+    cent = cent.map((c, i) =>
+      acc[i][2] === 0 ? c : ([acc[i][0] / acc[i][2], acc[i][1] / acc[i][2]] as [number, number])
+    );
+  }
+  return cent;
+})();
+
+/** 전체 데이터의 분산 — 막대 눈금의 기준. 최적 군집에서 (내 분산 + 간 분산)과 같아진다 */
+const clusterTotalVariance = (() => {
+  const gx = clusterData.reduce((a, p) => a + p.x, 0) / clusterData.length;
+  const gy = clusterData.reduce((a, p) => a + p.y, 0) / clusterData.length;
+  return clusterData.reduce((a, p) => a + (p.x - gx) ** 2 + (p.y - gy) ** 2, 0) / clusterData.length;
+})();
+
 /* 특징추출용 3차원 데이터 — 두 덩어리가 x2 방향으로 떨어져 있음 */
 interface Point3 {
   x1: number;
@@ -160,6 +197,30 @@ const planeScores: Record<PlaneKey, number> = {
   "13": separationScore("13"),
 };
 
+/* ── 판매 예측 차트 (2010~2018 과거 판매량 → 2019.8 예측) ── */
+
+/** 2019년 8월 = 2019 + 7/12 */
+const FORECAST_YEAR = 2019 + 7 / 12;
+/** x축: 2010 → 40px, 1년당 25.2px (2019.8이 오른쪽 끝 안쪽에 오도록) */
+const salesX = (year: number) => 40 + (year - 2010) * 25.2;
+/** y축: 0 → 140px, 판매량 60 → 20px (1단위 = 2px) */
+const salesY = (v: number) => 140 - v * 2;
+
+const salesSeries = [
+  {
+    name: "상품A",
+    color: "#0891b2",
+    values: [22, 26, 29, 33, 37, 41, 45, 48, 51],
+    forecast: 53,
+  },
+  {
+    name: "상품B",
+    color: "#f59e0b",
+    values: [9, 10, 11, 11, 12, 13, 13, 14, 14],
+    forecast: 15,
+  },
+];
+
 /* ── 공통 입·출력 관계 도식 ────────────────────────────── */
 
 function IORelation({
@@ -178,7 +239,7 @@ function IORelation({
       <p className="mb-3 text-xs font-bold tracking-wide text-cyan-700 dark:text-cyan-300">
         입·출력 관계
       </p>
-      <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
         <div className="rounded-lg bg-white p-3 dark:bg-gray-900">
           <p className="text-[11px] font-semibold text-gray-500">학습 데이터 구성</p>
           <div className="mt-1 text-sm text-gray-800 dark:text-gray-100">{dataset}</div>
@@ -275,6 +336,9 @@ export default function MLTopicsExplorer() {
     };
   }, [slope]);
 
+  /** 결정경계를 그릴 x1의 반폭 — |slope·x1| ≤ 3.5가 되도록 잘라 기울기를 왜곡하지 않는다 */
+  const boundaryHalfSpan = Math.min(3.5, Math.abs(slope) < 1e-9 ? 3.5 : 3.5 / Math.abs(slope));
+
   /* 회귀 계산 */
   const regResult = useMemo(() => {
     const residuals = regressionData.map((p) => p.y - (regSlope * p.x + regIntercept));
@@ -285,7 +349,7 @@ export default function MLTopicsExplorer() {
   /* 군집화 계산 */
   const cluResult = useMemo(() => {
     const t = quality / 100;
-    const centroids = clusterCenters.map(
+    const centroids = bestCentroids.map(
       (good, i) =>
         [
           badCentroids[i][0] + (good[0] - badCentroids[i][0]) * t,
@@ -328,7 +392,7 @@ export default function MLTopicsExplorer() {
         subtitle="데이터 분석(분류 · 회귀 · 군집화)과 데이터 표현(특징추출)"
       />
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-2">
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
           <p className="text-sm font-bold">데이터 분석 data analysis</p>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">분류 · 회귀 · 군집화</p>
@@ -382,7 +446,7 @@ export default function MLTopicsExplorer() {
               }
             />
 
-            <div className="grid gap-4 lg:grid-cols-[auto_1fr]">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[auto_1fr]">
               <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
                 <svg viewBox={`0 0 ${V} ${V}`} className="w-full max-w-[300px]" role="img" aria-label="2차원 분류 예제">
                   <line x1={M} y1={V - M} x2={V - M} y2={V - M} stroke="#94a3b8" strokeWidth="1.2" />
@@ -393,12 +457,12 @@ export default function MLTopicsExplorer() {
                   <text x={M - 6} y={M + 2} textAnchor="end" fontSize="10" fill="#64748b">
                     x2
                   </text>
-                  {/* 결정경계 x2 = slope * x1 */}
+                  {/* 결정경계 x2 = slope · x1 — 기울기를 유지한 채 축 범위(±3.5)에서 잘라 낸다 */}
                   <line
-                    x1={mapTo(-3.5, -3.5, 3.5)}
-                    y1={mapToY(Math.max(-3.5, Math.min(3.5, slope * -3.5)), -3.5, 3.5)}
-                    x2={mapTo(3.5, -3.5, 3.5)}
-                    y2={mapToY(Math.max(-3.5, Math.min(3.5, slope * 3.5)), -3.5, 3.5)}
+                    x1={mapTo(-boundaryHalfSpan, -3.5, 3.5)}
+                    y1={mapToY(-slope * boundaryHalfSpan, -3.5, 3.5)}
+                    x2={mapTo(boundaryHalfSpan, -3.5, 3.5)}
+                    y2={mapToY(slope * boundaryHalfSpan, -3.5, 3.5)}
                     stroke="#0891b2"
                     strokeWidth="2.4"
                   />
@@ -455,7 +519,7 @@ export default function MLTopicsExplorer() {
                   </button>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="rounded-xl border border-cyan-300 bg-cyan-50 p-4 dark:border-cyan-800 dark:bg-cyan-950/50">
                     <p className="text-xs text-cyan-800 dark:text-cyan-300">분류율 classification rate</p>
                     <p className="mt-1 text-2xl font-bold tabular-nums text-cyan-700 dark:text-cyan-200">
@@ -490,7 +554,7 @@ export default function MLTopicsExplorer() {
               </div>
             </div>
 
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
                 <p className="mb-2 text-sm font-bold">용어 정리</p>
                 <ul className="space-y-1.5 text-sm text-gray-700 dark:text-gray-200">
@@ -578,7 +642,7 @@ export default function MLTopicsExplorer() {
               }
             />
 
-            <div className="grid gap-4 lg:grid-cols-[auto_1fr]">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[auto_1fr]">
               <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
                 <svg viewBox={`0 0 ${V} ${V}`} className="w-full max-w-[300px]" role="img" aria-label="회귀 직선과 잔차">
                   <line x1={M} y1={V - M} x2={V - M} y2={V - M} stroke="#94a3b8" strokeWidth="1.2" />
@@ -646,7 +710,7 @@ export default function MLTopicsExplorer() {
                     type="range"
                     min={0}
                     max={6}
-                    step={0.05}
+                    step={0.01}
                     value={regIntercept}
                     onChange={(e) => setRegIntercept(Number(e.target.value))}
                     className="mt-1 w-full accent-cyan-600"
@@ -678,44 +742,78 @@ export default function MLTopicsExplorer() {
             </div>
 
             {/* 판매 예측 */}
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
                 <p className="mb-2 text-sm font-bold">판매 예측 — 시계열 예측의 예</p>
                 <div className="overflow-x-auto">
                   <svg viewBox="0 0 300 170" className="w-full min-w-[280px]" role="img" aria-label="판매 예측 그래프">
-                    <line x1="34" y1="140" x2="290" y2="140" stroke="#94a3b8" strokeWidth="1" />
-                    <line x1="34" y1="12" x2="34" y2="140" stroke="#94a3b8" strokeWidth="1" />
-                    {[
-                      { label: "2010", x: 44 },
-                      { label: "2012", x: 100 },
-                      { label: "2014", x: 156 },
-                      { label: "2016", x: 212 },
-                      { label: "2018", x: 268 },
-                    ].map((t) => (
-                      <text key={t.label} x={t.x} y="154" textAnchor="middle" fontSize="9" fill="#64748b">
-                        {t.label}
+                    <line x1="34" y1={salesY(0)} x2="292" y2={salesY(0)} stroke="#94a3b8" strokeWidth="1" />
+                    <line x1="34" y1="12" x2="34" y2={salesY(0)} stroke="#94a3b8" strokeWidth="1" />
+                    {[0, 20, 40, 60].map((v) => (
+                      <g key={v}>
+                        <line
+                          x1="34"
+                          y1={salesY(v)}
+                          x2="292"
+                          y2={salesY(v)}
+                          stroke="#e2e8f0"
+                          strokeWidth="0.8"
+                        />
+                        <text x="30" y={salesY(v) + 3} textAnchor="end" fontSize="8" fill="#94a3b8">
+                          {v}
+                        </text>
+                      </g>
+                    ))}
+                    {[2010, 2012, 2014, 2016, 2018].map((y) => (
+                      <text key={y} x={salesX(y)} y="154" textAnchor="middle" fontSize="9" fill="#64748b">
+                        {y}
                       </text>
                     ))}
-                    <polyline
-                      points="44,112 72,104 100,96 128,92 156,80 184,74 212,62 240,54 268,44"
-                      fill="none"
-                      stroke="#0891b2"
-                      strokeWidth="2"
-                    />
-                    <polyline
-                      points="44,132 72,130 100,128 128,127 156,125 184,124 212,122 240,121 268,119"
-                      fill="none"
-                      stroke="#f59e0b"
-                      strokeWidth="2"
-                    />
-                    <line x1="268" y1="44" x2="286" y2="36" stroke="#0891b2" strokeWidth="2" strokeDasharray="4 3" />
-                    <line x1="268" y1="119" x2="286" y2="117" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 3" />
-                    <circle cx="286" cy="36" r="3.5" fill="#0891b2" />
-                    <circle cx="286" cy="117" r="3.5" fill="#f59e0b" />
-                    <text x="44" y="24" fontSize="10" fill="#0e7490" fontWeight="bold">
+                    {salesSeries.map((s) => (
+                      <g key={s.name}>
+                        <polyline
+                          points={s.values
+                            .map((v, i) => `${salesX(2010 + i)},${salesY(v)}`)
+                            .join(" ")}
+                          fill="none"
+                          stroke={s.color}
+                          strokeWidth="2"
+                        />
+                        <line
+                          x1={salesX(2018)}
+                          y1={salesY(s.values[s.values.length - 1])}
+                          x2={salesX(FORECAST_YEAR)}
+                          y2={salesY(s.forecast)}
+                          stroke={s.color}
+                          strokeWidth="2"
+                          strokeDasharray="4 3"
+                        />
+                        <circle cx={salesX(FORECAST_YEAR)} cy={salesY(s.forecast)} r="3.5" fill={s.color} />
+                        <text
+                          x={salesX(FORECAST_YEAR)}
+                          y={salesY(s.forecast) - 7}
+                          textAnchor="end"
+                          fontSize="9"
+                          fontWeight="bold"
+                          fill={s.color}
+                        >
+                          {s.forecast}
+                        </text>
+                      </g>
+                    ))}
+                    <text x="40" y="24" fontSize="10" fill="#0e7490" fontWeight="bold">
                       2019.8 예측 — 상품A : 53 / 상품B : 15
                     </text>
                   </svg>
+                </div>
+                <div className="mt-1 flex flex-wrap items-center gap-3 text-[11px] text-gray-500">
+                  {salesSeries.map((s) => (
+                    <span key={s.name} className="flex items-center gap-1.5">
+                      <span className="h-0.5 w-4" style={{ backgroundColor: s.color }} />
+                      {s.name}
+                    </span>
+                  ))}
+                  <span>실선 = 관측된 과거 판매량, 점선 = 예측</span>
                 </div>
                 <p className="mt-1 text-xs text-gray-500">
                   2010년부터 2018년까지의 과거 판매 데이터를 이용해 2019년 8월의 판매량을 추정.
@@ -781,7 +879,7 @@ export default function MLTopicsExplorer() {
               }
             />
 
-            <div className="grid gap-4 lg:grid-cols-[auto_1fr]">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[auto_1fr]">
               <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
                 <svg viewBox={`0 0 ${V} ${V}`} className="w-full max-w-[300px]" role="img" aria-label="군집화 결과">
                   <line x1={M} y1={V - M} x2={V - M} y2={V - M} stroke="#e2e8f0" strokeWidth="1" />
@@ -840,13 +938,17 @@ export default function MLTopicsExplorer() {
                     onChange={(e) => setQuality(Number(e.target.value))}
                     className="mt-2 w-full accent-cyan-600"
                   />
-                  <div className="mt-1 flex justify-between text-[11px] text-gray-500">
+                  <div className="mt-1 flex justify-between gap-3 text-[11px] text-gray-500">
                     <span>나쁜 군집 — 대표 벡터가 한곳에 몰림</span>
-                    <span>좋은 군집</span>
+                    <span className="text-right">좋은 군집 — 대표 벡터 = 각 클러스터의 평균</span>
                   </div>
+                  <p className="mt-2 text-[11px] text-gray-500">
+                    슬라이더를 100까지 밀면 각 대표 벡터가 자기 클러스터에 속한 데이터의 평균에
+                    놓이며, 이때 클러스터 내의 분산이 가장 작아짐.
+                  </p>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
                     <p className="text-xs text-gray-500">클러스터 내의 분산 (최소가 목표)</p>
                     <p className="mt-1 text-2xl font-bold tabular-nums text-cyan-700 dark:text-cyan-300">
@@ -855,7 +957,7 @@ export default function MLTopicsExplorer() {
                     <div className="mt-2 h-2 overflow-hidden rounded bg-gray-100 dark:bg-gray-800">
                       <motion.div
                         className="h-full bg-cyan-600"
-                        animate={{ width: `${Math.min(100, (cluResult.within / 3.2) * 100)}%` }}
+                        animate={{ width: `${Math.min(100, (cluResult.within / clusterTotalVariance) * 100)}%` }}
                       />
                     </div>
                   </div>
@@ -867,7 +969,7 @@ export default function MLTopicsExplorer() {
                     <div className="mt-2 h-2 overflow-hidden rounded bg-gray-100 dark:bg-gray-800">
                       <motion.div
                         className="h-full bg-violet-500"
-                        animate={{ width: `${Math.min(100, (cluResult.between / 3.2) * 100)}%` }}
+                        animate={{ width: `${Math.min(100, (cluResult.between / clusterTotalVariance) * 100)}%` }}
                       />
                     </div>
                   </div>
@@ -886,7 +988,7 @@ export default function MLTopicsExplorer() {
               </div>
             </div>
 
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
                 <p className="mb-2 text-sm font-bold">응용</p>
                 <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-200">
@@ -971,7 +1073,7 @@ export default function MLTopicsExplorer() {
               ))}
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-[auto_1fr]">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[auto_1fr]">
               <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
                 <svg viewBox={`0 0 ${V} ${V}`} className="w-full max-w-[300px]" role="img" aria-label="사영된 2차원 데이터">
                   <line x1={M} y1={V - M} x2={V - M} y2={V - M} stroke="#94a3b8" strokeWidth="1.2" />

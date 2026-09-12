@@ -112,6 +112,14 @@ export default function KMeansSimulator() {
   const activeStage =
     frame.phase === "init" ? 1 : frame.phase === "grouping" ? 2 : 3;
 
+  /**
+   * ② 그룹핑 직후의 J는 수정 전 대표 벡터로 계산한 값이고,
+   * ③ 대표 벡터 수정 직후의 J는 같은 배정에 새 대표 벡터로 계산한 값이다.
+   * 두 단계 모두 J를 줄이는 방향이라는 것이 강의록 ⑴의 요지이므로 단계별로 해당 값을 보여 준다.
+   */
+  const shownJ =
+    frame.phase === "update" ? frame.objectiveAfterUpdate : frame.objective;
+
   const sizes = useMemo(() => {
     if (frame.phase === "init") return null;
     return frame.centroids.map(
@@ -234,7 +242,7 @@ export default function KMeansSimulator() {
         </p>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
           <KMeansCanvas
             points={KMEANS_DATA}
@@ -259,7 +267,7 @@ export default function KMeansSimulator() {
               {frame.phase === "grouping" &&
                 "각 데이터에서 K개의 대표 벡터까지 거리를 계산해 가장 가까운 클러스터로 레이블링"}
               {frame.phase === "update" &&
-                "각 클러스터에 속한 데이터들의 평균으로 대표 벡터를 갱신"}
+                "각 클러스터에 속한 데이터들의 평균으로 대표 벡터를 갱신 — 배정을 그대로 둔 채 대표 벡터만 옮기므로 J가 다시 줄어듦"}
             </p>
           </div>
 
@@ -271,8 +279,16 @@ export default function KMeansSimulator() {
             <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
               <p className="text-xs text-gray-500">목적함수 J</p>
               <p className="mt-1 text-xl font-bold">
-                {frame.objective === null ? "—" : frame.objective.toFixed(2)}
+                {shownJ === null ? "—" : shownJ.toFixed(2)}
               </p>
+              {frame.phase === "update" &&
+                frame.objective !== null &&
+                frame.objectiveAfterUpdate !== null && (
+                  <p className="mt-1 text-[11px] leading-snug text-emerald-600 dark:text-emerald-400">
+                    대표 벡터를 평균으로 옮겨 {frame.objective.toFixed(2)} →{" "}
+                    {frame.objectiveAfterUpdate.toFixed(2)}
+                  </p>
+                )}
             </div>
           </div>
 
@@ -319,7 +335,7 @@ export default function KMeansSimulator() {
       </div>
 
       {/* 수식 */}
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
           <p className="text-xs font-bold text-teal-600 dark:text-teal-400">
             ② 데이터 그룹핑
@@ -352,7 +368,7 @@ export default function KMeansSimulator() {
         <h3 className="mb-3 text-base font-bold">
           실제 문제에 적용할 때 고려해야 할 사항
         </h3>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {CONSIDERATIONS.map((c) => (
             <div
               key={c.no}

@@ -18,8 +18,10 @@ export interface KMeansFrame {
   centroids: Point[];
   /** 각 데이터가 속한 클러스터 번호. -1은 아직 그룹핑 전 */
   assignment: number[];
-  /** 목적함수 J. 그룹핑 전에는 null */
+  /** 목적함수 J. 그룹핑 직후, 즉 이번 회차의 배정과 수정 전 대표 벡터로 계산한 값. 그룹핑 전에는 null */
   objective: number | null;
+  /** 같은 배정을 유지한 채 대표 벡터를 평균으로 갱신한 뒤의 J. 대표 벡터 수정 단계에서만 값이 있음 */
+  objectiveAfterUpdate: number | null;
   /** ‖m_new − m‖의 최댓값. 대표 벡터 수정 단계에서만 값이 있음 */
   shift: number | null;
   converged: boolean;
@@ -104,6 +106,7 @@ export function runKMeans(
     centroids: centroids.map((p) => ({ ...p })),
     assignment: points.map(() => -1),
     objective: null,
+    objectiveAfterUpdate: null,
     shift: null,
     converged: false,
   });
@@ -124,6 +127,7 @@ export function runKMeans(
       centroids: centroids.map((p) => ({ ...p })),
       assignment: [...assignment],
       objective: J,
+      objectiveAfterUpdate: null,
       shift: null,
       converged: false,
     });
@@ -139,6 +143,7 @@ export function runKMeans(
       centroids: next.map((p) => ({ ...p })),
       assignment: [...assignment],
       objective: J,
+      objectiveAfterUpdate: objectiveValue(points, next, assignment),
       shift,
       converged,
     });
@@ -204,6 +209,46 @@ export function randomInit(points: Point[], k: number): Point[] {
     pool.splice(idx, 1);
   }
   return picked.map((i) => ({ ...points[i] }));
+}
+
+/** 서버 렌더와 클라이언트 렌더가 어긋나지 않도록 고정 시드를 쓰는 난수 생성기 */
+function seededRandom(seed: number): () => number {
+  let s = seed >>> 0;
+  return () => {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+}
+
+/**
+ * 강의에서 소개한 초기값 설정 방법 중
+ * "여러 번 수행하고 좋은 결과를 선택하는 방법"을 결정론적으로 구현한다.
+ * 거리가 떨어진 데이터를 고르는 초기값 한 번과 고정 시드로 뽑은 임의 초기값 여러 번을
+ * 모두 수행한 뒤, 최종 J가 가장 작은 결과를 돌려준다.
+ */
+export function bestKMeans(
+  points: Point[],
+  k: number,
+  restarts = 24,
+  seed = 20260404
+): KMeansRun {
+  let best = runKMeans(points, farthestPointInit(points, k));
+  const rand = seededRandom(seed + k);
+  for (let t = 0; t < restarts; t += 1) {
+    const pool = points.map((_, i) => i);
+    const picked: number[] = [];
+    while (picked.length < k && pool.length > 0) {
+      const idx = Math.floor(rand() * pool.length);
+      picked.push(pool[idx]);
+      pool.splice(idx, 1);
+    }
+    const run = runKMeans(
+      points,
+      picked.map((i) => ({ ...points[i] }))
+    );
+    if (run.finalObjective < best.finalObjective - 1e-12) best = run;
+  }
+  return best;
 }
 
 /**

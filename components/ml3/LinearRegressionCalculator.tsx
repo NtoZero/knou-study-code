@@ -20,6 +20,24 @@ const LECTURE_DATA: Pt[] = [
 /** 강의록 표에 인쇄된 잔차 제곱값 */
 const LECTURE_SQ = [0.1687, 0.5625, 0.3473, 0.3265, 0.5896, 0.7972, 0.1993];
 
+/**
+ * 강의록에 인쇄된 값과 그 표기 자릿수.
+ * 화면 값이 이 값들을 실제로 재현하는지 매 렌더마다 비교함.
+ * 허용 오차는 인쇄 자릿수의 반올림 폭(0.5 × 10⁻ᵈ)으로 둠.
+ */
+const LECTURE_REF: { label: string; value: number; digits: number }[] = [
+  { label: "N", value: 7, digits: 0 },
+  { label: "Σxᵢ", value: 28, digits: 0 },
+  { label: "Σyᵢ", value: 24, digits: 0 },
+  { label: "Σxᵢyᵢ", value: 119.5, digits: 1 },
+  { label: "Σxᵢ²", value: 140, digits: 0 },
+  { label: "x̄", value: 4, digits: 0 },
+  { label: "ȳ", value: 3.428571, digits: 6 },
+  { label: "w₁", value: 0.8392857, digits: 7 },
+];
+
+const tolFor = (digits: number) => 0.5 * Math.pow(10, -digits);
+
 type TestPt = { x: number; y: number };
 const DEFAULT_TEST: TestPt[] = [
   { x: 8, y: 6.5 },
@@ -76,6 +94,33 @@ export default function LinearRegressionCalculator() {
     const sse = sq.reduce((s, v) => s + v, 0);
     return { n, sumX, sumY, sumXY, sumXX, sumXsq, meanX, meanY, w1, w0, sq, sse, valid };
   }, [pts]);
+
+  /**
+   * 검산 — 강의록 예제 데이터일 때만 수행.
+   * 화면에 표시되는 계산 결과를 강의록 인쇄값과 항목별로 실제 비교함.
+   */
+  const lectureCheck = useMemo(() => {
+    if (!isLecture) return null;
+    const mine: Record<string, number> = {
+      N: calc.n,
+      "Σxᵢ": calc.sumX,
+      "Σyᵢ": calc.sumY,
+      "Σxᵢyᵢ": calc.sumXY,
+      "Σxᵢ²": calc.sumXX,
+      "x̄": calc.meanX,
+      "ȳ": calc.meanY,
+      "w₁": calc.w1,
+    };
+    const items = LECTURE_REF.map((ref) => ({
+      label: ref.label,
+      ok: Math.abs(mine[ref.label] - ref.value) <= tolFor(ref.digits),
+    }));
+    calc.sq.forEach((v, i) => {
+      items.push({ label: `e${i + 1}²`, ok: Math.abs(v - LECTURE_SQ[i]) <= tolFor(4) });
+    });
+    const passed = items.filter((it) => it.ok).length;
+    return { items, passed, total: items.length, failed: items.filter((it) => !it.ok) };
+  }, [isLecture, calc]);
 
   const testEval = useMemo(() => {
     if (!testSet.length) return { rows: [], mse: 0, rmse: 0 };
@@ -251,7 +296,14 @@ export default function LinearRegressionCalculator() {
                 strokeDasharray="4 3"
               />
               <circle cx={sx(xNewNum)} cy={sy(yNew)} r="6" fill="#fff" stroke="#d946ef" strokeWidth="2.5" />
-              <text x={sx(xNewNum) + 9} y={sy(yNew) - 6} fontSize="10" fill="#d946ef" fontWeight="bold">
+              <text
+                x={sx(xNewNum) + (sx(xNewNum) > W - 80 ? -9 : 9)}
+                y={sy(yNew) - 6}
+                fontSize="10"
+                textAnchor={sx(xNewNum) > W - 80 ? "end" : "start"}
+                fill="#d946ef"
+                fontWeight="bold"
+              >
                 예측 {yNew.toFixed(3)}
               </text>
             </g>
@@ -302,7 +354,7 @@ export default function LinearRegressionCalculator() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Σ 계산표 */}
         <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
           <h3 className="mb-3 text-sm font-bold text-gray-800 dark:text-gray-200">Σ 계산표</h3>
@@ -407,11 +459,25 @@ export default function LinearRegressionCalculator() {
               </tbody>
             </table>
           </div>
-          {isLecture && (
-            <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400">
-              각 데이터의 eᵢ² 값은 강의록 표(0.1687, 0.5625, 0.3473, 0.3265, 0.5896, 0.7972, 0.1993)와 모두 일치.
-              이 7개를 더한 합은 2.9911이며, 강의록 표의 Σ 칸에는 2.911로 인쇄되어 있음.
-            </p>
+          {lectureCheck && (
+            <div className="mt-2 space-y-1 text-[11px] text-gray-500 dark:text-gray-400">
+              <p
+                className={
+                  lectureCheck.failed.length === 0
+                    ? "flex items-center gap-1 font-medium text-emerald-600 dark:text-emerald-400"
+                    : "flex items-center gap-1 font-medium text-rose-600 dark:text-rose-400"
+                }
+              >
+                {lectureCheck.failed.length === 0 ? <BadgeCheck size={13} /> : null}
+                검산 {lectureCheck.passed} / {lectureCheck.total} 항목이 강의록 인쇄값과 일치
+                {lectureCheck.failed.length > 0 &&
+                  ` — 불일치: ${lectureCheck.failed.map((f) => f.label).join(", ")}`}
+              </p>
+              <p>
+                7개 eᵢ²를 더한 합은 {calc.sse.toFixed(4)}이며, 강의록 표의 Σ 칸에는 2.911로 인쇄되어 있음.
+                자릿수 하나가 빠진 인쇄 오기로 보면 됨.
+              </p>
+            </div>
           )}
         </div>
       </div>
@@ -419,6 +485,13 @@ export default function LinearRegressionCalculator() {
       {/* 최적 매개변수 공식 */}
       <div className="mt-6 rounded-xl border border-orange-200 bg-orange-50 p-5 dark:border-orange-800 dark:bg-orange-950">
         <h3 className="mb-4 text-sm font-bold text-gray-800 dark:text-gray-200">최적의 매개변수 — 공식과 대입</h3>
+
+        {!calc.valid && (
+          <div className="mb-3 rounded-lg border border-rose-300 bg-rose-50 p-3 text-xs text-rose-700 dark:border-rose-700 dark:bg-rose-950 dark:text-rose-300">
+            분모 N Σxᵢ² − (Σxᵢ)² 가 0이 되어 w₁을 구할 수 없음. 모든 xᵢ가 같은 값이면 이 분모가 0이 되며, 이는
+            같은 x 위에 점이 쌓여 있어 기울기를 정할 수 없다는 뜻. xᵢ 값을 서로 다르게 바꾸면 다시 계산됨.
+          </div>
+        )}
 
         <div className="overflow-x-auto rounded-lg border border-orange-200 bg-white p-4 dark:border-orange-800 dark:bg-gray-900">
           <div className="flex min-w-max items-center gap-3 font-mono text-sm text-gray-800 dark:text-gray-100">
@@ -460,17 +533,30 @@ export default function LinearRegressionCalculator() {
           <p className="mt-1 font-mono text-lg font-bold text-orange-700 dark:text-orange-300">
             y = {calc.w1.toFixed(7)}x + {calc.w0.toFixed(7)}
           </p>
-          {isLecture && (
-            <p className="mt-2 flex items-center justify-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+          {lectureCheck && (
+            <p
+              className={`mt-2 flex items-center justify-center gap-1 text-xs ${
+                Math.abs(calc.w1 - 0.8392857) <= tolFor(7)
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-rose-600 dark:text-rose-400"
+              }`}
+            >
               <BadgeCheck size={13} />
-              강의록 표기: y = 0.8392857x + 0.0714282 (w₀의 끝자리는 강의록 반올림 표기 차이)
+              강의록 표기 y = 0.8392857x + 0.0714282 와 대조 — w₁ 차이{" "}
+              {Math.abs(calc.w1 - 0.8392857).toExponential(1)}, w₀ 차이{" "}
+              {Math.abs(calc.w0 - 0.0714282).toExponential(1)}
+            </p>
+          )}
+          {isLecture && (
+            <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+              w₀는 ȳ − w₁x̄ = 0.0714286 이 정확한 값. 강의록에 인쇄된 0.0714282는 끝자리 표기 차이.
             </p>
           )}
         </div>
       </div>
 
       {/* 예측과 평가 */}
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
           <h3 className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-200">새로운 데이터 x_new에 대한 예측</h3>
           <p className="mb-3 font-mono text-xs text-gray-500 dark:text-gray-400">y_new = w₁ x_new + w₀</p>
@@ -566,7 +652,7 @@ export default function LinearRegressionCalculator() {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="overflow-x-auto rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
           <div className="flex min-w-max items-center gap-2 font-mono text-sm text-gray-800 dark:text-gray-100">
             <span>MSE(w₁, w₀) =</span>

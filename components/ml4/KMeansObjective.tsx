@@ -54,9 +54,40 @@ const J_PRESETS = [
   },
 ];
 
-/** 목적함수 지형 예시 — 지역 극소점 3개, 그중 하나가 전역 극소점 */
+/**
+ * 목적함수 지형의 모식도 — 극소점이 여럿 있는 함수라면 시작점에 따라 도착지가 달라진다는
+ * 사실만 보이기 위한 1차원 예시 함수이며, K-평균의 실제 J 지형을 그린 것이 아니다.
+ * 극소점 3개 중 하나가 전역 극소점.
+ */
 const landscape = (t: number) => 0.3 * (t - 5) ** 2 + 5.5 * Math.cos(2 * t) + 14;
 const landscapeGrad = (t: number) => 0.6 * (t - 5) - 11 * Math.sin(2 * t);
+
+const L_X0 = 30;
+const L_W = 380;
+const L_Y0 = 190;
+const L_H = 150;
+const L_VMIN = 8;
+const L_VSPAN = 20;
+const lx = (t: number) => L_X0 + (t / 10) * L_W;
+const ly = (v: number) => L_Y0 - ((v - L_VMIN) / L_VSPAN) * L_H;
+
+/** 기울기의 부호가 바뀌는 지점을 훑어 극소점을 찾는다 — 좌표를 손으로 적어 두지 않는다. */
+function findMinima() {
+  const out: { t: number; v: number; global: boolean }[] = [];
+  const dt = 0.0005;
+  for (let t = dt; t <= 10; t += dt) {
+    if (landscapeGrad(t - dt) < 0 && landscapeGrad(t) >= 0) {
+      out.push({ t: Number(t.toFixed(3)), v: landscape(t), global: false });
+    }
+  }
+  if (out.length > 0) {
+    const best = out.reduce((a, b) => (b.v < a.v ? b : a));
+    best.global = true;
+  }
+  return out;
+}
+
+const MINIMA = findMinima();
 
 const DESCENT_STARTS = [0.8, 4.8, 6.6];
 const DESCENT_COLORS = ["#0891b2", "#0d9488", "#d97706"];
@@ -141,10 +172,7 @@ export default function KMeansObjective() {
     const pts: string[] = [];
     for (let i = 0; i <= 200; i += 1) {
       const t = (i / 200) * 10;
-      const v = landscape(t);
-      const px = 30 + (t / 10) * 380;
-      const py = 190 - ((v - 8) / 20) * 150;
-      pts.push(`${i === 0 ? "M" : "L"}${px.toFixed(1)},${py.toFixed(1)}`);
+      pts.push(`${i === 0 ? "M" : "L"}${lx(t).toFixed(1)},${ly(landscape(t)).toFixed(1)}`);
     }
     return pts.join(" ");
   }, []);
@@ -196,7 +224,7 @@ export default function KMeansObjective() {
         <p className="mt-3 font-mono text-sm text-gray-700 dark:text-gray-300">
           r<sub>ni</sub> = 1 if i = argminⱼ ‖x<sub>n</sub> − mⱼ‖² , else 0
         </p>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <p className="rounded-lg bg-white p-3 text-xs leading-relaxed text-gray-700 dark:bg-gray-900 dark:text-gray-300">
             J는 해당 클러스터에 있는 데이터와 대표 벡터 사이 거리의 제곱을 모두 더한 값,
             즉 <strong>각 클러스터 Cᵢ의 분산을 모두 더한 값</strong>.
@@ -222,7 +250,7 @@ export default function KMeansObjective() {
           함께 갱신됨.
         </p>
 
-        <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
           <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
             <svg
               viewBox={`0 0 ${DEMO_SIZE} ${DEMO_SIZE}`}
@@ -540,6 +568,12 @@ export default function KMeansObjective() {
           한 번 반복할 때마다 J의 값이 줄어드는 방향으로 학습이 진행됨이 보장되어 있음.
         </p>
 
+        <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+          아래 곡선은 K-평균의 실제 J 지형을 그린 것이 아니라, 극소점이 여럿인 함수에서는
+          어디서 출발하느냐에 따라 도착하는 극소점이 달라진다는 사실만 보이기 위한 모식도.
+          표시된 세 극소점의 위치와 공이 멈추는 지점은 이 곡선에서 실제로 계산한 값.
+        </p>
+
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <button
             onClick={() => {
@@ -578,35 +612,39 @@ export default function KMeansObjective() {
             </text>
             <path d={landscapePath} fill="none" stroke="#94a3b8" strokeWidth="2" />
 
-            {/* 전역 극소점 표시 */}
-            <text
-              x={30 + (4.72 / 10) * 380}
-              y={190 - ((8.52 - 8) / 20) * 150 + 26}
-              fontSize="10"
-              textAnchor="middle"
-              fontWeight="bold"
-              fill="#0d9488"
-            >
-              전역 극소점
-            </text>
-            <text
-              x={30 + (1.66 / 10) * 380}
-              y={190 - ((11.93 - 8) / 20) * 150 + 26}
-              fontSize="10"
-              textAnchor="middle"
-              fill="#94a3b8"
-            >
-              지역 극소점
-            </text>
-            <text
-              x={30 + (7.78 / 10) * 380}
-              y={190 - ((10.88 - 8) / 20) * 150 + 26}
-              fontSize="10"
-              textAnchor="middle"
-              fill="#94a3b8"
-            >
-              지역 극소점
-            </text>
+            {/* 극소점 표시 — 위치는 곡선의 실제 극소점을 수치로 찾은 값 */}
+            {MINIMA.map((m) => (
+              <g key={m.t}>
+                <line
+                  x1={lx(m.t)}
+                  y1={ly(m.v)}
+                  x2={lx(m.t)}
+                  y2={L_Y0 + 5}
+                  stroke={m.global ? "#0d9488" : "#94a3b8"}
+                  strokeWidth="1"
+                  strokeDasharray="2 2"
+                />
+                <text
+                  x={lx(m.t)}
+                  y={ly(m.v) - 12}
+                  fontSize="10"
+                  textAnchor="middle"
+                  fontWeight={m.global ? "bold" : "normal"}
+                  fill={m.global ? "#0d9488" : "#94a3b8"}
+                >
+                  {m.global ? "전역 극소점" : "지역 극소점"}
+                </text>
+                <text
+                  x={lx(m.t)}
+                  y={ly(m.v) - 2}
+                  fontSize="9"
+                  textAnchor="middle"
+                  fill={m.global ? "#0d9488" : "#94a3b8"}
+                >
+                  J = {m.v.toFixed(2)}
+                </text>
+              </g>
+            ))}
 
             {descentPaths.map((path, i) => {
               const t = path[Math.min(descentStep, path.length - 1)];
@@ -615,10 +653,7 @@ export default function KMeansObjective() {
                 <motion.circle
                   key={i}
                   initial={false}
-                  animate={{
-                    cx: 30 + (t / 10) * 380,
-                    cy: 190 - ((v - 8) / 20) * 150,
-                  }}
+                  animate={{ cx: lx(t), cy: ly(v) }}
                   transition={{ duration: 0.05, ease: "linear" }}
                   r={6}
                   fill={DESCENT_COLORS[i]}
@@ -628,7 +663,7 @@ export default function KMeansObjective() {
           </svg>
         </div>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-xl border-l-4 border-teal-500 bg-teal-50 p-4 dark:bg-teal-950/40">
             <p className="text-sm font-bold text-teal-700 dark:text-teal-300">
               보장되는 것 — 지역 극소점

@@ -161,14 +161,22 @@ export default function FeatureExtractionLab() {
   const [x1, setX1] = useState(2);
   const [x2, setX2] = useState(3);
   const [angle, setAngle] = useState(45);
+  /** 사영 방향 u의 크기 — 강의 예시 u = (1, 1)은 크기가 √2 */
+  const [uLen, setULen] = useState(Math.SQRT2);
   const [showLectureCase, setShowLectureCase] = useState(false);
 
   const rad = (angle * Math.PI) / 180;
+  // û: 방향만 나타내는 단위벡터, u: 실제로 곱해지는 벡터 (u = |u| · û)
   const ux = Math.cos(rad);
   const uy = Math.sin(rad);
-  const feature = x1 * ux + x2 * uy;
-  const footX = feature * ux;
-  const footY = feature * uy;
+  const uxFull = ux * uLen;
+  const uyFull = uy * uLen;
+  /** 특징값 = xᵀu */
+  const feature = x1 * uxFull + x2 * uyFull;
+  /** 수선의 발 = (xᵀû)û — u의 크기와 무관하게 방향 직선 위의 수직 발 */
+  const unitProjection = x1 * ux + x2 * uy;
+  const footX = unitProjection * ux;
+  const footY = unitProjection * uy;
 
   const variance = useMemo(() => projectedVariance(angle), [angle]);
   const varRatio = variance / maxVariance;
@@ -206,7 +214,7 @@ export default function FeatureExtractionLab() {
       </div>
 
       <div className="mb-10 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
-        <div className="grid gap-6 md:grid-cols-[auto_1fr]">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[auto_1fr]">
           {/* 원영상은 항상 왼쪽에 기준으로 표시 */}
           <div>
             <div
@@ -222,8 +230,12 @@ export default function FeatureExtractionLab() {
                 />
               ))}
             </div>
-            <p className="mt-2 text-center text-xs text-gray-500">원영상 (120 × 120)</p>
-            <p className="text-center text-[11px] text-gray-400">검은 화소 {onPixelCount}개</p>
+            <p className="mt-2 text-center text-xs text-gray-500">
+              원영상 (120 × 120 — 화면에는 24 × 24로 축소 표시)
+            </p>
+            <p className="text-center text-[11px] text-gray-400">
+              축소 표시에서 검은 화소 {onPixelCount}개
+            </p>
           </div>
 
           <AnimatePresence mode="wait">
@@ -354,7 +366,7 @@ export default function FeatureExtractionLab() {
         쓸 수 있는 방법이 사영에 의한 특징추출.
       </p>
 
-      <div className="mb-10 grid gap-4 lg:grid-cols-[auto_1fr]">
+      <div className="mb-10 grid grid-cols-1 gap-4 lg:grid-cols-[auto_1fr]">
         <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
           <svg viewBox={`0 0 ${P_VIEW} ${P_VIEW}`} className="w-full max-w-[300px]" role="img" aria-label="사영 계산기">
             <line x1="10" y1={P_MID} x2={P_VIEW - 10} y2={P_MID} stroke="#cbd5e1" strokeWidth="1" />
@@ -376,12 +388,12 @@ export default function FeatureExtractionLab() {
               strokeWidth="1.5"
               strokeDasharray="5 4"
             />
-            {/* 단위벡터 u */}
+            {/* 사영 방향 벡터 u (길이 = |u|) */}
             <line
               x1={px(0)}
               y1={py(0)}
-              x2={px(ux)}
-              y2={py(uy)}
+              x2={px(uxFull)}
+              y2={py(uyFull)}
               stroke="#0891b2"
               strokeWidth="3"
               markerEnd="url(#fx-arrow)"
@@ -391,7 +403,7 @@ export default function FeatureExtractionLab() {
                 <polygon points="0 0, 7 3, 0 6" fill="#0891b2" />
               </marker>
             </defs>
-            <text x={px(ux) + 6} y={py(uy) - 4} fontSize="12" fontWeight="bold" fill="#0e7490">
+            <text x={px(uxFull) + 6} y={py(uyFull) - 4} fontSize="12" fontWeight="bold" fill="#0e7490">
               u
             </text>
 
@@ -466,17 +478,42 @@ export default function FeatureExtractionLab() {
                 className="mt-1 w-full accent-cyan-600"
               />
             </div>
+            <div>
+              <label className="flex items-center justify-between text-sm">
+                <span className="text-gray-600 dark:text-gray-300">사영 방향 u의 크기 |u|</span>
+                <span className="font-mono tabular-nums text-cyan-700 dark:text-cyan-300">
+                  {uLen.toFixed(3)}
+                </span>
+              </label>
+              <input
+                type="range"
+                min={0.5}
+                max={2.5}
+                step={0.01}
+                value={uLen}
+                onChange={(e) => setULen(Number(e.target.value))}
+                className="mt-1 w-full accent-cyan-600"
+              />
+              <p className="mt-1 text-[11px] text-gray-500">
+                크기를 1로 두면 u는 단위벡터가 되고, 특징값은 방향 직선 위에서 잰 길이와 같아짐. 크기를
+                바꿔도 수선의 발(주황 점)의 위치는 그대로.
+              </p>
+            </div>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
             {[
-              { label: "u = (1, 0) — x축", deg: 0 },
-              { label: "u = (0, 1) — x2축", deg: 90 },
-              { label: "u = (1, 1)/√2", deg: 45 },
+              { label: "u = (1, 0) — x축", deg: 0, len: 1 },
+              { label: "u = (0, 1) — x2축", deg: 90, len: 1 },
+              { label: "u = (1, 1)", deg: 45, len: Math.SQRT2 },
+              { label: "u = (1, 1)/√2 — 단위벡터", deg: 45, len: 1 },
             ].map((p) => (
               <button
-                key={p.deg}
-                onClick={() => setAngle(p.deg)}
+                key={p.label}
+                onClick={() => {
+                  setAngle(p.deg);
+                  setULen(p.len);
+                }}
                 className="rounded-lg bg-gray-100 px-2.5 py-1 text-xs text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300"
               >
                 {p.label}
@@ -487,6 +524,7 @@ export default function FeatureExtractionLab() {
                 setX1(2);
                 setX2(3);
                 setAngle(45);
+                setULen(Math.SQRT2);
                 setShowLectureCase(true);
               }}
               className="flex items-center gap-1.5 rounded-lg bg-cyan-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-cyan-700"
@@ -497,10 +535,11 @@ export default function FeatureExtractionLab() {
 
           <div className="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
             <p className="font-mono text-sm text-gray-700 dark:text-gray-200">
-              u = ({ux.toFixed(3)}, {uy.toFixed(3)}) &nbsp; (크기 1인 단위벡터)
+              u = ({uxFull.toFixed(3)}, {uyFull.toFixed(3)}) &nbsp; (크기 {uLen.toFixed(3)})
             </p>
             <p className="mt-1 font-mono text-sm text-gray-700 dark:text-gray-200">
-              x<sup>T</sup>u = {x1.toFixed(1)} × {ux.toFixed(3)} + {x2.toFixed(1)} × {uy.toFixed(3)} ={" "}
+              x<sup>T</sup>u = {x1.toFixed(1)} × {uxFull.toFixed(3)} + {x2.toFixed(1)} ×{" "}
+              {uyFull.toFixed(3)} ={" "}
               <strong className="text-cyan-700 dark:text-cyan-300">{feature.toFixed(3)}</strong>
             </p>
             <p className="mt-2 text-xs text-gray-500">
@@ -519,8 +558,8 @@ export default function FeatureExtractionLab() {
                 <div className="mt-3 rounded-lg border border-cyan-300 bg-cyan-50 p-4 text-sm dark:border-cyan-800 dark:bg-cyan-950/50">
                   <p className="font-bold text-cyan-800 dark:text-cyan-200">강의 예시</p>
                   <p className="mt-1 text-gray-700 dark:text-gray-200">
-                    u = (1, 1)이고 x = (2, 3)이면 x<sup>T</sup>u = 2 + 3 ={" "}
-                    <strong>5</strong>. 두 개의 값이 5라는 하나의 값으로 축소.
+                    u = (1, 1)이고 x = (2, 3)이면 x<sup>T</sup>u = 2 + 3 = <strong>5</strong>. 두 개의
+                    값이 5라는 하나의 값으로 축소. 위 계산기도 지금 같은 값을 보여주고 있음.
                   </p>
                   <p className="mt-1 text-xs text-gray-500">
                     x축으로 수선을 내리면 값은 2, x2축으로 내리면 값은 3. 이것이 사영.
@@ -537,10 +576,11 @@ export default function FeatureExtractionLab() {
       <p className="mb-4 text-sm text-gray-500">
         단순히 차원 축소가 아닌 데이터 처리를 위한 핵심 정보의 추출이 더 중요 → 주어진 데이터의{" "}
         <strong>분포 특성을 가장 잘 나타낼 수 있는 방향</strong>. 위의 각도 슬라이더를 돌리면 사영된
-        1차원 분포의 퍼짐이 함께 바뀜.
+        1차원 분포의 퍼짐이 함께 바뀜. 퍼짐의 크기는 방향에 따라서만 달라져야 하므로, 아래 분산은 크기
+        1인 방향벡터(û)를 기준으로 계산.
       </p>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
           <svg viewBox="0 0 260 260" className="w-full max-w-full" role="img" aria-label="점 구름과 사영 방향">
             <line x1="10" y1="130" x2="250" y2="130" stroke="#e2e8f0" strokeWidth="1" />

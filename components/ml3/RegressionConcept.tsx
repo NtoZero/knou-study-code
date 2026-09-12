@@ -288,7 +288,7 @@ function InterpolationVsRegression() {
         ))}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
           <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="보간 곡선과 회귀 직선 비교">
             <line x1={pad} y1={H - pad} x2={W - 10} y2={H - pad} stroke="currentColor" className="text-gray-300 dark:text-gray-600" />
@@ -392,7 +392,7 @@ export default function RegressionConcept() {
         <p className="mt-2 text-lg font-bold text-orange-700 dark:text-orange-300">
           입력 변수와 출력 변수 사이의 매핑 관계 <span className="font-mono">y = f(x; θ)</span> 를 찾는 것
         </p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-lg border border-orange-200 bg-white p-3 text-sm dark:border-orange-800 dark:bg-gray-900">
             <span className="font-semibold text-orange-600 dark:text-orange-300">입력 변수 x</span>
             <span className="ml-2 text-gray-500">통계학 용어로 </span>
@@ -410,7 +410,7 @@ export default function RegressionConcept() {
       </div>
 
       {/* 응용 */}
-      <div className="mb-8 grid gap-4 lg:grid-cols-2">
+      <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
           <h3 className="mb-1 text-sm font-bold text-gray-800 dark:text-gray-200">
             대표 응용 — 시계열 예측
@@ -510,7 +510,7 @@ export default function RegressionConcept() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="grid gap-3 sm:grid-cols-2"
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2"
           >
             {(
               [

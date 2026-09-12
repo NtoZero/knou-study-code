@@ -181,7 +181,7 @@ export default function ErrorAndValidation() {
       </div>
 
       {/* 목적함수 / 오차함수 */}
-      <div className="mb-10 grid gap-4 sm:grid-cols-2">
+      <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-5 dark:border-cyan-900 dark:bg-cyan-950/40">
           <p className="text-sm font-bold text-cyan-800 dark:text-cyan-200">
             목적함수 objective function

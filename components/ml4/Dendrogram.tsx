@@ -51,6 +51,25 @@ export default function Dendrogram({
     [result, cutHeight]
   );
 
+  /**
+   * 병합 높이를 눈금으로 찍되, Ward's 방법처럼 낮은 높이가 촘촘히 몰리는 경우
+   * 숫자가 겹쳐 읽히지 않으므로 11px 이내로 붙는 눈금은 건너뛴다.
+   */
+  const ticks = useMemo(() => {
+    const sorted = [...result.heights].sort((a, b) => a - b);
+    const out: number[] = [];
+    let lastY = Number.POSITIVE_INFINITY;
+    sorted.forEach((h) => {
+      const y = py(h);
+      if (lastY - y >= 11) {
+        out.push(h);
+        lastY = y;
+      }
+    });
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result, yMax]);
+
   const colorForMembers = (members: number[]) => {
     if (!cutClusters) return "#0d9488";
     const idx = cutClusters.findIndex((c) =>
@@ -95,7 +114,7 @@ export default function Dendrogram({
         y2={H - PAD_B}
         stroke="currentColor"
       />
-      <text x={2} y={PAD_T + 2} fontSize="10" fill="#64748b">
+      <text x={2} y={PAD_T - 6} fontSize="10" fill="#64748b">
         군집 간의 거리
       </text>
       <text x={W - PAD_R} y={H - 6} fontSize="10" textAnchor="end" fill="#64748b">
@@ -106,10 +125,7 @@ export default function Dendrogram({
       <text x={PAD_L - 6} y={H - PAD_B + 4} fontSize="10" textAnchor="end" fill="#94a3b8">
         0
       </text>
-      {result.heights
-        .slice()
-        .sort((a, b) => a - b)
-        .map((h, i) => (
+      {ticks.map((h, i) => (
           <g key={`tick-${i}`}>
             <line
               x1={PAD_L - 3}

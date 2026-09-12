@@ -103,13 +103,22 @@ export default function ClusteringConcept() {
   const [showLabels, setShowLabels] = useState(false);
   const [resultView, setResultView] = useState("subset");
 
-  const centroids = useMemo(() => {
-    const avg = (pts: P[]) => ({
-      x: pts.reduce((s, p) => s + p.x, 0) / pts.length,
-      y: pts.reduce((s, p) => s + p.y, 0) / pts.length,
-    });
-    return [avg(GROUP_0), avg(GROUP_1)];
+  /** 대표 벡터와 확률분포 등고선을 모두 실제 데이터에서 계산한다. */
+  const stats = useMemo(() => {
+    const of = (pts: P[]) => {
+      const mx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+      const my = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+      const sdx = Math.sqrt(
+        pts.reduce((s, p) => s + (p.x - mx) ** 2, 0) / pts.length
+      );
+      const sdy = Math.sqrt(
+        pts.reduce((s, p) => s + (p.y - my) ** 2, 0) / pts.length
+      );
+      return { x: mx, y: my, sdx, sdy };
+    };
+    return [of(GROUP_0), of(GROUP_1)];
   }, []);
+  const centroids = stats;
 
   const allPoints = useMemo(() => [...GROUP_0, ...GROUP_1], []);
 
@@ -154,7 +163,7 @@ export default function ClusteringConcept() {
           </button>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* 분류 */}
           <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
             <p className="mb-2 text-center text-sm font-bold text-gray-700 dark:text-gray-300">
@@ -265,7 +274,7 @@ export default function ClusteringConcept() {
           달라짐.
         </p>
 
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
             <p className="text-xs font-bold text-blue-600 dark:text-blue-400">
               지금까지 배운 지도학습 방법
@@ -357,7 +366,7 @@ export default function ClusteringConcept() {
         <h3 className="mb-3 text-base font-bold">
           군집화의 세 가지 학습 결과 — 카드를 눌러 확인
         </h3>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {RESULT_CARDS.map((card) => {
             const Icon = card.icon;
             const active = resultView === card.id;
@@ -391,14 +400,14 @@ export default function ClusteringConcept() {
           >
             <Axes />
             {resultView === "dist" &&
-              centroids.map((m, ci) =>
+              stats.map((m, ci) =>
                 [1, 2, 3].map((ring) => (
                   <ellipse
                     key={`ring-${ci}-${ring}`}
                     cx={sx(m.x)}
                     cy={sy(m.y)}
-                    rx={(ring * 9 * (SIZE - 2 * PAD)) / ((MAX - MIN) * 10)}
-                    ry={(ring * 8 * (SIZE - 2 * PAD)) / ((MAX - MIN) * 10)}
+                    rx={(ring * m.sdx * (SIZE - 2 * PAD)) / (MAX - MIN)}
+                    ry={(ring * m.sdy * (SIZE - 2 * PAD)) / (MAX - MIN)}
                     fill={ci === 0 ? "#0d9488" : "#0891b2"}
                     fillOpacity={0.07}
                     stroke={ci === 0 ? "#0d9488" : "#0891b2"}
@@ -505,7 +514,7 @@ export default function ClusteringConcept() {
             {resultView === "centroid" &&
               "각 클러스터에 속하는 데이터들의 평균 = 대표 벡터. K-평균 군집화 알고리즘의 학습 결과가 바로 이 대표 벡터의 집합."}
             {resultView === "dist" &&
-              "각 클러스터를 확률분포로 표현한 결과. 등고선이 촘촘한 곳일수록 그 클러스터에 속할 확률이 큼."}
+              "각 클러스터를 확률분포로 표현한 결과. 등고선은 각 군집의 실제 평균과 축별 표준편차의 1·2·3배 위치에 그린 것으로, 안쪽일수록 그 클러스터에 속할 확률이 큼."}
           </motion.p>
         </AnimatePresence>
       </div>
@@ -513,7 +522,7 @@ export default function ClusteringConcept() {
       {/* 대표적 적용 방법 */}
       <div className="mb-10">
         <h3 className="mb-3 text-base font-bold">대표적 적용 방법</h3>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {METHODS.map((m) => (
             <div
               key={m.name}
@@ -531,7 +540,7 @@ export default function ClusteringConcept() {
       {/* 적용의 예 */}
       <div className="mb-10">
         <h3 className="mb-3 text-base font-bold">군집화 적용의 예</h3>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
             <p className="text-sm font-bold">장면 영상 데이터의 군집화</p>
             <p className="mt-2 text-xs leading-relaxed text-gray-600 dark:text-gray-400">
@@ -588,7 +597,7 @@ export default function ClusteringConcept() {
       {/* 적용 가능한 데이터 */}
       <div>
         <h3 className="mb-3 text-base font-bold">군집화 적용이 가능한 데이터</h3>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-xl border-l-4 border-teal-500 bg-teal-50 p-4 dark:bg-teal-950/40">
             <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
               데이터에 대한 클래스 레이블이 주어지지 않는 경우

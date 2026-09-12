@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Sparkle, ChevronRight } from "lucide-react";
+import { Menu, X, Sparkle, ChevronRight, Layers } from "lucide-react";
 import { mlLectures, mlUpcomingLectures } from "@/lib/constants";
 
 export default function MLNavigation() {
@@ -45,6 +45,29 @@ export default function MLNavigation() {
         </Link>
 
         <nav className="p-3">
+          <Link
+            href="/ml/prerequisites"
+            onClick={() => setOpen(false)}
+            className={`mb-3 flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors ${
+              pathname === "/ml/prerequisites"
+                ? "bg-amber-50 font-semibold text-amber-700 dark:bg-amber-950 dark:text-amber-100"
+                : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            }`}
+          >
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-amber-500 text-white">
+              <Layers size={15} />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate font-medium">선행 개념 다지기</span>
+              <span className="block truncate text-xs text-gray-400">
+                벡터·행렬 · 확률·통계 · 미분
+              </span>
+            </span>
+            {pathname === "/ml/prerequisites" && (
+              <ChevronRight size={14} className="ml-auto shrink-0" />
+            )}
+          </Link>
+
           {mlLectures.map((lec) => {
             const active = pathname === `/ml/lecture/${lec.id}`;
             return (

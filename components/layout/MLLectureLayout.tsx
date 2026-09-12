@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Target } from "lucide-react";
 import { mlLectures } from "@/lib/constants";
 import { getMlOutline } from "@/lib/mlLectureOutline";
 import LectureSummary from "@/components/mlShared/LectureSummary";
+import LecturePrereqBar from "@/components/mlShared/LecturePrereqBar";
 
 interface Props {
   lectureId: number;
@@ -62,6 +63,8 @@ export default function MLLectureLayout({ lectureId, children }: Props) {
           </div>
         )}
       </div>
+
+      <LecturePrereqBar lectureId={lectureId} />
 
       <div className="space-y-12">{children}</div>
 

@@ -96,7 +96,7 @@ export default function HierarchicalClustering() {
       </div>
 
       {/* 두 가지 접근 방법 */}
-      <div className="mb-10 grid gap-4 sm:grid-cols-2">
+      <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-teal-300 bg-white p-5 dark:border-teal-700 dark:bg-gray-900">
           <p className="text-sm font-bold text-teal-700 dark:text-teal-300">
             병합적 방법 agglomerative, bottom-up
@@ -243,7 +243,7 @@ export default function HierarchicalClustering() {
           </div>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {/* 거리 행렬 + 클러스터 풀 */}
           <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
             <p className="mb-2 text-sm font-bold">

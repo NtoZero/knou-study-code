@@ -39,9 +39,16 @@ const TRAIN: Pt[] = [
   { x: 5.6, y: 4.1, c: 1 },
 ];
 
-/** K값 미리보기용 대규모 데이터 — 결정론적 생성기라 서버·클라이언트 결과가 동일 */
+/**
+ * K값 미리보기용 대규모 데이터 — 결정론적 생성기라 서버·클라이언트 결과가 동일.
+ *
+ * 두 클래스를 겹치게 두고, 상대 클래스 영역 안에 소수의 데이터를 섞어 둔다.
+ * 이 섞인 데이터가 K = 1에서 작은 섬 모양의 결정영역을 만들어 과다적합을 드러내고,
+ * K가 커지면 사라진다. 클래스 개수를 C₁ 60개 / C₂ 48개로 다르게 두었으므로
+ * K가 전체 데이터 수에 가까워지면 비율이 큰 C₁ 쪽으로 전체가 쏠린다.
+ */
 const BIG: Pt[] = (() => {
-  let seed = 20260212;
+  let seed = 20250101;
   const rnd = () => {
     seed = (seed * 1103515245 + 12345) % 2147483648;
     return seed / 2147483648;
@@ -51,23 +58,24 @@ const BIG: Pt[] = (() => {
     const v = rnd();
     return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
   };
+  const clamp = (v: number) => Math.min(7.9, Math.max(0.1, v));
+  const C1 = { cx: 2.6, cy: 2.8 };
+  const C2 = { cx: 5.6, cy: 5.4 };
+  const SD = 1.15;
   const pts: Pt[] = [];
-  const centers: { cx: number; cy: number; c: 0 | 1 }[] = [
-    { cx: 2.4, cy: 2.4, c: 0 },
-    { cx: 5.6, cy: 5.6, c: 1 },
-    { cx: 2.2, cy: 6.0, c: 1 },
-    { cx: 6.2, cy: 2.2, c: 0 },
-  ];
-  for (let i = 0; i < 120; i++) {
-    const ctr = centers[i % centers.length];
-    pts.push({
-      x: Math.min(7.9, Math.max(0.1, ctr.cx + gauss() * 1.05)),
-      y: Math.min(7.9, Math.max(0.1, ctr.cy + gauss() * 1.05)),
-      c: ctr.c,
-    });
-  }
+  const add = (ctr: { cx: number; cy: number }, c: 0 | 1, n: number, spread: number) => {
+    for (let i = 0; i < n; i++) {
+      pts.push({ x: clamp(ctr.cx + gauss() * spread), y: clamp(ctr.cy + gauss() * spread), c });
+    }
+  };
+  add(C1, 0, 52, SD);
+  add(C2, 1, 38, SD);
+  add(C2, 0, 8, SD * 0.7); // 상대 영역에 섞인 C₁ 데이터
+  add(C1, 1, 10, SD * 0.7); // 상대 영역에 섞인 C₂ 데이터
   return pts;
 })();
+
+const BIG_C1 = BIG.filter((p) => p.c === 0).length;
 
 /* ---------- 거리 함수 (직접 구현) ---------- */
 
@@ -280,7 +288,7 @@ export default function KNNSimulator() {
 
       <div className="mb-10 rounded-xl border-l-4 border-fuchsia-400 bg-fuchsia-50 p-4 dark:bg-fuchsia-950">
         <p className="text-sm font-bold">최근접이웃 분류기의 문제점 — 과다적합</p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="rounded-lg bg-white p-3 dark:bg-gray-900">
             <p className="text-xs text-gray-500">베이즈 분류기</p>
             <p className="mt-1 text-2xl font-bold text-violet-600 dark:text-violet-400">6.5%</p>
@@ -304,7 +312,7 @@ export default function KNNSimulator() {
         캔버스를 눌러 새 데이터 x의 위치를 정하고, K값과 거리 함수를 바꿔볼 것.
       </p>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
         <div className="rounded-xl border border-gray-200 bg-white p-2 dark:border-gray-800 dark:bg-gray-900">
           <svg
             ref={svgRef}
@@ -318,7 +326,7 @@ export default function KNNSimulator() {
               <g key={t}>
                 <line x1={sc(t)} y1={0} x2={sc(t)} y2={S} stroke="#9ca3af" strokeWidth="0.4" opacity={0.35} />
                 <line x1={0} y1={scY(t)} x2={S} y2={scY(t)} stroke="#9ca3af" strokeWidth="0.4" opacity={0.35} />
-                <text x={sc(t) + 3} y={S - 3} fontSize="9" fill="#9ca3af">
+                <text x={Math.min(sc(t) + 3, S - 9)} y={S - 3} fontSize="9" fill="#9ca3af">
                   {t}
                 </text>
               </g>
@@ -464,6 +472,11 @@ export default function KNNSimulator() {
             <p className="mt-3 font-mono text-[11px] text-gray-500">
               y(x) = argmax{"{"}K₁(x), K₂(x){"}"}
             </p>
+            {k1 === k2 && (
+              <p className="mt-1 text-[11px] text-amber-600 dark:text-amber-400">
+                K₁ = K₂ 인 동점 — 최빈 클래스가 하나로 정해지지 않음. 이 시뮬레이터는 동점일 때 C₁로 정하도록 두었으며, 실제로는 K를 홀수로 잡아 동점을 피함.
+              </p>
+            )}
             <AnimatePresence mode="wait">
               <motion.div
                 key={verdict}
@@ -529,7 +542,9 @@ export default function KNNSimulator() {
               <tr>
                 <th className="px-3 py-2">순위</th>
                 <th className="px-3 py-2">학습 데이터 xᵢ</th>
-                <th className="px-3 py-2">거리 d(x, xᵢ)</th>
+                <th className="px-3 py-2">
+                  {metric === "dot" ? "순위값 −(x · xᵢ)" : "거리 d(x, xᵢ)"}
+                </th>
                 <th className="px-3 py-2">레이블 y(xᵢ)</th>
               </tr>
             </thead>
@@ -559,7 +574,7 @@ export default function KNNSimulator() {
 
       {/* 설계 고려사항 */}
       <h3 className="mb-2 text-base font-bold">K-최근접이웃 분류기의 설계 고려사항</h3>
-      <div className="mb-4 grid gap-3 sm:grid-cols-2">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
           <p className="text-sm font-bold text-violet-600 dark:text-violet-400">⑴ 적절한 K값의 결정</p>
           <ul className="mt-2 space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
@@ -618,7 +633,7 @@ export default function KNNSimulator() {
         ))}
       </div>
       <p className="mt-2 text-xs text-gray-500">
-        K가 작으면 경계가 잘게 흔들리고(과다적합), K가 커지면 경계가 단순해지다가 결국 전체 데이터에서 각 클래스가 차지하는 비율 쪽으로 쏠림.
+        K가 작으면 경계가 잘게 흔들리고(과다적합), K가 커지면 경계가 단순해지다가 결국 전체 데이터에서 각 클래스가 차지하는 비율 쪽으로 쏠림. 위 데이터는 전체 {BIG.length}개 중 C₁이 {BIG_C1}개로 더 많아, K = 100에서는 전체 영역이 C₁ 한 클래스로 덮임 — 이때는 주변 이웃이 아니라 사전확률이 결과를 정한 것. K가 학습 데이터 수 {BIG.length}개를 넘으면 이웃을 더 고를 수 없으므로 전체 데이터로 잘라서 계산.
       </p>
     </section>
   );

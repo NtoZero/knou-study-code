@@ -95,11 +95,14 @@ export default function LikelihoodRatioBoundary() {
       });
     });
     let yMax = baseMax;
+    let scaledMax = 0;
     if (!multi) {
-      const scaledMax = Math.max(...rawDensity.map((row) => row[1] * alpha));
+      scaledMax = Math.max(...rawDensity.map((row) => row[1] * alpha));
       yMax = Math.max(yMax, Math.min(scaledMax, baseMax * 2.2));
     }
     yMax *= 1.12;
+    // α가 크면 점선 곡선의 봉우리가 그림 위쪽으로 벗어남 (교차점은 그림 안에 남음)
+    const dashedClipped = !multi && scaledMax > yMax;
 
     const labels = samples.map((s) => argmax(s.vals));
 
@@ -135,7 +138,18 @@ export default function LikelihoodRatioBoundary() {
     const decided = labels[idxNew];
     const gValues = samples[idxNew].vals;
 
-    return { samples, rawDensity, yMax, labels, boundaries, regions, alpha, decided, gValues };
+    return {
+      samples,
+      rawDensity,
+      yMax,
+      labels,
+      boundaries,
+      regions,
+      alpha,
+      decided,
+      gValues,
+      dashedClipped,
+    };
   }, [params, priors, multi, priorC1, xNew]);
 
   const sx = (x: number) => PAD.left + ((x - X_MIN) / (X_MAX - X_MIN)) * PW;
@@ -378,7 +392,7 @@ export default function LikelihoodRatioBoundary() {
       </div>
 
       {/* 슬라이더 */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Slider
           label="μ₁ (C₁의 평균)"
           value={mu1}
@@ -441,6 +455,8 @@ export default function LikelihoodRatioBoundary() {
                 p(C₂) = {(1 - priorC1).toFixed(2)} / α = p(C₂)/p(C₁) = {model.alpha.toFixed(2)}
                 {Math.abs(model.alpha - 1) > 0.02 &&
                   " — 점선이 α·p(x|C₂) 곡선이며, 이 곡선과 p(x|C₁)의 교차점이 옮겨진 결정경계"}
+                {model.dashedClipped &&
+                  ". α가 커서 점선의 봉우리는 그림 위로 벗어나 있으나, 교차점은 그림 안에 그대로 있음"}
               </p>
             </div>
           </>

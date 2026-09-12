@@ -14,9 +14,10 @@ import {
 } from "./hierarchicalCore";
 
 const COMPARE_LABELS = ["A", "B", "C", "D", "E", "F"];
-const COMPARE_VALUES = [1, 2, 3, 5, 7, 11];
+/** 연결법에 따라 병합 순서가 실제로 갈리도록 고른 1차원 데이터 */
+const COMPARE_VALUES = [1, 2, 3, 5, 8, 12];
 const OUTLIER_LABEL = "G";
-const OUTLIER_VALUE = 24;
+const OUTLIER_VALUE = 18;
 
 /** 덴드로그램으로부터 군집 수를 결정하는 예 — 강의록 예제 그대로 */
 const CUT_VALUES = [1, 3, 9, 12];
@@ -185,7 +186,7 @@ export default function LinkageComparison() {
               </p>
               <p className="text-xs text-gray-400">{l.english}</p>
             </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
               <div className="rounded-lg bg-gray-50 p-2.5 dark:bg-gray-800">
                 <p className="text-[11px] font-bold text-gray-500">정의</p>
                 <p className="mt-1 break-words font-mono text-xs text-gray-700 dark:text-gray-300">
@@ -229,11 +230,13 @@ export default function LinkageComparison() {
             아웃라이어 G = {OUTLIER_VALUE} 추가
           </label>
           <span className="text-xs text-gray-400">
-            군집 특성에서 동떨어진 데이터 하나가 최단·최장연결법에 어떤 영향을 주는지 확인
+            군집 특성에서 동떨어진 데이터 하나가 최단·최장연결법에 어떤 영향을 주는지 확인.
+            최단연결법은 G가 가장 마지막에 붙고 나머지 병합 순서는 그대로지만, 최장연결법은
+            G가 E·F와 먼저 묶이면서 병합 순서 자체가 바뀜
           </span>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {[
             { type: leftType, setType: setLeftType, result: leftResult },
             { type: rightType, setType: setRightType, result: rightResult },
@@ -272,11 +275,18 @@ export default function LinkageComparison() {
         </div>
 
         <p className="mt-3 rounded-lg bg-gray-50 p-3 text-xs leading-relaxed text-gray-600 dark:bg-gray-800/60 dark:text-gray-400">
-          최단연결법은 가장 가까운 데이터 쌍만 보므로 군집이 길게 이어 붙는 모양이 되고,
-          최장연결법은 가장 멀리 떨어진 데이터 쌍을 보므로 응집된 군집을 만듦. 두 방법
-          모두 각 군집의 아웃라이어 하나에 영향을 받게 됨. 중심연결법과 평균연결법은 하나의
-          데이터에만 의존해 거리가 계산되는 것을 피하는 방법이고, Ward's 방법은 병합 후
-          내부 분산을 보므로 비슷한 크기의 군집을 병합함.
+          최단연결법은 가장 가까운 데이터 쌍만 보므로 군집이 한 데이터씩 길게 이어 붙는
+          모양이 되고, 최장연결법은 가장 멀리 떨어진 데이터 쌍을 보므로 {"{"}A, B, C, D{"}"}와{" "}
+          {"{"}E, F{"}"}처럼 응집된 군집을 만듦. 두 방법 모두 각 군집의 아웃라이어, 즉 그
+          군집의 특성에서 동떨어진 데이터 하나에 영향을 받게 됨. 중심연결법과 평균연결법은
+          하나의 데이터에만 의존해 거리가 계산되는 것을 피하는 방법이고, Ward's 방법은 병합
+          후 내부 분산을 보므로 비슷한 크기의 군집을 병합함.
+        </p>
+        <p className="mt-2 rounded-lg bg-gray-50 p-3 text-xs leading-relaxed text-gray-600 dark:bg-gray-800/60 dark:text-gray-400">
+          여기서 중심연결법과 평균연결법의 값이 같게 나오는 것은 구현이 겹쳐서가 아니라 이
+          예제가 1차원이기 때문. 한 군집의 값들이 모두 다른 군집의 값들보다 작으면 모든
+          데이터 쌍 거리의 평균이 두 평균 사이의 거리와 정확히 같아짐. 두 방법의 차이는
+          군집이 서로 겹쳐 놓이는 2차원 이상의 데이터에서 드러남.
         </p>
       </div>
 
@@ -344,7 +354,7 @@ export default function LinkageComparison() {
                   ))}
                 </div>
 
-                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
                   {PAIRS.map(([a, b], pi) => {
                     let style =
                       "border-gray-200 bg-gray-50 hover:bg-teal-50 dark:border-gray-700 dark:bg-gray-800";
@@ -433,7 +443,7 @@ export default function LinkageComparison() {
           지점을 선택.
         </p>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
             <Dendrogram
               values={CUT_VALUES}

@@ -114,15 +114,21 @@ const trainSet: CPoint[] = (() => {
   return pts;
 })();
 
-/** 테스트 데이터 — 잡음 없이 실제 경계를 따름 */
+/**
+ * 테스트(검증) 데이터 — 학습 데이터와 같은 모집단에서 뽑은 다른 표본집합.
+ * 경계에 아주 가까운 데이터는 여기서도 반대쪽 클래스로 관찰될 수 있으므로,
+ * 아무리 잘 맞춘 결정경계라도 검증 오차가 0이 되지는 않는다.
+ */
 const testSet: CPoint[] = (() => {
-  const r = mulberry32(778899);
+  const r = mulberry32(20260201);
   const pts: CPoint[] = [];
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 72; i++) {
     const x = -X_MAX + r() * 2 * X_MAX;
-    const label: 0 | 1 = r() < 0.5 ? 1 : 0;
+    let label: 0 | 1 = r() < 0.5 ? 1 : 0;
     const off = 0.03 + 0.45 * r();
-    pts.push({ x, y: trueFn(x) + (label === 1 ? off : -off), label, off });
+    const y = trueFn(x) + (label === 1 ? off : -off);
+    if (off < 0.13 && r() < 0.7) label = (1 - label) as 0 | 1;
+    pts.push({ x, y, label, off });
   }
   return pts;
 })();
@@ -152,7 +158,11 @@ function boundaryAt(x: number, c: number): number {
   else if (c === 2) value = 0.7 * lin + 0.3 * trueFn(x);
   else value = trueFn(x);
 
-  const bumps = Math.max(0, Math.min(noisyPoints.length, c - 3));
+  // 복잡도 3 → 잡음을 하나도 따라가지 않음, 복잡도 10 → 잡음 데이터를 전부 따라감
+  const bumps = Math.max(
+    0,
+    Math.min(noisyPoints.length, Math.round(((c - 3) / 7) * noisyPoints.length))
+  );
   for (let i = 0; i < bumps; i++) {
     const p = noisyPoints[i];
     const need = p.y - trueFn(p.x) + (p.label === 1 ? -0.1 : 0.1);
@@ -263,7 +273,7 @@ export default function LearningTypesOverfitting() {
 
       {/* 머신러닝의 유형 */}
       <h3 className="mb-3 text-base font-bold">머신러닝의 유형</h3>
-      <div className="mb-6 grid gap-3 lg:grid-cols-3">
+      <div className="mb-6 grid grid-cols-1 gap-3 lg:grid-cols-3">
         {learningTypes.map((t) => {
           const active = openType === t.key;
           const toneBox =
@@ -316,7 +326,7 @@ export default function LearningTypesOverfitting() {
           부름. 인터넷에서 모은 영상마다 사람 얼굴·동물 얼굴·산·건물이라고 일일이 붙여야 하므로 비용이
           많이 들고 어려움. 이 때문에 아래와 같은 변형된 학습 방법들이 사용됨.
         </p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           {labelingVariants.map((v) => (
             <div key={v.name} className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
               <p className="text-sm font-bold text-gray-800 dark:text-gray-100">{v.name}</p>
@@ -370,7 +380,7 @@ export default function LearningTypesOverfitting() {
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* 결정경계 */}
         <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
           <div className="overflow-x-auto">
@@ -508,7 +518,7 @@ export default function LearningTypesOverfitting() {
         <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
           학습 시스템이 학습 데이터에 대해서만 지나치게 적합한 형태로 결정경계가 형성되는 현상.
         </p>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
           <div className="rounded-lg bg-white p-4 dark:bg-gray-900">
             <p className="text-xs font-bold text-gray-500">원인</p>
             <ul className="mt-1.5 space-y-1 text-sm text-gray-700 dark:text-gray-200">
@@ -535,7 +545,7 @@ export default function LearningTypesOverfitting() {
 
       {/* 고급 주제 */}
       <h3 className="mt-10 mb-3 text-base font-bold">머신러닝의 고급 주제</h3>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {advancedTopics.map((t) => (
           <div
             key={t.name}

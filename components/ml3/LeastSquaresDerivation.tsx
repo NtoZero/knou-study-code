@@ -36,7 +36,7 @@ const STEPS: Step[] = [
   {
     title: "첫 번째 식을 정리한다",
     formula: "Σyᵢ − Σw₀ − Σw₁xᵢ = 0  ⇒  w₀N + w₁Σxᵢ = Σyᵢ",
-    why: "−2는 0으로 나눠 없앨 수 있다. w₀는 i에 무관한 상수이므로 N번 더해져 w₀N이 된다.",
+    why: "우변이 0이므로 양변을 −2로 나누면 −2가 사라진다. w₀는 i에 무관한 상수이므로 N번 더해져 w₀N이 된다.",
   },
   {
     title: "두 번째 식을 정리한다",
@@ -214,7 +214,7 @@ export default function LeastSquaresDerivation() {
           아래 조각을 유도 순서대로 눌러 배열. 선택한 조각을 다시 누르면 취소됨.
         </p>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <p className="mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400">선택 가능한 조각</p>
             <div className="space-y-2">

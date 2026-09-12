@@ -140,7 +140,8 @@ export default function BayesTheoremLab() {
       postC1,
       postC2,
       g: postC1 - postC2,
-      winner: postC1 >= postC2 ? "C₁" : "C₂",
+      // 결정규칙 y(x) = 1 if g(x) > 0, −1 otherwise — g(x) = 0은 C₂ 쪽
+      winner: postC1 > postC2 ? "C₁" : "C₂",
     };
   }, [priorC1, likeC1, likeC2]);
 
@@ -197,7 +198,7 @@ export default function BayesTheoremLab() {
         이진 분류에서는 x가 각 클래스에 속할 확률 P(C₁|x)과 P(C₂|x) 중 확률값이 큰 클래스로 할당.
       </p>
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-2">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
           <p className="text-xs font-medium text-gray-500">판별함수</p>
           <p className="mt-2 font-mono text-sm">g(x) = P(C₁|x) &minus; P(C₂|x)</p>
@@ -213,7 +214,7 @@ export default function BayesTheoremLab() {
       </div>
 
       <div className="mb-8 rounded-xl border border-violet-200 bg-white p-4 dark:border-violet-800 dark:bg-gray-900">
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {/* 슬라이더 */}
           <div className="space-y-4">
             <div>
@@ -345,6 +346,11 @@ export default function BayesTheoremLab() {
                   x ∈ {bayes.winner}
                 </motion.span>
               </div>
+              <p className="mt-2 text-[11px] text-gray-400">
+                {Math.abs(bayes.g) < 1e-9
+                  ? "g(x) = 0 — 두 사후확률이 같은 경계 위. 결정규칙이 g(x) > 0일 때만 1이므로 이 점은 C₂ 쪽으로 판정됨."
+                  : "P(C₁|x) + P(C₂|x) = 1 이므로 g(x)의 부호만으로 판정이 갈림."}
+              </p>
             </div>
           </div>
         </div>
@@ -408,7 +414,7 @@ export default function BayesTheoremLab() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mb-8 grid gap-3 sm:grid-cols-2"
+            className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2"
           >
             <div className="rounded-xl border border-violet-200 bg-violet-50 p-3 dark:border-violet-800 dark:bg-violet-950">
               <p className="text-xs font-bold text-violet-700 dark:text-violet-300">
@@ -434,7 +440,7 @@ export default function BayesTheoremLab() {
 
       {/* 결정규칙 */}
       <h3 className="mb-2 text-base font-bold">결정규칙</h3>
-      <div className="mb-8 grid gap-3 md:grid-cols-2">
+      <div className="mb-8 grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="space-y-2 rounded-xl border border-gray-200 p-4 dark:border-gray-800">
           <p className="font-mono text-xs">
             g_LRT(x) = p(x|C₁)p(C₁) &minus; p(x|C₂)p(C₂) &gt; 0 &rarr;{" "}

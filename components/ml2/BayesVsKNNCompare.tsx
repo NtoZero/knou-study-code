@@ -268,7 +268,7 @@ export default function BayesVsKNNCompare() {
         </button>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {[
           { title: "가우시안 베이즈 분류기", runs: panels.bayes, err: panels.bayesErr, tone: "violet" },
           { title: "K-최근접이웃 분류기 (K = 5)", runs: panels.knn, err: panels.knnErr, tone: "fuchsia" },
@@ -320,7 +320,7 @@ export default function BayesVsKNNCompare() {
 
       {/* 그 밖의 분류기들 */}
       <h3 className="mb-2 mt-8 text-base font-bold">그 밖의 분류기들</h3>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {others.map((o) => {
           const open = openCard === o.name;
           return (

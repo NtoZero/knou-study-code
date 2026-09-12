@@ -108,8 +108,8 @@ export default function CovarianceDecisionBoundary() {
   const [g1VarX, setG1VarX] = useState(0.9); // ③ 클래스별 Σ
   const [g1VarY, setG1VarY] = useState(0.25);
   const [g1Corr, setG1Corr] = useState(0.5);
-  const [g2VarX, setG2VarX] = useState(0.25);
-  const [g2VarY, setG2VarY] = useState(1.0);
+  const [g2VarX, setG2VarX] = useState(1.3);
+  const [g2VarY, setG2VarY] = useState(1.3);
   const [g2Corr, setG2Corr] = useState(-0.4);
 
   const activeCase = cases.find((c) => c.key === caseKey) ?? cases[0];
@@ -244,7 +244,7 @@ export default function CovarianceDecisionBoundary() {
       </div>
 
       {/* 캔버스 + 컨트롤 */}
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
         <div className="rounded-xl border border-gray-200 bg-white p-2 dark:border-gray-800 dark:bg-gray-900">
           <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full" role="img">
             {/* 결정영역 */}
@@ -278,12 +278,19 @@ export default function CovarianceDecisionBoundary() {
               <g key={t}>
                 <line x1={sc(t)} y1={0} x2={sc(t)} y2={SIZE} stroke="#9ca3af" strokeWidth="0.4" opacity={0.4} />
                 <line x1={0} y1={scY(t)} x2={SIZE} y2={scY(t)} stroke="#9ca3af" strokeWidth="0.4" opacity={0.4} />
-                <text x={sc(t) + 3} y={SIZE - 4} fontSize="9" fill="#9ca3af">
+                <text
+                  x={Math.min(sc(t) + 3, SIZE - 9)}
+                  y={SIZE - 4}
+                  fontSize="9"
+                  fill="#9ca3af"
+                >
                   {t}
                 </text>
-                <text x={3} y={scY(t) - 3} fontSize="9" fill="#9ca3af">
-                  {t}
-                </text>
+                {t !== DOM_MIN && (
+                  <text x={3} y={Math.max(scY(t) - 3, 9)} fontSize="9" fill="#9ca3af">
+                    {t}
+                  </text>
+                )}
               </g>
             ))}
 
@@ -392,7 +399,7 @@ export default function CovarianceDecisionBoundary() {
                 </p>
               </div>
               <p className="text-[11px] text-gray-500">
-                두 ln|Σᵢ| 값이 다르면 그 차이가 판별함수에 남아 결정경계가 곡선이 됨.
+                결정경계가 곡선이 되는 것은 Σ₁⁻¹ ≠ Σ₂⁻¹ 이어서 이차항이 서로 상쇄되지 않기 때문. 여기에 더해 두 ln|Σᵢ| 값이 다르면 그 차이만큼 경계가 한쪽으로 밀려, 행렬식이 큰 클래스의 결정영역이 좁아짐.
               </p>
             </div>
           )}
@@ -409,7 +416,7 @@ export default function CovarianceDecisionBoundary() {
           각 클래스의 평균 μₖ와 공분산행렬 Σₖ를 각각 추정해야 함.
         </p>
       </div>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {simplify.map((s) => (
           <div
             key={s.title}
