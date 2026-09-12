@@ -4,7 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GraduationCap, ChevronRight, UserRound } from "lucide-react";
 
+import { semesterLabelBySlug, subjectTitleBySlug } from "@/lib/semesters";
+
 const courseMap: Record<string, string> = {
+  ...subjectTitleBySlug,
   network: "정보통신망",
   ai: "인공지능",
   java: "Java프로그래밍",
@@ -20,6 +23,7 @@ export default function SiteHeader() {
   const segments = pathname.split("/").filter(Boolean);
   const courseKey = segments[0];
   const courseName = courseKey ? courseMap[courseKey] : null;
+  const semesterLabel = courseKey ? semesterLabelBySlug[courseKey] : null;
   const isHome = pathname === "/";
   const showBreadcrumb = Boolean(courseName && courseKey !== "my-page");
 
@@ -43,9 +47,14 @@ export default function SiteHeader() {
             <ChevronRight size={14} className="text-gray-300 dark:text-gray-600" />
             <Link
               href={`/${courseKey}`}
-              className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 transition-colors"
+              className="flex items-center gap-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 transition-colors"
             >
               {courseName}
+              {semesterLabel && (
+                <span className="hidden rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold text-gray-500 dark:bg-gray-800 dark:text-gray-400 sm:inline">
+                  {semesterLabel}
+                </span>
+              )}
             </Link>
           </>
         )}

@@ -762,3 +762,64 @@ export const javaLectures = [
     bgLightClass: "bg-slate-50 dark:bg-slate-950",
   },
 ] as const;
+
+export const mlLectures = [
+  {
+    id: 1,
+    title: "머신러닝 소개",
+    subtitle: "AI·ML·DL 관계, 처리 과정, 오차와 교차검증, 과다적합",
+    color: "ml1",
+    bgClass: "bg-cyan-500",
+    textClass: "text-cyan-500",
+    borderClass: "border-cyan-500",
+    bgLightClass: "bg-cyan-50 dark:bg-cyan-950",
+  },
+  {
+    id: 2,
+    title: "지도학습: 분류",
+    subtitle: "베이즈 분류기, 우도비 검정, 공분산과 결정경계, K-NN",
+    color: "ml2",
+    bgClass: "bg-violet-500",
+    textClass: "text-violet-500",
+    borderClass: "border-violet-500",
+    bgLightClass: "bg-violet-50 dark:bg-violet-950",
+  },
+  {
+    id: 3,
+    title: "지도학습: 회귀",
+    subtitle: "최소제곱법, 선형·다변량 회귀, 로지스틱 회귀와 오즈비",
+    color: "ml3",
+    bgClass: "bg-orange-500",
+    textClass: "text-orange-500",
+    borderClass: "border-orange-500",
+    bgLightClass: "bg-orange-50 dark:bg-orange-950",
+  },
+  {
+    id: 4,
+    title: "비지도학습: 군집화",
+    subtitle: "K-평균 알고리즘, 목적함수 J, 계층적 군집화와 덴드로그램",
+    color: "ml4",
+    bgClass: "bg-teal-500",
+    textClass: "text-teal-500",
+    borderClass: "border-teal-500",
+    bgLightClass: "bg-teal-50 dark:bg-teal-950",
+  },
+] as const;
+
+/**
+ * 5~15강은 강의록·정리하기 원자료는 확보되어 있으나
+ * 인터랙티브 페이지는 아직 제작 전이다. 과목 홈에서 진행 상태로만 노출한다.
+ */
+export const mlUpcomingLectures = [
+  { id: 5, title: "데이터 표현: 특징추출", subtitle: "PCA, LDA, MDS, t-SNE" },
+  { id: 6, title: "앙상블 학습", subtitle: "배깅, 부스팅, 결합 전략" },
+  { id: 7, title: "결정 트리와 랜덤 포레스트", subtitle: "분할 기준, 가지치기, 배깅 트리" },
+  { id: 8, title: "SVM과 커널법", subtitle: "최대 마진, 커널 트릭" },
+  { id: 9, title: "신경망 (1)", subtitle: "퍼셉트론, MLP, 오류역전파" },
+  { id: 10, title: "신경망 (2)", subtitle: "학습 기법, 일반화" },
+  { id: 11, title: "딥러닝 (1)", subtitle: "심층 신경망, CNN 기초" },
+  { id: 12, title: "딥러닝 (2)", subtitle: "학습 안정화, 규제" },
+  { id: 13, title: "딥러닝 응용 (1)", subtitle: "영상 인식 응용" },
+  { id: 14, title: "딥러닝 응용 (2)", subtitle: "시퀀스·생성 모델" },
+  { id: 15, title: "강화학습", subtitle: "보상, 정책, 가치 함수" },
+] as const;
