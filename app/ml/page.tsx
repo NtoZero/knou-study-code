@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { mlLectures, mlUpcomingLectures } from "@/lib/constants";
 import { getMlOutline } from "@/lib/mlLectureOutline";
+import CourseStructure from "@/components/mlShared/CourseStructure";
 import { ArrowRight, Sparkle, BookOpen, Layers3 } from "lucide-react";
 
 const lectureFocus: Record<number, string[]> = {
@@ -25,6 +26,8 @@ export default function MLHome() {
           KNOU 머신러닝 1~4강의 개념을 시뮬레이션·계산기·판별 드릴로 학습합니다
         </p>
       </div>
+
+      <CourseStructure />
 
       <div className="mb-4 flex items-center gap-2">
         <BookOpen size={18} className="text-gray-400" />
