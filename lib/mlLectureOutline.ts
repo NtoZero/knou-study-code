@@ -1,14 +1,22 @@
 /**
- * 머신러닝 1~4강 강의록 기준 학습목표와 정리하기.
+ * 머신러닝 강의록 기준 학습목표와 정리하기.
  *
  * `objectives` — 강의록 학습목표 슬라이드
  * `summary`    — 강의록 마지막 정리하기 슬라이드
  * `checkpoints`— 강의에서 반복해 짚는 구분 기준. 헷갈리기 쉬운 지점만 모음.
  */
 
+import type { SourceRef } from "@/lib/mlSources";
+import { lecture5Outline } from "@/lib/mlOutlines/lecture5";
+import { lecture6Outline } from "@/lib/mlOutlines/lecture6";
+import { lecture7Outline } from "@/lib/mlOutlines/lecture7";
+import { lecture8Outline } from "@/lib/mlOutlines/lecture8";
+
 export interface SummaryGroup {
   title: string;
   items: string[];
+  /** 5강부터 — 출처 배지 */
+  refs?: SourceRef;
 }
 
 export interface Checkpoint {
@@ -16,8 +24,10 @@ export interface Checkpoint {
   question: string;
   /** 가르는 기준 */
   answer: string;
-  /** 근거가 되는 강의록 소목차 */
+  /** 근거가 되는 강의록 소목차. refs가 있으면 출처 전체를 적는다 */
   basis: string;
+  /** 5강부터 — 출처 배지 */
+  refs?: SourceRef;
 }
 
 export interface LectureOutline {
@@ -325,6 +335,11 @@ const outlines: Record<number, LectureOutline> = {
     ],
   },
 };
+
+outlines[5] = lecture5Outline;
+outlines[6] = lecture6Outline;
+outlines[7] = lecture7Outline;
+outlines[8] = lecture8Outline;
 
 export function getMlOutline(lectureId: number) {
   return outlines[lectureId];

@@ -114,7 +114,7 @@ export const lecture1Terms: GlossaryTerm[] = [
     lectures: [1],
     basis: "1강 공식 연습문제 Q1",
     emphasis:
-      "머신러닝이 언제 필요한지를 뒤집어 놓은 선택지가 자주 나온다. 명시적인 지식 표현이나 처리 절차가 이미 있는 문제는 머신러닝이 아니라 기존 방식으로 프로그램을 짜면 된다.",
+      "머신러닝이 언제 필요한지를 뒤집어 생각하지 않도록 주의. 명시적인 지식 표현이나 처리 절차가 이미 있는 문제는 머신러닝이 아니라 기존 방식으로 프로그램을 짜면 된다.",
     aliases: ["machine learning", "ML", "기계학습"],
   },
   {
@@ -363,7 +363,7 @@ export const lecture1Terms: GlossaryTerm[] = [
     role: "n차원 데이터를 하나의 값으로 줄이는 차원 축소의 가장 기본적인 형태.",
     formula: [{ expr: "특징값 = xᵀu = uᵀx" }],
     example:
-      "x = (2, 3)을 u = (1, 1) 방향으로 사영하면 xᵀu = 2 + 3 = 5. 두 개의 값이 5라는 하나의 값으로 축소된다. x축으로 내리면 2, x₂축으로 내리면 3이다.",
+      "x = (2, 3)을 단위벡터 u = (1/√2, 1/√2) 방향으로 사영하면 xᵀu = (2 + 3)/√2 = 5/√2 ≈ 3.54. 두 개의 값이 하나의 값으로 축소된다. x₁축 방향 u = (1, 0)으로 내리면 2, x₂축 방향 u = (0, 1)로 내리면 3이다.",
     prereqs: ["pre-dot-product", "pre-transpose"],
     related: ["t-feature-extraction", "t-pca", "t-lda"],
     lectures: [1],
@@ -674,7 +674,7 @@ export const lecture1Terms: GlossaryTerm[] = [
     lectures: [1],
     basis: "강의록 1강 머신러닝에서의 주제 — 데이터 분석: 분류",
     emphasis:
-      "결정경계·결정함수·결정규칙 셋을 서로 바꿔 놓은 선택지가 자주 나온다. 경계는 g(x) = 0인 자리, 함수는 g(x) 자체, 규칙은 부호를 보고 클래스를 정하는 방식이다.",
+      "결정경계·결정함수·결정규칙 셋은 서로 혼동하기 쉽다. 경계는 g(x) = 0인 자리, 함수는 g(x) 자체, 규칙은 부호를 보고 클래스를 정하는 방식이다.",
     aliases: ["decision boundary", "결정 경계", "판별 경계"],
   },
   {

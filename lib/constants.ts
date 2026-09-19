@@ -804,17 +804,53 @@ export const mlLectures = [
     borderClass: "border-teal-500",
     bgLightClass: "bg-teal-50 dark:bg-teal-950",
   },
+  {
+    id: 5,
+    title: "데이터 표현: 특징추출",
+    subtitle: "선형 변환과 사영, 주성분분석, 선형판별분석, 거리 기반 차원 축소",
+    color: "ml5",
+    bgClass: "bg-rose-500",
+    textClass: "text-rose-500",
+    borderClass: "border-rose-500",
+    bgLightClass: "bg-rose-50 dark:bg-rose-950",
+  },
+  {
+    id: 6,
+    title: "앙상블 학습",
+    subtitle: "학습기 결합, 배깅과 보팅, 부스팅과 AdaBoost, 결합 방법",
+    color: "ml6",
+    bgClass: "bg-amber-500",
+    textClass: "text-amber-500",
+    borderClass: "border-amber-500",
+    bgLightClass: "bg-amber-50 dark:bg-amber-950",
+  },
+  {
+    id: 7,
+    title: "결정 트리와 랜덤 포레스트",
+    subtitle: "속성 선택 평가지수, 분류·회귀 트리, 과다적합, 랜덤 포레스트",
+    color: "ml7",
+    bgClass: "bg-emerald-500",
+    textClass: "text-emerald-500",
+    borderClass: "border-emerald-500",
+    bgLightClass: "bg-emerald-50 dark:bg-emerald-950",
+  },
+  {
+    id: 8,
+    title: "SVM과 커널법",
+    subtitle: "선형 분류기, 최대 마진과 서포트 벡터, 슬랙 변수, 커널 함수",
+    color: "ml8",
+    bgClass: "bg-indigo-500",
+    textClass: "text-indigo-500",
+    borderClass: "border-indigo-500",
+    bgLightClass: "bg-indigo-50 dark:bg-indigo-950",
+  },
 ] as const;
 
 /**
- * 5~15강은 강의록·정리하기 원자료는 확보되어 있으나
+ * 9~15강은 강의록·정리하기 원자료는 확보되어 있으나
  * 인터랙티브 페이지는 아직 제작 전이다. 과목 홈에서 진행 상태로만 노출한다.
  */
 export const mlUpcomingLectures = [
-  { id: 5, title: "데이터 표현: 특징추출", subtitle: "PCA, LDA, MDS, t-SNE" },
-  { id: 6, title: "앙상블 학습", subtitle: "배깅, 부스팅, 결합 전략" },
-  { id: 7, title: "결정 트리와 랜덤 포레스트", subtitle: "분할 기준, 가지치기, 배깅 트리" },
-  { id: 8, title: "SVM과 커널법", subtitle: "최대 마진, 커널 트릭" },
   { id: 9, title: "신경망 (1)", subtitle: "퍼셉트론, MLP, 오류역전파" },
   { id: 10, title: "신경망 (2)", subtitle: "학습 기법, 일반화" },
   { id: 11, title: "딥러닝 (1)", subtitle: "심층 신경망, CNN 기초" },

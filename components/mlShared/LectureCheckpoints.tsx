@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Scale } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { getMlOutline } from "@/lib/mlLectureOutline";
+import { Sourced } from "@/components/mlShared/SourceFilter";
 
 interface Props {
   lectureId: number;
@@ -24,14 +25,14 @@ export default function LectureCheckpoints({ lectureId, accentText }: Props) {
     <section>
       <SectionTitle
         title="헷갈리기 쉬운 지점"
-        subtitle="문제로 넘어가기 전에, 시험에서 자주 갈리는 구분 기준을 짚고 갑니다"
+        subtitle="문제로 넘어가기 전에, 헷갈리기 쉬운 구분 기준을 짚고 갑니다"
       />
       <div className="space-y-2">
         {outline.checkpoints.map((cp, i) => {
           const open = openPoint === i;
           return (
+            <Sourced key={cp.question} refs={cp.refs ?? {}} badgeClassName="mb-1.5">
             <div
-              key={cp.question}
               className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
             >
               <button
@@ -61,13 +62,14 @@ export default function LectureCheckpoints({ lectureId, accentText }: Props) {
                         {cp.answer}
                       </p>
                       <p className="mt-2 text-[11px] text-gray-400">
-                        근거: 강의록 {lectureId}강 {cp.basis}
+                        근거: {cp.refs ? cp.basis : `강의록 ${lectureId}강 ${cp.basis}`}
                       </p>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
+            </Sourced>
           );
         })}
       </div>

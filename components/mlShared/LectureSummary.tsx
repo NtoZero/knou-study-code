@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ClipboardList, CheckCircle2, Circle } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { getMlOutline } from "@/lib/mlLectureOutline";
+import { Sourced } from "@/components/mlShared/SourceFilter";
 
 interface Props {
   lectureId: number;
@@ -49,8 +50,8 @@ export default function LectureSummary({ lectureId, accentText, accentBg }: Prop
 
         <div className="space-y-3">
           {outline.summary.map((group, gi) => (
+            <Sourced key={group.title} refs={group.refs ?? {}} badgeClassName="mb-1.5">
             <div
-              key={group.title}
               className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900"
             >
               <div className="mb-3 flex items-center gap-2">
@@ -92,6 +93,7 @@ export default function LectureSummary({ lectureId, accentText, accentBg }: Prop
                 })}
               </ul>
             </div>
+            </Sourced>
           ))}
         </div>
       </div>

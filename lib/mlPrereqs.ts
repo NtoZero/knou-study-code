@@ -1,10 +1,15 @@
 /**
- * 머신러닝 1~4강을 따라가는 데 필요한 선행 개념.
+ * 머신러닝 1~8강을 따라가는 데 필요한 선행 개념.
  *
  * 교재 구성에서 2장(데이터 표현: 벡터와 행렬)과 3장(데이터 분포: 확률과 통계)은
  * 자율 학습 범위로 지정되어 있고, 강의는 이 내용을 이미 안다고 보고 진행한다.
- * 여기서는 1~4강 본문에서 실제로 쓰이는 것만 골라, 쓰이는 자리와 함께 정리한다.
+ * 여기서는 1~8강 본문에서 실제로 쓰이는 것만 골라, 쓰이는 자리와 함께 정리한다.
  */
+
+import { lecture5Prereqs, lecture5PrereqUsages } from "@/lib/mlPrereqAdditions/lecture5";
+import { lecture6Prereqs, lecture6PrereqUsages } from "@/lib/mlPrereqAdditions/lecture6";
+import { lecture7Prereqs, lecture7PrereqUsages } from "@/lib/mlPrereqAdditions/lecture7";
+import { lecture8Prereqs, lecture8PrereqUsages } from "@/lib/mlPrereqAdditions/lecture8";
 
 export type PrereqArea = "벡터와 행렬" | "확률과 통계" | "미분과 수식 표기";
 
@@ -34,7 +39,7 @@ export interface PrereqEntry {
   chapter?: string;
 }
 
-export const prereqs: PrereqEntry[] = [
+const basePrereqs: PrereqEntry[] = [
   /* ─────────── 벡터와 행렬 ─────────── */
   {
     id: "pre-column-vector",
@@ -640,7 +645,7 @@ export const prereqs: PrereqEntry[] = [
     en: "numerical optimization",
     area: "미분과 수식 표기",
     short: "식을 한 번에 풀 수 없을 때 조금씩 값을 고쳐 가며 답에 접근하는 방법.",
-    why: "선형회귀는 공식으로 바로 풀리지만 로지스틱 회귀는 그렇지 않다. 두 방법의 차이를 묻는 문항이 자주 나온다.",
+    why: "선형회귀는 공식으로 바로 풀리지만 로지스틱 회귀는 그렇지 않다. 두 방법의 차이를 구분할 수 있어야 한다.",
     definition:
       "미분해서 0으로 놓은 식이 복잡한 비선형 함수여서 닫힌 형태로 풀리지 않을 때, 현재 값에서 목적함수가 좋아지는 방향으로 조금씩 이동하는 것을 반복해 최적값에 접근하는 방법.",
     usedIn: [{ lecture: 3, where: "로지스틱 회귀의 매개변수 m, b 추정" }],
@@ -661,6 +666,38 @@ export const prereqs: PrereqEntry[] = [
     ],
   },
 ];
+
+const additions = [
+  { lecture: 5, entries: lecture5Prereqs, usages: lecture5PrereqUsages },
+  { lecture: 6, entries: lecture6Prereqs, usages: lecture6PrereqUsages },
+  { lecture: 7, entries: lecture7Prereqs, usages: lecture7PrereqUsages },
+  { lecture: 8, entries: lecture8Prereqs, usages: lecture8PrereqUsages },
+];
+
+/**
+ * 5강부터 추가된 선행 개념을 합친다. 같은 id가 여러 강의에서 추가되면
+ * 먼저 나온 정의를 쓰고 쓰이는 자리만 합친다.
+ */
+function mergePrereqs(): PrereqEntry[] {
+  const map = new Map<string, PrereqEntry>(
+    basePrereqs.map((p) => [p.id, { ...p, usedIn: [...p.usedIn] }]),
+  );
+  for (const { entries } of additions) {
+    for (const e of entries) {
+      const existing = map.get(e.id);
+      if (existing) existing.usedIn.push(...e.usedIn);
+      else map.set(e.id, { ...e, usedIn: [...e.usedIn] });
+    }
+  }
+  for (const { lecture, usages } of additions) {
+    for (const u of usages) {
+      map.get(u.id)?.usedIn.push({ lecture, where: u.where });
+    }
+  }
+  return Array.from(map.values());
+}
+
+export const prereqs: PrereqEntry[] = mergePrereqs();
 
 export const prereqById: Record<string, PrereqEntry> = Object.fromEntries(
   prereqs.map((p) => [p.id, p]),

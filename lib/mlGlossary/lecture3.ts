@@ -79,7 +79,7 @@ export const lecture3Terms: GlossaryTerm[] = [
     lectures: [3],
     basis: "강의록 3강 보간법과 회귀",
     emphasis:
-      "제곱 오차가 0인 쪽이 보간법이고 오차를 허용하는 쪽이 회귀다. 둘을 뒤집어 서술한 선택지가 자주 나온다.",
+      "제곱 오차가 0인 쪽이 보간법이고 오차를 허용하는 쪽이 회귀다. 둘을 뒤집어 기억하지 않도록 주의.",
     aliases: ["interpolation", "보간 곡선"],
   },
   {

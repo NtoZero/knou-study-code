@@ -9,6 +9,10 @@ const lectureFocus: Record<number, string[]> = {
   2: ["베이즈 정리", "우도비 검정", "최소거리 분류기", "마할라노비스 거리", "K-NN"],
   3: ["최소제곱법", "잔차", "(XᵀX)⁻¹Xᵀy", "로지스틱 함수", "오즈비·로짓"],
   4: ["대표 벡터", "목적함수 J", "지역 극소점", "덴드로그램", "연결법 5종"],
+  5: ["y = Wᵀx", "사영", "주성분분석", "선형판별분석", "t-SNE"],
+  6: ["배깅", "부트스트랩", "AdaBoost", "보팅", "캐스케이딩"],
+  7: ["지니 불순도", "정보 이득", "분산 감소량", "가지치기", "랜덤 포레스트"],
+  8: ["최대 마진", "서포트 벡터", "라그랑주 승수", "슬랙 변수", "커널 함수"],
 };
 
 export default function MLHome() {
@@ -23,7 +27,7 @@ export default function MLHome() {
         </div>
         <h1 className="text-3xl font-bold">머신러닝 인터랙티브 학습</h1>
         <p className="mt-2 text-gray-500">
-          KNOU 머신러닝 1~4강의 개념을 시뮬레이션·계산기·판별 드릴로 학습합니다
+          KNOU 머신러닝 1~8강의 개념을 시뮬레이션·계산기·판별 드릴로 학습합니다
         </p>
       </div>
 
@@ -118,7 +122,7 @@ export default function MLHome() {
       <div className="mt-12">
         <div className="mb-4 flex items-center gap-2">
           <Layers3 size={18} className="text-gray-400" />
-          <h2 className="text-lg font-bold">5~15강 · 준비 중</h2>
+          <h2 className="text-lg font-bold">9~15강 · 준비 중</h2>
         </div>
         <p className="mb-4 text-sm text-gray-500">
           강의록과 정리 자료는 확보되어 있으나 인터랙티브 페이지는 아직 제작 전입니다.

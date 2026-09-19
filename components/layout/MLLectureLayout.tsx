@@ -6,6 +6,10 @@ import { mlLectures } from "@/lib/constants";
 import { getMlOutline } from "@/lib/mlLectureOutline";
 import LectureSummary from "@/components/mlShared/LectureSummary";
 import LecturePrereqBar from "@/components/mlShared/LecturePrereqBar";
+import { SourceFilterProvider, SourceFilterBar } from "@/components/mlShared/SourceFilter";
+
+/** 출처 배지와 출처 칩 필터를 쓰는 강의 */
+const SOURCE_TAGGED_FROM = 5;
 
 interface Props {
   lectureId: number;
@@ -18,8 +22,9 @@ export default function MLLectureLayout({ lectureId, children }: Props) {
   const prev = idx > 0 ? mlLectures[idx - 1] : null;
   const next = idx < mlLectures.length - 1 ? mlLectures[idx + 1] : null;
   const outline = getMlOutline(lectureId);
+  const tagged = lectureId >= SOURCE_TAGGED_FROM;
 
-  return (
+  const page = (
     <div className="mx-auto max-w-6xl px-4 py-8 max-sm:pl-16">
       <div className="mb-6 flex items-center gap-2 text-sm text-gray-500">
         <Link href="/ml" className="hover:text-gray-900 dark:hover:text-gray-200">
@@ -64,6 +69,12 @@ export default function MLLectureLayout({ lectureId, children }: Props) {
         )}
       </div>
 
+      {tagged && (
+        <div className="sticky top-12 z-20 -mx-2 mb-8 rounded-xl border border-gray-200 bg-white/90 px-3 py-2.5 shadow-sm backdrop-blur dark:border-gray-800 dark:bg-gray-950/90">
+          <SourceFilterBar accentText={lec.textClass} />
+        </div>
+      )}
+
       <LecturePrereqBar lectureId={lectureId} />
 
       <div className="space-y-12">{children}</div>
@@ -102,4 +113,6 @@ export default function MLLectureLayout({ lectureId, children }: Props) {
       </div>
     </div>
   );
+
+  return tagged ? <SourceFilterProvider>{page}</SourceFilterProvider> : page;
 }

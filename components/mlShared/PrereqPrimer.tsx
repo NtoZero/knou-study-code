@@ -324,7 +324,7 @@ export default function PrereqPrimer() {
       <section>
         <SectionTitle
           title="바탕이 되는 개념"
-          subtitle={`1~4강 본문에서 실제로 쓰이는 것만 골라, 쓰이는 자리와 함께 정리했습니다 · ${prereqs.length}개`}
+          subtitle={`1~8강 본문에서 실제로 쓰이는 것만 골라, 쓰이는 자리와 함께 정리했습니다 · ${prereqs.length}개`}
         />
 
         <div className="mb-4 flex flex-col gap-2 sm:flex-row">

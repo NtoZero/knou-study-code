@@ -249,7 +249,7 @@ export const lecture4Terms: GlossaryTerm[] = [
     lectures: [4],
     basis: "강의록 4강 알고리즘의 특성",
     emphasis:
-      "r_ni가 고정되어 있을 때 mᵢ를 구하는 과정은 그룹핑이 아니라 대표 벡터 수정식에 대응한다. 두 관점의 짝을 뒤바꿔 놓은 선택지가 자주 나온다.",
+      "r_ni가 고정되어 있을 때 mᵢ를 구하는 과정은 그룹핑이 아니라 대표 벡터 수정식에 대응한다. 두 관점의 짝을 뒤바꾸지 않도록 주의.",
     aliases: ["centroid update", "대표벡터 갱신", "평균 갱신", "update step"],
   },
   {

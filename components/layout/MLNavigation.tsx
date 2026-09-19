@@ -99,7 +99,7 @@ export default function MLNavigation() {
 
           <div className="mt-4 border-t border-gray-200 pt-3 dark:border-gray-800">
             <div className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-              준비 중 · 5~15강
+              준비 중 · 9~15강
             </div>
             {mlUpcomingLectures.map((lec) => (
               <div
