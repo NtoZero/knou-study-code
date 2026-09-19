@@ -73,7 +73,7 @@ export default function EnsembleResultExample() {
   }, [model]);
 
   return (
-    <section>
+    <section id="result-example" className="scroll-mt-32">
       <SectionTitle
         title="09. 앙상블 학습 결과의 예시"
         subtitle="AdaBoost로 선형 분류기를 결합 — 결합하는 분류기 개수 M에 따른 분류 오차와 결정경계의 변화"

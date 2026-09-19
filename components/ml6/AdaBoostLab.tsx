@@ -97,7 +97,7 @@ export default function AdaBoostLab() {
   const epsForGraph = phase >= 1 && !stopped ? r.eps : epsProbe;
 
   return (
-    <section>
+    <section id="adaboost" className="scroll-mt-32">
       <SectionTitle
         title="05. AdaBoost 알고리즘"
         subtitle="같은 데이터 집합, 데이터마다 적응적으로 바뀌는 가중치, 분류기 중요도를 가진 보팅"

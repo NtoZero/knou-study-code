@@ -37,7 +37,7 @@ export default function MixtureOfExperts() {
   const p1 = pi1(probe, k);
 
   return (
-    <section>
+    <section id="mixture-of-experts" className="scroll-mt-32">
       <SectionTitle
         title="08. 전문가 혼합"
         subtitle="가중합 계수가 입력에 대한 함수 πᵢ(x) — 입력에 따라 어떤 학습기를 중요하게 쓸지가 달라짐"

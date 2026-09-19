@@ -76,7 +76,7 @@ export default function Cascading() {
   const allLast = STAGES[STAGES.length - 1].cost;
 
   return (
-    <section>
+    <section id="cascading" className="scroll-mt-32">
       <SectionTitle
         title="07. 캐스케이딩"
         subtitle="여러 가지 복잡도를 가진 학습기들을 순차적으로 결합 — 계산 효율을 높이면서 안정적인 성능"

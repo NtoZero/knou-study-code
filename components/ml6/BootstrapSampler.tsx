@@ -70,7 +70,7 @@ export default function BootstrapSampler() {
   const expectedNever = N * probNeverPicked(N, nTilde);
 
   return (
-    <section>
+    <section id="bagging" className="scroll-mt-32">
       <SectionTitle
         title="02. 배깅에 의한 학습"
         subtitle="부트스트랩(복원 추출)으로 서로 다른 학습 데이터 집합을 만들어 M개의 학습기를 학습"

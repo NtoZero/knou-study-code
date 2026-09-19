@@ -64,7 +64,7 @@ export default function EnsembleConcept() {
   const dm = DATA_METHODS[dataMethod];
 
   return (
-    <section>
+    <section id="concept" className="scroll-mt-32">
       <SectionTitle
         title="01. 앙상블 학습의 개념"
         subtitle="복수 개의 간단한 학습기를 결합해 더 좋은 성능의 학습기를 만드는 방법"

@@ -42,7 +42,7 @@ export default function BoostingConcept() {
   const cur = FILTER_STEPS[fs];
 
   return (
-    <section>
+    <section id="boosting" className="scroll-mt-32">
       <SectionTitle
         title="04. 부스팅"
         subtitle="간단한 학습기들이 상호보완적 역할을 하도록 단계적으로 학습하여 성능을 증폭(boost)"

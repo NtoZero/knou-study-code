@@ -590,7 +590,7 @@ export default function Lecture6Quiz() {
   };
 
   return (
-    <section>
+    <section id="quiz" className="scroll-mt-32">
       <SectionTitle
         title="복습 퀴즈"
         subtitle={`공식 연습문제 ${QUIZZES.filter((q) => q.source === "공식 연습문제").length}문항과 변형 문제 ${QUIZZES.filter((q) => q.source === "변형").length}문항`}

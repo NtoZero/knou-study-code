@@ -104,7 +104,7 @@ export default function CombinationMethods() {
   const [reuse, setReuse] = useState(false);
 
   return (
-    <section>
+    <section id="combination" className="scroll-mt-32">
       <SectionTitle
         title="06. 결합 방법 — 기본적인 결합 방법"
         subtitle="학습기의 결과를 결합하는 대표적 방법: 평균법, 보팅법(투표법), 결합기"

@@ -22,7 +22,7 @@ export default function LectureCheckpoints({ lectureId, accentText }: Props) {
   if (!outline) return null;
 
   return (
-    <section>
+    <section id="checkpoints" className="scroll-mt-32">
       <SectionTitle
         title="헷갈리기 쉬운 지점"
         subtitle="문제로 넘어가기 전에, 헷갈리기 쉬운 구분 기준을 짚고 갑니다"

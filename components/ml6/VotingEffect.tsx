@@ -110,7 +110,7 @@ export default function VotingEffect() {
   const combined = ebar * (1 / gm + ((gm - 1) / gm) * rhoEff);
 
   return (
-    <section>
+    <section id="voting" className="scroll-mt-32">
       <SectionTitle
         title="03. 보팅에 의한 결합과 배깅·보팅의 효과"
         subtitle="M개의 학습기 결과를 동일한 정도로 반영하여 평균 — 결정경계와 일반화 오차 두 측면에서 확인"
