@@ -8,6 +8,8 @@ import { lecture5Terms } from "./lecture5";
 import { lecture6Terms } from "./lecture6";
 import { lecture7Terms } from "./lecture7";
 import { lecture8Terms } from "./lecture8";
+import { lecture9Terms } from "./lecture9";
+import { lecture10Terms } from "./lecture10";
 
 export type ResolvedEntry =
   | (GlossaryTerm & { kind: "term" })
@@ -22,6 +24,8 @@ const lectureTerms: GlossaryTerm[] = [
   ...lecture6Terms,
   ...lecture7Terms,
   ...lecture8Terms,
+  ...lecture9Terms,
+  ...lecture10Terms,
 ];
 
 /** 항목이 담고 있는 내용의 양 — 같은 용어가 두 강의에서 정의될 때 더 자세한 쪽을 고르는 기준 */

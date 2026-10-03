@@ -1,15 +1,17 @@
 /**
- * 머신러닝 1~8강을 따라가는 데 필요한 선행 개념.
+ * 머신러닝 1~10강을 따라가는 데 필요한 선행 개념.
  *
  * 교재 구성에서 2장(데이터 표현: 벡터와 행렬)과 3장(데이터 분포: 확률과 통계)은
  * 자율 학습 범위로 지정되어 있고, 강의는 이 내용을 이미 안다고 보고 진행한다.
- * 여기서는 1~8강 본문에서 실제로 쓰이는 것만 골라, 쓰이는 자리와 함께 정리한다.
+ * 여기서는 1~10강 본문에서 실제로 쓰이는 것만 골라, 쓰이는 자리와 함께 정리한다.
  */
 
 import { lecture5Prereqs, lecture5PrereqUsages } from "@/lib/mlPrereqAdditions/lecture5";
 import { lecture6Prereqs, lecture6PrereqUsages } from "@/lib/mlPrereqAdditions/lecture6";
 import { lecture7Prereqs, lecture7PrereqUsages } from "@/lib/mlPrereqAdditions/lecture7";
 import { lecture8Prereqs, lecture8PrereqUsages } from "@/lib/mlPrereqAdditions/lecture8";
+import { lecture9Prereqs, lecture9PrereqUsages } from "@/lib/mlPrereqAdditions/lecture9";
+import { lecture10Prereqs, lecture10PrereqUsages } from "@/lib/mlPrereqAdditions/lecture10";
 
 export type PrereqArea = "벡터와 행렬" | "확률과 통계" | "미분과 수식 표기";
 
@@ -672,6 +674,8 @@ const additions = [
   { lecture: 6, entries: lecture6Prereqs, usages: lecture6PrereqUsages },
   { lecture: 7, entries: lecture7Prereqs, usages: lecture7PrereqUsages },
   { lecture: 8, entries: lecture8Prereqs, usages: lecture8PrereqUsages },
+  { lecture: 9, entries: lecture9Prereqs, usages: lecture9PrereqUsages },
+  { lecture: 10, entries: lecture10Prereqs, usages: lecture10PrereqUsages },
 ];
 
 /**

@@ -18,9 +18,9 @@ import {
 } from "lucide-react";
 import { allTerms, termById, type ResolvedEntry } from "@/lib/mlGlossary";
 
-type Filter = "전체" | "1강" | "2강" | "3강" | "4강" | "5강" | "6강" | "7강" | "8강" | "선행 개념";
+type Filter = "전체" | "1강" | "2강" | "3강" | "4강" | "5강" | "6강" | "7강" | "8강" | "9강" | "10강" | "선행 개념";
 
-const FILTERS: Filter[] = ["전체", "1강", "2강", "3강", "4강", "5강", "6강", "7강", "8강", "선행 개념"];
+const FILTERS: Filter[] = ["전체", "1강", "2강", "3강", "4강", "5강", "6강", "7강", "8강", "9강", "10강", "선행 개념"];
 
 function matches(entry: ResolvedEntry, q: string) {
   if (!q) return true;
@@ -40,7 +40,7 @@ function matches(entry: ResolvedEntry, q: string) {
 function inFilter(entry: ResolvedEntry, f: Filter) {
   if (f === "전체") return true;
   if (f === "선행 개념") return entry.kind === "prereq";
-  const n = Number(f[0]);
+  const n = Number(f.replace("강", ""));
   return entry.kind === "term" && entry.lectures.includes(n);
 }
 

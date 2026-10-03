@@ -11,6 +11,8 @@ import { lecture5Outline } from "@/lib/mlOutlines/lecture5";
 import { lecture6Outline } from "@/lib/mlOutlines/lecture6";
 import { lecture7Outline } from "@/lib/mlOutlines/lecture7";
 import { lecture8Outline } from "@/lib/mlOutlines/lecture8";
+import { lecture9Outline } from "@/lib/mlOutlines/lecture9";
+import { lecture10Outline } from "@/lib/mlOutlines/lecture10";
 
 export interface SummaryGroup {
   title: string;
@@ -340,6 +342,8 @@ outlines[5] = lecture5Outline;
 outlines[6] = lecture6Outline;
 outlines[7] = lecture7Outline;
 outlines[8] = lecture8Outline;
+outlines[9] = lecture9Outline;
+outlines[10] = lecture10Outline;
 
 export function getMlOutline(lectureId: number) {
   return outlines[lectureId];

@@ -844,15 +844,33 @@ export const mlLectures = [
     borderClass: "border-indigo-500",
     bgLightClass: "bg-indigo-50 dark:bg-indigo-950",
   },
+  {
+    id: 9,
+    title: "신경망 (1)",
+    subtitle: "신경망 개요, 신경세포·연결구조·학습, 퍼셉트론과 다층 퍼셉트론",
+    color: "ml9",
+    bgClass: "bg-fuchsia-500",
+    textClass: "text-fuchsia-500",
+    borderClass: "border-fuchsia-500",
+    bgLightClass: "bg-fuchsia-50 dark:bg-fuchsia-950",
+  },
+  {
+    id: 10,
+    title: "신경망 (2)",
+    subtitle: "오류역전파 학습 알고리즘, 학습 시 고려사항과 전략, 숫자 인식",
+    color: "ml10",
+    bgClass: "bg-sky-600",
+    textClass: "text-sky-600",
+    borderClass: "border-sky-600",
+    bgLightClass: "bg-sky-50 dark:bg-sky-950",
+  },
 ] as const;
 
 /**
- * 9~15강은 강의록·정리하기 원자료는 확보되어 있으나
+ * 11~15강은 강의록·정리하기 원자료는 확보되어 있으나
  * 인터랙티브 페이지는 아직 제작 전이다. 과목 홈에서 진행 상태로만 노출한다.
  */
 export const mlUpcomingLectures = [
-  { id: 9, title: "신경망 (1)", subtitle: "퍼셉트론, MLP, 오류역전파" },
-  { id: 10, title: "신경망 (2)", subtitle: "학습 기법, 일반화" },
   { id: 11, title: "딥러닝 (1)", subtitle: "심층 신경망, CNN 기초" },
   { id: 12, title: "딥러닝 (2)", subtitle: "학습 안정화, 규제" },
   { id: 13, title: "딥러닝 응용 (1)", subtitle: "영상 인식 응용" },

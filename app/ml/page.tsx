@@ -13,6 +13,8 @@ const lectureFocus: Record<number, string[]> = {
   6: ["배깅", "부트스트랩", "AdaBoost", "보팅", "캐스케이딩"],
   7: ["지니 불순도", "정보 이득", "분산 감소량", "가지치기", "랜덤 포레스트"],
   8: ["최대 마진", "서포트 벡터", "라그랑주 승수", "슬랙 변수", "커널 함수"],
+  9: ["활성화 함수", "다층 전방향", "MP 뉴런", "XOR 문제", "표현 능력"],
+  10: ["기울기 강하", "오류역전파", "지역 극소", "에포크", "소프트맥스"],
 };
 
 export default function MLHome() {
@@ -27,7 +29,7 @@ export default function MLHome() {
         </div>
         <h1 className="text-3xl font-bold">머신러닝 인터랙티브 학습</h1>
         <p className="mt-2 text-gray-500">
-          KNOU 머신러닝 1~8강의 개념을 시뮬레이션·계산기·판별 드릴로 학습합니다
+          KNOU 머신러닝 1~10강의 개념을 시뮬레이션·계산기·판별 드릴로 학습합니다
         </p>
       </div>
 
@@ -122,7 +124,7 @@ export default function MLHome() {
       <div className="mt-12">
         <div className="mb-4 flex items-center gap-2">
           <Layers3 size={18} className="text-gray-400" />
-          <h2 className="text-lg font-bold">9~15강 · 준비 중</h2>
+          <h2 className="text-lg font-bold">11~15강 · 준비 중</h2>
         </div>
         <p className="mb-4 text-sm text-gray-500">
           강의록과 정리 자료는 확보되어 있으나 인터랙티브 페이지는 아직 제작 전입니다.
