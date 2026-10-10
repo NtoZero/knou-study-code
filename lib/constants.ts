@@ -864,16 +864,43 @@ export const mlLectures = [
     borderClass: "border-sky-600",
     bgLightClass: "bg-sky-50 dark:bg-sky-950",
   },
+  {
+    id: 11,
+    title: "딥러닝 (1)",
+    subtitle: "딥러닝의 등장, 학습 성능 향상 기법, 합성곱 신경망(CNN)",
+    color: "ml11",
+    bgClass: "bg-lime-600",
+    textClass: "text-lime-600",
+    borderClass: "border-lime-600",
+    bgLightClass: "bg-lime-50 dark:bg-lime-950",
+  },
+  {
+    id: 12,
+    title: "딥러닝 (2)",
+    subtitle: "기본 순환 신경망, 시간 역전파, LSTM과 GRU",
+    color: "ml12",
+    bgClass: "bg-red-500",
+    textClass: "text-red-500",
+    borderClass: "border-red-500",
+    bgLightClass: "bg-red-50 dark:bg-red-950",
+  },
+  {
+    id: 13,
+    title: "딥러닝 응용 (1)",
+    subtitle: "컴퓨터비전 응용, 객체 인식 CNN 모델, 영상 이해와 생성",
+    color: "ml13",
+    bgClass: "bg-blue-600",
+    textClass: "text-blue-600",
+    borderClass: "border-blue-600",
+    bgLightClass: "bg-blue-50 dark:bg-blue-950",
+  },
 ] as const;
 
 /**
- * 11~15강은 강의록·정리하기 원자료는 확보되어 있으나
+ * 14~15강은 강의록·정리하기 원자료는 확보되어 있으나
  * 인터랙티브 페이지는 아직 제작 전이다. 과목 홈에서 진행 상태로만 노출한다.
  */
 export const mlUpcomingLectures = [
-  { id: 11, title: "딥러닝 (1)", subtitle: "심층 신경망, CNN 기초" },
-  { id: 12, title: "딥러닝 (2)", subtitle: "학습 안정화, 규제" },
-  { id: 13, title: "딥러닝 응용 (1)", subtitle: "영상 인식 응용" },
   { id: 14, title: "딥러닝 응용 (2)", subtitle: "시퀀스·생성 모델" },
   { id: 15, title: "강화학습", subtitle: "보상, 정책, 가치 함수" },
 ] as const;

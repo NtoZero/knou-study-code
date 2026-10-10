@@ -18,9 +18,9 @@ import {
 } from "lucide-react";
 import { allTerms, termById, type ResolvedEntry } from "@/lib/mlGlossary";
 
-type Filter = "전체" | "1강" | "2강" | "3강" | "4강" | "5강" | "6강" | "7강" | "8강" | "9강" | "10강" | "선행 개념";
+type Filter = "전체" | "1강" | "2강" | "3강" | "4강" | "5강" | "6강" | "7강" | "8강" | "9강" | "10강" | "11강" | "12강" | "13강" | "선행 개념";
 
-const FILTERS: Filter[] = ["전체", "1강", "2강", "3강", "4강", "5강", "6강", "7강", "8강", "9강", "10강", "선행 개념"];
+const FILTERS: Filter[] = ["전체", "1강", "2강", "3강", "4강", "5강", "6강", "7강", "8강", "9강", "10강", "11강", "12강", "13강", "선행 개념"];
 
 function matches(entry: ResolvedEntry, q: string) {
   if (!q) return true;
