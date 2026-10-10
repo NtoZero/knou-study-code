@@ -243,9 +243,12 @@ export default function AlexNetVggLab() {
                   <Formula note="가로 × 세로 × 채널">
                     {stage.w} × {stage.h} × {stage.c} = {num(elems(stage))}
                   </Formula>
-                  <Formula note="직전 단계 대비">
-                    {num(elems(stage))} ÷ {num(elems(prev))} = {ratio.toFixed(4)}
-                  </Formula>
+                  {/* 입력 영상은 직전 단계가 없으므로 비율을 계산하지 않는다 */}
+                  {step > 0 && (
+                    <Formula note="직전 단계 대비">
+                      {num(elems(stage))} ÷ {num(elems(prev))} = {ratio.toFixed(4)}
+                    </Formula>
+                  )}
                 </div>
                 <Hint>
                   2~4번째 블록에서는 한 변이 절반이 되는 대신 채널이 두 배가 되므로 값의 개수가 정확히

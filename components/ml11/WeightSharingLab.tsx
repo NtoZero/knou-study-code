@@ -176,7 +176,7 @@ export default function WeightSharingLab() {
                         <td className="px-2 py-1.5 font-mono">{num(convW)}</td>
                         <td className="px-2 py-1.5 font-mono">{num(convB)}</td>
                         <td className="px-2 py-1.5 font-mono font-bold">
-                          {(convW + num(convB))}
+                          {num(convW + convB)}
                         </td>
                       </tr>
                       <tr className="border-b border-gray-100 dark:border-gray-800">
@@ -188,7 +188,7 @@ export default function WeightSharingLab() {
                         </td>
                         <td className="px-2 py-1.5 font-mono">{num(fcW)}</td>
                         <td className="px-2 py-1.5 font-mono">{num(fcB)}</td>
-                        <td className="px-2 py-1.5 font-mono font-bold">{(fcW + num(fcB))}</td>
+                        <td className="px-2 py-1.5 font-mono font-bold">{num(fcW + fcB)}</td>
                       </tr>
                     </tbody>
                   </table>
