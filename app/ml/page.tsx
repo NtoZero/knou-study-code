@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { mlLectures, mlUpcomingLectures } from "@/lib/constants";
+import { mlLectures } from "@/lib/constants";
 import { getMlOutline } from "@/lib/mlLectureOutline";
 import CourseStructure from "@/components/mlShared/CourseStructure";
-import { ArrowRight, Sparkle, BookOpen, Layers3, Layers } from "lucide-react";
+import { ArrowRight, Sparkle, BookOpen, Layers } from "lucide-react";
 
 const lectureFocus: Record<number, string[]> = {
   1: ["AI ⊃ ML ⊃ DL", "학습·추론 단계", "일반화 오차", "교차검증법", "과다적합"],
@@ -18,6 +18,8 @@ const lectureFocus: Record<number, string[]> = {
   11: ["사전학습", "드롭아웃", "ReLU", "콘볼루션층", "풀링층"],
   12: ["순차 데이터", "가중치 공유", "시간 역전파", "기울기 소멸", "LSTM·GRU"],
   13: ["영상 이해", "객체 검출", "영상 분할", "AlexNet·ResNet", "영상 생성"],
+  14: ["데이터 표현", "Word2Vec", "Seq2Seq·Attention", "Transformer·BERT", "LLM·RAG"],
+  15: ["보상과 정책", "MDP", "가치함수", "Q-학습", "DQN"],
 };
 
 export default function MLHome() {
@@ -32,7 +34,7 @@ export default function MLHome() {
         </div>
         <h1 className="text-3xl font-bold">머신러닝 인터랙티브 학습</h1>
         <p className="mt-2 text-gray-500">
-          KNOU 머신러닝 1~13강의 개념을 시뮬레이션·계산기·판별 드릴로 학습합니다
+          KNOU 머신러닝 1~15강의 개념을 시뮬레이션·계산기·판별 드릴로 학습합니다
         </p>
       </div>
 
@@ -124,35 +126,6 @@ export default function MLHome() {
         })}
       </div>
 
-      <div className="mt-12">
-        <div className="mb-4 flex items-center gap-2">
-          <Layers3 size={18} className="text-gray-400" />
-          <h2 className="text-lg font-bold">14~15강 · 준비 중</h2>
-        </div>
-        <p className="mb-4 text-sm text-gray-500">
-          강의록과 정리 자료는 확보되어 있으나 인터랙티브 페이지는 아직 제작 전입니다.
-        </p>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {mlUpcomingLectures.map((lec) => (
-            <div
-              key={lec.id}
-              className="flex items-center gap-3 rounded-lg border border-dashed border-gray-300 bg-gray-50/50 p-3 dark:border-gray-700 dark:bg-gray-900/40"
-            >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gray-200 text-xs font-bold text-gray-500 dark:bg-gray-800">
-                {lec.id}
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-medium text-gray-600 dark:text-gray-300">
-                  {lec.title}
-                </span>
-                <span className="block truncate text-[11px] text-gray-400">
-                  {lec.subtitle}
-                </span>
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

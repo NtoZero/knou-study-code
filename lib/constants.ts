@@ -894,13 +894,24 @@ export const mlLectures = [
     borderClass: "border-blue-600",
     bgLightClass: "bg-blue-50 dark:bg-blue-950",
   },
-] as const;
-
-/**
- * 14~15강은 강의록·정리하기 원자료는 확보되어 있으나
- * 인터랙티브 페이지는 아직 제작 전이다. 과목 홈에서 진행 상태로만 노출한다.
- */
-export const mlUpcomingLectures = [
-  { id: 14, title: "딥러닝 응용 (2)", subtitle: "시퀀스·생성 모델" },
-  { id: 15, title: "강화학습", subtitle: "보상, 정책, 가치 함수" },
+  {
+    id: 14,
+    title: "딥러닝 응용 (2)",
+    subtitle: "자연어처리 응용, Word2Vec·Seq2Seq·Attention·Transformer, 대규모 언어 모델",
+    color: "ml14",
+    bgClass: "bg-violet-600",
+    textClass: "text-violet-600",
+    borderClass: "border-violet-600",
+    bgLightClass: "bg-violet-50 dark:bg-violet-950",
+  },
+  {
+    id: 15,
+    title: "강화학습",
+    subtitle: "상태·행동·보상·정책, MDP와 가치함수, Q-학습과 DQN",
+    color: "ml15",
+    bgClass: "bg-cyan-600",
+    textClass: "text-cyan-600",
+    borderClass: "border-cyan-600",
+    bgLightClass: "bg-cyan-50 dark:bg-cyan-950",
+  },
 ] as const;

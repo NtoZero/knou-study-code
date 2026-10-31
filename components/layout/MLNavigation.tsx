@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Sparkle, ChevronRight, Layers } from "lucide-react";
-import { mlLectures, mlUpcomingLectures } from "@/lib/constants";
+import { mlLectures } from "@/lib/constants";
 
 export default function MLNavigation() {
   const [open, setOpen] = useState(false);
@@ -97,22 +97,6 @@ export default function MLNavigation() {
             );
           })}
 
-          <div className="mt-4 border-t border-gray-200 pt-3 dark:border-gray-800">
-            <div className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-              준비 중 · 14~15강
-            </div>
-            {mlUpcomingLectures.map((lec) => (
-              <div
-                key={lec.id}
-                className="mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-400 dark:text-gray-600"
-              >
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-gray-200 text-[10px] font-bold text-gray-500 dark:bg-gray-800 dark:text-gray-500">
-                  {lec.id}
-                </span>
-                <span className="truncate text-xs">{lec.title}</span>
-              </div>
-            ))}
-          </div>
         </nav>
       </aside>
     </>
