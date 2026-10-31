@@ -89,7 +89,7 @@ export default function QNetworkLab() {
       />
 
       <div className="space-y-5">
-        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 그림 14-11", slides: "Q-테이블에서 Q-신경망으로" }}>
+        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 그림 14-11", slides: "Q-테이블에서 Q-신경망으로", lecture: "100×100 미로만 해도 1만 가지 상태 × 4가지 행동 = 4만 칸이 되고, 아타리·바둑으로 가면 테이블로 표현하기 어려워 Q-함수를 신경망으로 나타낸다고 설명" }}>
           <Card>
             <CardTitle>Q-테이블의 한계 — 실제 응용에서의 비효율성</CardTitle>
             <div className="mb-3 flex flex-wrap gap-1.5">
@@ -127,7 +127,7 @@ export default function QNetworkLab() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 그림 14-12", slides: "Q-신경망 Q-Network" }}>
+        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 그림 14-12", slides: "Q-신경망 Q-Network", lecture: "기본 형태는 행동마다 Q-값을 따로 계산해야 해서 너무 복잡하므로, 딥마인드가 아타리에 적용하면서 상태만 넣고 모든 행동의 Q-값을 한꺼번에 내도록 다시 정의했고 출력 노드 수가 행동의 개수와 같아진다고 강조" }}>
           <Card>
             <CardTitle>Q-신경망의 두 형태</CardTitle>
             <div className="mb-3 flex flex-wrap gap-1.5">
@@ -211,7 +211,7 @@ export default function QNetworkLab() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 그림 14-13 · 식 14-19 · 14-20", slides: "Q-신경망의 학습" }}>
+        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 그림 14-13 · 식 14-19 · 14-20", slides: "Q-신경망의 학습", lecture: "Q-학습의 갱신식 오른쪽이 곧 목표 출력값이 되고, 실제 출력과의 차이의 제곱을 줄이도록 오류역전파로 학습하므로 보상을 쓰는 강화학습이라는 큰 틀 안에서 지도학습을 수행하는 셈이라고 정리" }}>
           <Card>
             <CardTitle>Q-신경망의 학습 — 목표 출력값을 Q-학습이 만들어 준다</CardTitle>
             <Formula note="시점 t에서 학습 파라미터 θ에 대한 Q-신경망의 실제 출력">Q̂(sₜ, aₜ | θ)</Formula>

@@ -87,7 +87,7 @@ export default function DiscountPathLab() {
       />
 
       <div className="space-y-5">
-        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 식 14-13 · 14-14", slides: "더 좋은 경로에 대한 선택 — 할인된 미래 보상" }}>
+        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 식 14-13 · 14-14", slides: "더 좋은 경로에 대한 선택 — 할인된 미래 보상", lecture: "직관적으로 빨간(짧은) 경로가 초록 경로보다 좋다고 느끼는데, 갱신 규칙에 γ만 곱해 주면 그 짧은 경로가 더 큰 값을 갖게 된다고 설명" }}>
           <Card>
             <CardTitle>할인된 미래 보상 discounted future reward</CardTitle>
             <Formula note="(식 14-13) 미래 보상에 할인율 γ를 적용한 것 — (식 14-4)의 총할인 보상과 개념적으로 동일">
@@ -115,7 +115,7 @@ export default function DiscountPathLab() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 그림 14-10", slides: "더 좋은 경로에 대한 선택 — 상태 11에서의 Q-값" }}>
+        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 그림 14-10", slides: "더 좋은 경로에 대한 선택 — 상태 11에서의 Q-값", lecture: "상태 11에서 아래쪽(0.9)이 왼쪽(0.729)보다 크므로 빨간 경로가 더 좋다고 판정한다고 정리" }}>
           <Card>
             <CardTitle>상태 11에서 목표까지 — 실선과 점선</CardTitle>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-[auto_minmax(0,1fr)]">

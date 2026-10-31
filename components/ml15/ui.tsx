@@ -187,3 +187,12 @@ export function ConceptRows({
     </dl>
   );
 }
+
+/** 교재·강의록에는 없고 강의에서 보충한 내용 */
+export function LectureNote({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="mt-3 rounded-lg bg-rose-50 px-2.5 py-1.5 text-[11.5px] leading-5 text-rose-800 dark:bg-rose-950/40 dark:text-rose-200">
+      <strong>강의 보충</strong> — {children}
+    </p>
+  );
+}

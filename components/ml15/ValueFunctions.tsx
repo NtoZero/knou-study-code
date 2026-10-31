@@ -139,7 +139,7 @@ export default function ValueFunctions() {
       />
 
       <div className="space-y-5">
-        <Sourced refs={{ textbook: "14.1.3 정책과 가치함수 — 식 14-1 ~ 14-3", slides: "정책과 가치함수 — 정책 π" }}>
+        <Sourced refs={{ textbook: "14.1.3 정책과 가치함수 — 식 14-1 ~ 14-3", slides: "정책과 가치함수 — 정책 π", lecture: "상태 1에서는 오른쪽과 아래로만 갈 수 있으니 확률이 각각 1/2이라는 예로, 상태–행동의 시퀀스를 만들어 내는 함수적 규칙이 정책이라고 정리" }}>
           <Card>
             <CardTitle>정책 π</CardTitle>
             <Formula note="(식 14-1) 상태–행동 쌍이 이어지고, 쌍 사이마다 보상이 붙는다">
@@ -172,7 +172,7 @@ export default function ValueFunctions() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.1.3 정책과 가치함수 — 식 14-4", slides: "정책과 가치함수 — ‘좋은 정책’에 대한 평가 기준" }}>
+        <Sourced refs={{ textbook: "14.1.3 정책과 가치함수 — 식 14-4", slides: "정책과 가치함수 — ‘좋은 정책’에 대한 평가 기준", lecture: "γ가 0과 1 사이라 거듭제곱할수록 작아지므로, 바로 다음 보상이 가장 크게, 먼 보상일수록 작게 반영된다고 설명" }}>
           <Card>
             <CardTitle>수익 Gₜ — 멀리 있는 보상일수록 덜 쳐 준다</CardTitle>
             <Formula note="(식 14-4) 총할인 보상 total discount reward">
@@ -241,6 +241,7 @@ export default function ValueFunctions() {
           refs={{
             textbook: "14.1.3 정책과 가치함수 — 식 14-5 ~ 14-9",
             slides: "정책과 가치함수 — 가치함수 · 최적 가치함수와 최적 정책",
+            lecture: "모든 정책을 평가하는 방법은 바둑처럼 정책공간이 방대하면 불가능하므로 상태·행동의 가치를 평가하는 함수를 쓴다고 하고, 최적 가치함수는 특정 정책과 무관하게 최대값을 갖는 함수로 해석",
           }}
         >
           <Card>
@@ -285,7 +286,7 @@ export default function ValueFunctions() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.1.3 정책과 가치함수 — 식 14-9", slides: "최적 가치함수와 최적 정책" }}>
+        <Sourced refs={{ textbook: "14.1.3 정책과 가치함수 — 식 14-9", slides: "최적 가치함수와 최적 정책", lecture: "식으로는 간단해 보여도 실제 환경에서 Q*를 찾으려면 모든 정책을 조사해야 해서 쉽지 않고, 그래서 DQN이 등장해 주로 쓰인다고 연결" }}>
           <Card>
             <CardTitle>최적 정책은 q*(s, a)가 가장 큰 행동에 확률 1을 준다</CardTitle>
             <P>
@@ -346,7 +347,7 @@ export default function ValueFunctions() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.1.3 정책과 가치함수 — 학습의 어려움", slides: "MDP에서 학습의 어려움" }}>
+        <Sourced refs={{ textbook: "14.1.3 정책과 가치함수 — 학습의 어려움", slides: "MDP에서 학습의 어려움", lecture: "미로 찾기에서 목표가 어디 있는지 전체적으로는 모르고 다음 상태로 가 봐야 알 수 있다는 예로 ‘지역적·부분적 정보’를 설명" }}>
           <Card>
             <CardTitle>MDP에서 학습의 어려움</CardTitle>
             <ol className="space-y-1.5">

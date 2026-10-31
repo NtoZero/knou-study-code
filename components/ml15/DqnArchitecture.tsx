@@ -122,7 +122,7 @@ export default function DqnArchitecture() {
       />
 
       <div className="space-y-5">
-        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 불안정성의 원인", slides: "Q-신경망 학습의 불안정성" }}>
+        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 불안정성의 원인", slides: "Q-신경망 학습의 불안정성", lecture: "이렇게 하면 된다는 이론적 방법은 오래전부터 알려져 있었지만 테이블과 달리 신경망에서는 수렴하지 않아 학습이 불안정했고, 그 해결책으로 DQN이 개발되어 아타리 게임에 적용되었다고 설명" }}>
           <Card>
             <CardTitle>불안정성의 원인 → 해결책</CardTitle>
             <P>
@@ -168,7 +168,7 @@ export default function DqnArchitecture() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 그림 14-14 DQN 구조", slides: "Deep Q-Network" }}>
+        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 그림 14-14 DQN 구조", slides: "Deep Q-Network", lecture: "2013년 초기 모델은 콘볼루션층 2개와 완전연결층 2개에 ReLU를 쓰고, 입력은 최근 4개 프레임을 채널로 쌓은 84×84이며 출력은 상태 하나에 대한 모든 행동의 Q-값이라고 짚음" }}>
           <Card>
             <CardTitle>DQN — 아타리 게임을 위한 신경망 구조</CardTitle>
             <ConceptRows

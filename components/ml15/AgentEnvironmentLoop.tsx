@@ -143,6 +143,7 @@ export default function AgentEnvironmentLoop() {
           refs={{
             textbook: "14.1.1 강화학습의 계산 모델 — 그림 14-3 · 14-4",
             slides: "강화학습의 표준 계산 모델",
+            lecture: "게임으로 대응시켜 설명 — 플레이어의 두뇌가 에이전트, 조이스틱 조작이 행동, 게임기가 환경, 게임 화면이 상태, 점수 변화가 보상이며, 실제로는 학습시킬 머신이 에이전트라고 짚음",
           }}
         >
           <Card>
@@ -253,7 +254,7 @@ export default function AgentEnvironmentLoop() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.1.1 강화학습의 계산 모델", slides: "상태와 보상의 예" }}>
+        <Sourced refs={{ textbook: "14.1.1 강화학습의 계산 모델", slides: "상태와 보상의 예", lecture: "함정은 움직일 수 없는 곳이라 상태 집합에서 빠지고, 그림의 화살표는 각 위치에서 목표에 가기 위해 고를 수 있는 최적의 이동 방향이라고 설명" }}>
           <Card>
             <CardTitle>집합 A, S, R의 정의가 우선 필요하다</CardTitle>
             <ConceptRows

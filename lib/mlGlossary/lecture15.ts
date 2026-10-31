@@ -95,6 +95,7 @@ export const lecture15Terms: GlossaryTerm[] = [
     related: ["t-environment", "t-policy", "t-reinforcement-learning"],
     lectures: [15],
     basis: "교재 14.1.1 강화학습의 계산 모델 — 그림 14-3 · 강의록 강화학습의 표준 계산 모델",
+    emphasis: "강의에서는 게임으로 대응시켜 플레이어의 두뇌가 에이전트, 조이스틱 조작이 행동, 게임기가 환경, 게임 화면이 상태, 점수 변화가 보상이라고 설명했다.",
     aliases: ["agent"],
   },
   {
@@ -165,7 +166,7 @@ export const lecture15Terms: GlossaryTerm[] = [
     related: ["t-mdp"],
     lectures: [15],
     basis: "교재 14.1.2 마르코프 결정 프로세스 · 강의록 마르코프 결정 프로세스 · 공식 연습문제 Q2",
-    emphasis: "‘다음 행동은 이전 선택과 현재 상태를 종합해 결정된다’는 공식 연습문제의 틀린 설명이다.",
+    emphasis: "‘다음 행동은 이전 선택과 현재 상태를 종합해 결정된다’는 공식 연습문제의 틀린 설명이다. 과거 결정까지 모두 따지면 너무 복잡해지므로 과거는 잊고 현재 상태만 보고 결정하도록 단순화한 것이라고 강의에서 설명했다.",
     aliases: ["Markov property"],
   },
   {
@@ -184,6 +185,7 @@ export const lecture15Terms: GlossaryTerm[] = [
     related: ["t-mdp", "t-environment", "t-nondeterministic-model"],
     lectures: [15],
     basis: "교재 14.1.1 · 14.1.2 · 강의록 마르코프 결정 프로세스",
+    emphasis: "강의 예: 11에서 위로 가면 보통 6으로 가지만 모터가 10번 중 한 번 오동작해 1까지 간다면 6으로 갈 확률 9/10, 1로 갈 확률 1/10 — 비결정론적이다. 확률이 1.0으로 하나로 정해지면 결정론적이다.",
     aliases: ["전이확률", "P"],
   },
   {
@@ -391,6 +393,7 @@ export const lecture15Terms: GlossaryTerm[] = [
     related: ["t-epsilon-greedy", "t-q-learning"],
     lectures: [15],
     basis: "교재 14.2.1 Q-학습 · 강의록 행동 선택을 위한 전략",
+    emphasis: "경로 하나를 찾은 뒤 탐사만 계속하면 찾아 둔 그 경로만 반복하게 된다고 강의에서 강조했다.",
     aliases: ["exploration", "exploitation", "탐험", "탐사"],
   },
   {
@@ -463,6 +466,7 @@ export const lecture15Terms: GlossaryTerm[] = [
     related: ["t-deterministic-model", "t-q-learning", "t-learning-rate"],
     lectures: [15],
     basis: "교재 14.2.1 Q-학습 — 식 14-18 · 강의록 비결정론적 환경",
+    emphasis: "강의에서는 α를 신경망의 학습률 η와 같은 개념으로, 새로 계산한 값을 보수적으로 α만큼만 반영하고 나머지는 원래 값을 유지하는 것이라고 설명했다.",
     aliases: ["belief factor", "α", "알파"],
   },
 
@@ -486,7 +490,7 @@ export const lecture15Terms: GlossaryTerm[] = [
     related: ["t-q-table", "t-dqn", "t-backpropagation", "t-gradient-descent"],
     lectures: [15],
     basis: "교재 14.2.2 심층 Q-신경망 — 그림 14-12 · 14-13 · 강의록 Q-신경망 Q-Network · Q-신경망의 학습",
-    emphasis: "Q-신경망 자체는 기울기 강하 학습법인 오류역전파 학습 알고리즘을 사용하는 지도학습을 수행한다.",
+    emphasis: "Q-신경망 자체는 기울기 강하 학습법인 오류역전파 학습 알고리즘을 사용하는 지도학습을 수행한다. 강의에서는 보상을 쓰는 강화학습이라는 큰 틀 안에서 Q-신경망 자체는 지도학습(오류역전파)으로 학습된다고 정리했다.",
     aliases: ["Q-network", "Q 신경망", "Q-네트워크"],
   },
   {
@@ -504,7 +508,7 @@ export const lecture15Terms: GlossaryTerm[] = [
     related: ["t-q-network", "t-experience-replay", "t-target-network", "t-cnn", "t-epsilon-greedy"],
     lectures: [15],
     basis: "교재 14.2.2 심층 Q-신경망 — 그림 14-14 · 강의록 Deep Q-Network · DQN 학습 알고리즘 · 공식 연습문제 Q5",
-    emphasis: "아타리 49종 게임에 동일한 구조와 파라미터를 쓰는 하나의 신경망을 사용했다 — CNN과 Q-학습의 결합.",
+    emphasis: "아타리 49종 게임에 동일한 구조와 파라미터를 쓰는 하나의 신경망을 사용했다 — CNN과 Q-학습의 결합. 강의에서는 2013년 초기 모델이 콘볼루션층 2개·완전연결층 2개에 ReLU를 쓰며, 큰 틀에서 Q-학습 알고리즘과 거의 같다고 정리했다.",
     aliases: ["DQN", "Deep Q-Network", "심층 Q-신경망", "심층 Q-학습", "Deep Q-learning"],
   },
   {
@@ -522,6 +526,7 @@ export const lecture15Terms: GlossaryTerm[] = [
     related: ["t-dqn", "t-target-network"],
     lectures: [15],
     basis: "교재 14.2.2 심층 Q-신경망 · 강의록 경험 재현, 목표망",
+    emphasis: "강의에서는 MNIST를 1만 쭉, 2만 쭉 학습시키면 잘 안 되어 데이터를 섞어 학습하는 것처럼, 경험 재현도 쉽게 말하면 경험을 섞어서 학습하는 것이라고 비유했다.",
     aliases: ["experience replay", "재현 메모리", "replay memory"],
   },
   {
@@ -542,6 +547,7 @@ export const lecture15Terms: GlossaryTerm[] = [
     related: ["t-dqn", "t-experience-replay", "t-q-network"],
     lectures: [15],
     basis: "교재 14.2.2 심층 Q-신경망 — 식 14-21 · 강의록 경험 재현, 목표망 · DQN 학습 알고리즘",
+    emphasis: "강의에서는 θ⁻를 ‘몇 단계 이전의 θ’라고 설명하고, 너무 자주 바꾸면 서로 영향을 주므로 C단계마다만 바꾼다고 했다.",
     aliases: ["target network", "θ⁻"],
   },
 ];

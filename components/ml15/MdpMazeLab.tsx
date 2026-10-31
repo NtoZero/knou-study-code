@@ -12,6 +12,7 @@ import {
   ConceptRows,
   Formula,
   Hint,
+  LectureNote,
   P,
   Scroller,
   Slider,
@@ -126,7 +127,7 @@ export default function MdpMazeLab() {
       />
 
       <div className="space-y-5">
-        <Sourced refs={{ textbook: "14.1.2 마르코프 결정 프로세스", slides: "마르코프 결정 프로세스" }}>
+        <Sourced refs={{ textbook: "14.1.2 마르코프 결정 프로세스", slides: "마르코프 결정 프로세스", lecture: "강화학습을 하려면 제일 먼저 주어진 문제를 MDP로 모형화해야 하고, 학습의 목적은 누적 보상을 최대화하는 최적의 행동을 결정하는 정책을 찾는 것이라고 정리" }}>
           <Card>
             <CardTitle>MDP, Markov Decision Process</CardTitle>
             <ConceptRows
@@ -152,7 +153,7 @@ export default function MdpMazeLab() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.1.2 마르코프 결정 프로세스 — 정의", slides: "마르코프 결정 프로세스 — 튜플" }}>
+        <Sourced refs={{ textbook: "14.1.2 마르코프 결정 프로세스 — 정의", slides: "마르코프 결정 프로세스 — 튜플", lecture: "전이를 확률로 적는 것은 같은 행동에도 여러 상태로 갈 수 있는 확률적 불확실성 때문이고, 보상 함수를 기대치로 적는 것도 보상이 정확한 값이 아니라 확률적으로 변할 수 있기 때문이라고 설명" }}>
           <Card>
             <CardTitle>마르코프 결정 프로세스는 &lt;S, A, P, R, γ&gt;의 튜플이다</CardTitle>
             <div className="mb-3 flex flex-wrap items-center justify-center gap-1 font-mono text-lg">
@@ -192,11 +193,17 @@ export default function MdpMazeLab() {
               Pᵃₛₛ′의 위첨자 a는 ‘어떤 행동을 했을 때’, 아래첨자 ss′는 ‘s에서 s′로’를 뜻한다. Rᵃₛ도
               같은 방식으로 읽는다 — 상태 s에서 행동 a를 했을 때의 보상 기대치.
             </Hint>
+            <LectureNote>
+              전이확률의 예 — 상태 s에서 행동 a를 했을 때 s₁로 갈 확률 0.7, s₂로 0.2, s₃로 0.1처럼 여러 상태로
+              갈 수 있다. 아래 미로에서 11에서 위로 가면 보통 6으로 가지만, 모터가 10번 중 한 번 오동작해 1까지
+              가 버린다면 6으로 갈 확률 9/10, 1로 갈 확률 1/10이 되어 비결정론적이다. 늘 6으로만 간다면(확률
+              1.0) 결정론적이다.
+            </LectureNote>
           </Card>
         </Sourced>
 
         <Sourced
-          refs={{ textbook: "14.1.2 마르코프 결정 프로세스 — 그림 14-6", slides: "미로 찾기 과업을 정의하는 MDP의 예" }}
+          refs={{ textbook: "14.1.2 마르코프 결정 프로세스 — 그림 14-6", slides: "미로 찾기 과업을 정의하는 MDP의 예", lecture: "회색 칸을 제외한 모든 위치가 상태 집합이고, 다음 상태가 하나로 정해져 전이확률이 1.0이면 결정론적이라고 짚음" }}
         >
           <Card>
             <CardTitle>미로 찾기 과업을 정의하는 MDP — 직접 움직여 보기</CardTitle>
@@ -376,7 +383,7 @@ export default function MdpMazeLab() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.1.2 마르코프 결정 프로세스 — 마르코프 성질", slides: "마르코프 결정 프로세스" }}>
+        <Sourced refs={{ textbook: "14.1.2 마르코프 결정 프로세스 — 마르코프 성질", slides: "마르코프 결정 프로세스", lecture: "과거의 결정까지 모두 따지면 아주 복잡해지므로, 문제를 단순화하려고 과거는 잊고 현재 상태만 보고 결정한다는 것이 마르코프 성질이며, 만족하지 못하는 문제도 근사적으로 만족하게 만들어 적용한다고 강조" }}>
           <Card>
             <CardTitle>마르코프 성질 Markov property</CardTitle>
             <ConceptRows

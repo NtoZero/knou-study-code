@@ -348,7 +348,7 @@ export default function QLearningLab() {
       />
 
       <div className="space-y-5">
-        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 식 14-10", slides: "Q-학습" }}>
+        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 식 14-10", slides: "Q-학습", lecture: "Q*를 모르니 추정치 Q̂를 쓰며, Q-학습을 딥러닝과 결합한 모델이 DQN이라고 연결" }}>
           <Card>
             <CardTitle>행동 가치함수를 “Q-함수 Q-function”라고 한다</CardTitle>
             <Formula note="(식 14-10) 앞 절의 qπ(s, a) = E[Gₜ | Sₜ = s, Aₜ = a]를 간단히 적은 것">
@@ -385,6 +385,7 @@ export default function QLearningLab() {
           refs={{
             textbook: "14.2.1 Q-학습 — 알고리즘 · 그림 14-7 ~ 14-10 · 식 14-11 ~ 14-17",
             slides: "Q-학습 알고리즘 · 4×4 미로 찾기에서 Q-학습의 예 · Q-테이블 · Q-학습의 예 · 더 좋은 경로에 대한 선택",
+            lecture: "‘부분적으로만 관찰’은 바로 이웃한 칸으로 가 봐야 보상을 알 뿐 전체 지도를 모른다는 뜻이고, 이렇게 계속 돌아다니며 갱신을 무한히 반복하다 보면 1-2-3-7-11-10-14-15-16 같은 경로(정책)를 찾게 된다고 설명",
           }}
         >
           <Card>

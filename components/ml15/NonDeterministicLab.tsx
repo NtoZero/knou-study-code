@@ -60,7 +60,7 @@ export default function NonDeterministicLab() {
       />
 
       <div className="space-y-5">
-        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 결정론적 모델과 비결정론적 모델", slides: "비결정론적 환경" }}>
+        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 결정론적 모델과 비결정론적 모델", slides: "비결정론적 환경", lecture: "보드게임에서 내가 늘 같은 수를 두어도 상대의 수는 알 수 없으니 나에게 상대방은 임의성이고, 그래서 지금 좋았던 것이 다음에도 좋다고 말할 수 없다고 설명" }}>
           <Card>
             <CardTitle>결정론적 모델 vs 비결정론적 모델</CardTitle>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -91,7 +91,7 @@ export default function NonDeterministicLab() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 식 14-18", slides: "비결정론적 환경 — α를 가진 Q-학습의 갱신 규칙" }}>
+        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 식 14-18", slides: "비결정론적 환경 — α를 가진 Q-학습의 갱신 규칙", lecture: "α는 신경망의 학습률 η와 같은 개념이며, 새로 계산한 값을 전적으로 따르지 않고 보수적으로 α만큼만 반영하고 나머지는 원래 값을 유지한다고 설명" }}>
           <Card>
             <CardTitle>α를 가진 Q-학습의 갱신 규칙</CardTitle>
             <ConceptRows

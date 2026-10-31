@@ -68,7 +68,7 @@ export default function ExplorationLab() {
       />
 
       <div className="space-y-5">
-        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 탐험과 탐사", slides: "행동 선택을 위한 전략" }}>
+        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 탐험과 탐사", slides: "행동 선택을 위한 전략", lecture: "일단 경로 하나를 찾은 뒤 탐사만 계속하면 찾아 둔 그 경로만 반복하게 되므로 둘을 적절히 섞어 써야 한다고 강조" }}>
           <Card>
             <CardTitle>탐험 exploration vs 탐사 exploitation</CardTitle>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -107,7 +107,7 @@ export default function ExplorationLab() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 엡실론 탐욕 방법", slides: "행동 선택을 위한 전략 — 엡실론 탐욕" }}>
+        <Sourced refs={{ textbook: "14.2.1 Q-학습 — 엡실론 탐욕 방법", slides: "행동 선택을 위한 전략 — 엡실론 탐욕", lecture: "ε는 랜덤을 허용하는 정도이며, 분자는 고정이고 분모가 시간에 따라 커지므로 초반에는 탐험이 많고 갈수록 탐사가 늘어난다고 설명" }}>
           <Card>
             <CardTitle>혼합된 선택 전략 → 엡실론 탐욕 ε-greedy</CardTitle>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">

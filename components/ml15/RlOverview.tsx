@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/mlShared/SourceFilter";
-import { Card, CardTitle, Chip, ConceptRows, Hint, P } from "./ui";
+import { Card, CardTitle, Chip, ConceptRows, Hint, LectureNote, P } from "./ui";
 
 /**
  * 14장 도입부와 강의록 01 강화학습의 개요 앞부분.
@@ -151,7 +151,7 @@ export default function RlOverview() {
       />
 
       <div className="space-y-5">
-        <Sourced refs={{ textbook: "14장 도입 · 14.1.1 강화학습의 계산 모델", slides: "머신러닝의 유형" }}>
+        <Sourced refs={{ textbook: "14장 도입 · 14.1.1 강화학습의 계산 모델", slides: "머신러닝의 유형", lecture: "1강에서 본 지도·비지도 구분(목표 출력값이 있느냐 없느냐)을 다시 꺼내, 강화학습은 그 교사 신호가 ‘잘했다·못했다’ 같은 보상으로 주어진다고 대비" }}>
           <Card>
             <CardTitle>머신러닝의 유형 — 무엇이 교사 신호인가</CardTitle>
             <div className="mb-3 flex flex-wrap gap-1.5">
@@ -191,7 +191,7 @@ export default function RlOverview() {
         </Sourced>
 
         <Sourced
-          refs={{ textbook: "14장 도입 — 강화학습의 응용 사례", slides: "강화학습의 적용 사례" }}
+          refs={{ textbook: "14장 도입 — 강화학습의 응용 사례", slides: "강화학습의 적용 사례", lecture: "AlphaGo → Master(기보 학습) → Zero(규칙만, 자기 대국) → 모든 보드게임으로 일반화 → MuZero(규칙도 모른 채 환경을 모델링)의 기술적 흐름을 짚고, 딥블루처럼 게임마다 사람이 조율하던 방식과 달리 DQN은 49종 게임에 하나의 신경망을 썼다는 점을 강조" }}
         >
           <Card>
             <CardTitle>강화학습의 적용 사례</CardTitle>
@@ -252,11 +252,17 @@ export default function RlOverview() {
               사용했고, 그것이 DQN 모델(CNN과 Q-학습의 결합)이다. DQN은 뒤의 ‘심층 Q-신경망’에서 다시
               다룬다.
             </Hint>
+            <LectureNote>
+              성능 비교 그래프의 기준선을 놓고 49종 가운데 29종은 컴퓨터가 사람보다 잘하고 나머지 20종은 사람
+              수준보다 조금 낮다고 나눠 설명했다. 또 딥마인드는 알파고 이전에 아타리 게임으로 강화학습을
+              연구했고, 브레이크아웃에서는 한쪽 벽돌만 깨 구멍을 낸 뒤 공을 위로 보내 깨는 요령까지 스스로
+              익혔다고 소개했다.
+            </LectureNote>
           </Card>
         </Sourced>
 
         <Sourced
-          refs={{ textbook: "14장 도입 — 응용 분야의 공통점과 제어 문제", slides: "강화학습의 응용 분야" }}
+          refs={{ textbook: "14장 도입 — 응용 분야의 공통점과 제어 문제", slides: "강화학습의 응용 분야", lecture: "로봇 팔의 모터를 몇 도 움직일지 같은 정확한 목표값은 주기 어렵지만 뚜껑을 열었는지 같은 성공·실패는 판단할 수 있다는 것이 응용 분야의 공통점이고, 이전 상황이 현재 결정에 영향을 주는 순차적 제어 문제에 강화학습이 효과적이라고 정리" }}
         >
           <Card>
             <CardTitle>왜 이 분야들인가 — 목표값은 못 줘도 성공 여부는 평가할 수 있다</CardTitle>
@@ -322,7 +328,7 @@ export default function RlOverview() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.1.1 강화학습의 계산 모델", slides: "강화학습" }}>
+        <Sourced refs={{ textbook: "14.1.1 강화학습의 계산 모델", slides: "강화학습", lecture: "특정 순간이 아니라 최종적으로 누적된 보상을 최대화하는 것이 목표이고, 그러려면 매 순간 최적의 행동을 골라 좋은 보상을 계속 얻어야 한다고 강조" }}>
           <Card>
             <CardTitle>강화학습</CardTitle>
             <ConceptRows

@@ -17,6 +17,7 @@ import {
   Scroller,
   Slider,
   makeRng,
+  LectureNote,
 } from "./ui";
 
 /**
@@ -190,7 +191,7 @@ export default function DqnTrainingLab() {
       />
 
       <div className="space-y-5">
-        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 경험 재현", slides: "경험 재현, 목표망 — 경험 재현" }}>
+        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 경험 재현", slides: "경험 재현, 목표망 — 경험 재현", lecture: "MNIST로 1만 쭉, 2만 쭉 학습시키면 잘 안 되어 데이터를 셔플링하는 것처럼, 경험 재현도 쉽게 말하면 학습 데이터를 섞어서 학습하는 것이라고 비유" }}>
           <Card>
             <CardTitle>경험 재현 → 데이터 간의 높은 상관관계에 따른 문제 해결</CardTitle>
             <ConceptRows
@@ -209,6 +210,10 @@ export default function DqnTrainingLab() {
                 },
               ]}
             />
+            <LectureNote>
+              MNIST 숫자 데이터를 1만 쭉, 그다음 2만 쭉 학습시키면 학습이 잘 안 되어 실제로는 데이터를 섞어(셔플링)
+              학습하는 것처럼, 경험 재현도 쉽게 말하면 순서대로 쌓인 경험을 섞어서 학습하는 것이라고 비유했다.
+            </LectureNote>
 
             <div className="mt-4 rounded-lg border border-gray-200 p-3 dark:border-gray-700">
               <div className="mb-2 grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,14rem)_1fr] sm:items-end">
@@ -281,7 +286,7 @@ export default function DqnTrainingLab() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 목표망 · 식 14-21", slides: "경험 재현, 목표망 — 목표망" }}>
+        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — 목표망 · 식 14-21", slides: "경험 재현, 목표망 — 목표망", lecture: "실제 출력과 목표 출력값을 같은 θ의 신경망이 만들면 θ가 바뀔 때 함께 움직이므로, 몇 단계 이전의 θ를 쓰는 목표망을 두고 너무 자주 바꾸지 않도록 C단계마다만 갱신한다고 설명" }}>
           <Card>
             <CardTitle>목표망 → 시변적인 목표 출력값 문제 해결</CardTitle>
             <Formula note="(식 14-21) 목표 출력값 계산에만 목표망의 파라미터 θ⁻를 쓴다">
@@ -293,6 +298,10 @@ export default function DqnTrainingLab() {
                 계산에 사용된다. θ⁻는 매 C단계마다 주기적으로 θ로 갱신한다. 아래 표에서 매 단계 θ는 바뀌지만,
                 목표값을 만드는 파라미터가 언제 바뀌는지 비교해 보자.
               </P>
+              <LectureNote>
+                θ⁻는 ‘몇 단계 이전의 θ 값’이라고 설명했다. 실제 출력과 목표 출력이 동시에 바뀌지 않게 하되, 너무
+                자주 바꾸면 서로 영향을 주므로 일정한 간격(C단계)마다만 바꾼다는 것이다.
+              </LectureNote>
             </div>
             <div className="mt-3 flex flex-wrap items-end gap-3">
               <div className="flex gap-1.5">
@@ -360,7 +369,7 @@ export default function DqnTrainingLab() {
           </Card>
         </Sourced>
 
-        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — DQN 학습 알고리즘", slides: "DQN 학습 알고리즘" }}>
+        <Sourced refs={{ textbook: "14.2.2 심층 Q-신경망 — DQN 학습 알고리즘", slides: "DQN 학습 알고리즘", lecture: "알고리즘을 외울 필요는 없고 관심 있으면 논문을 참고하라고 하며, 큰 틀에서는 신경망으로 목표 출력값을 쓰도록 구체화했을 뿐 처음 본 Q-학습 알고리즘과 거의 같다고 정리" }}>
           <Card>
             <CardTitle>DQN 학습 알고리즘 — 한 단계씩</CardTitle>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">

@@ -17,6 +17,7 @@ export const lecture15Outline: LectureOutline = {
       refs: {
         textbook: "14.1 강화학습의 개요",
         slides: "정리하기 — 강화학습의 개요",
+        lecture: "정확한 목표값은 주기 어렵지만 성공·실패는 판단할 수 있는 순차적 제어 문제에 강화학습이 쓰이고, 학습의 목적은 누적 보상을 최대화하는 정책을 찾는 것이라고 정리",
       },
     },
     {
@@ -28,6 +29,7 @@ export const lecture15Outline: LectureOutline = {
       refs: {
         textbook: "14.2 Q-학습과 심층 Q-신경망",
         slides: "정리하기 — Q-학습과 심층 Q-신경망",
+        lecture: "DQN 학습 알고리즘은 큰 틀에서 Q-학습 알고리즘과 거의 같고, 신경망으로 목표 출력값을 쓰도록 구체화한 것이라고 정리",
       },
     },
   ],
@@ -40,16 +42,18 @@ export const lecture15Outline: LectureOutline = {
       refs: {
         textbook: "14.1.2 마르코프 결정 프로세스",
         slides: "마르코프 결정 프로세스",
+        lecture: "강화학습을 하려면 제일 먼저 문제를 MDP로 모형화하고, 그 안에서 누적 보상을 최대화하는 정책을 찾는 것이 학습의 목적이라고 정리",
       },
     },
     {
       question: "마르코프 성질에서 이전의 선택은 다음 행동에 영향을 주는가?",
       answer:
         "주지 않는다. 마르코프 성질은 “현재 상태에서 선택할 다음 행동은 현재의 상태(상황)에 의해서만 결정된다”는 것이다. 이전의 선택/결정들은 영향을 미치지 않으므로 현재 상태만 판단하면 된다. ‘이전 선택과 현재 상태를 종합해 결정한다’는 설명은 틀린 것이다. 강화학습은 기본적으로 이 성질을 만족한다는 가정에서 동작하므로, 만족하지 못하는 문제라면 근사적으로라도 MDP로 만들어야 한다.",
-      basis: "교재 14.1.2 마르코프 결정 프로세스 · 강의록 마르코프 결정 프로세스 · 공식 연습문제 Q2",
+      basis: "교재 14.1.2 마르코프 결정 프로세스 · 강의록 마르코프 결정 프로세스 · 강의 설명 · 공식 연습문제 Q2",
       refs: {
         textbook: "14.1.2 마르코프 결정 프로세스 — 마르코프 성질",
         slides: "마르코프 결정 프로세스 — 마르코프 성질",
+        lecture: "과거 결정까지 따지면 너무 복잡해지므로 과거는 잊고 현재 상태만 보고 결정하도록 단순화한 것이라고 설명",
       },
     },
     {
@@ -70,6 +74,7 @@ export const lecture15Outline: LectureOutline = {
       refs: {
         textbook: "14.2.1 Q-학습 — 탐험과 탐사, 엡실론 탐욕 방법",
         slides: "행동 선택을 위한 전략",
+        lecture: "경로 하나를 찾은 뒤 탐사만 하면 그 경로만 반복하게 되므로 탐험과 섞어야 한다고 강조",
       },
     },
     {
@@ -80,6 +85,7 @@ export const lecture15Outline: LectureOutline = {
       refs: {
         textbook: "14.2.1 Q-학습 — 할인된 미래 보상, 비결정론적 모델",
         slides: "더 좋은 경로에 대한 선택 · 비결정론적 환경",
+        lecture: "α는 신경망의 학습률 η와 같은 개념으로, 새 값을 보수적으로 α만큼만 반영한다고 설명",
       },
     },
     {
@@ -90,6 +96,7 @@ export const lecture15Outline: LectureOutline = {
       refs: {
         textbook: "14.2.2 심층 Q-신경망 — 경험 재현 · 목표망",
         slides: "Q-신경망 학습의 불안정성 · 경험 재현, 목표망",
+        lecture: "경험 재현은 MNIST를 숫자별로 몰아서 학습시키지 않고 섞는 것과 같고, 목표망의 θ⁻는 몇 단계 이전의 θ라고 비유",
       },
     },
     {
@@ -100,6 +107,7 @@ export const lecture15Outline: LectureOutline = {
       refs: {
         textbook: "14.2.2 심층 Q-신경망 — DQN 구조",
         slides: "Deep Q-Network",
+        lecture: "DQN은 CNN을 기반으로 한 심층 신경망이며 2013년 초기 모델은 콘볼루션층 2개·완전연결층 2개·ReLU라고 짚음",
       },
     },
   ],
