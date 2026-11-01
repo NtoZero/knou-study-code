@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Sparkle, ChevronRight, Layers } from "lucide-react";
+import { Menu, X, Sparkle, ChevronRight, Layers, Presentation } from "lucide-react";
 import { mlLectures } from "@/lib/constants";
+import { hasMlBrief } from "@/lib/mlBriefs";
 
 export default function MLNavigation() {
   const [open, setOpen] = useState(false);
@@ -70,30 +71,48 @@ export default function MLNavigation() {
 
           {mlLectures.map((lec) => {
             const active = pathname === `/ml/lecture/${lec.id}`;
+            const briefHref = `/ml/lecture/${lec.id}/brief`;
+            const briefActive = pathname === briefHref;
             return (
-              <Link
-                key={lec.id}
-                href={`/ml/lecture/${lec.id}`}
-                onClick={() => setOpen(false)}
-                className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors ${
-                  active
-                    ? `${lec.bgLightClass} ${lec.textClass} font-semibold`
-                    : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-                }`}
-              >
-                <span
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-bold text-white ${lec.bgClass}`}
+              <div key={lec.id}>
+                <Link
+                  href={`/ml/lecture/${lec.id}`}
+                  onClick={() => setOpen(false)}
+                  className={`mb-1 flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors ${
+                    active
+                      ? `${lec.bgLightClass} ${lec.textClass} font-semibold`
+                      : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                  }`}
                 >
-                  {lec.id}
-                </span>
-                <span className="min-w-0">
-                  <span className="block truncate font-medium">{lec.title}</span>
-                  <span className="block truncate text-xs text-gray-400">
-                    {lec.subtitle}
+                  <span
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-bold text-white ${lec.bgClass}`}
+                  >
+                    {lec.id}
                   </span>
-                </span>
-                {active && <ChevronRight size={14} className="ml-auto shrink-0" />}
-              </Link>
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium">{lec.title}</span>
+                    <span className="block truncate text-xs text-gray-400">
+                      {lec.subtitle}
+                    </span>
+                  </span>
+                  {active && <ChevronRight size={14} className="ml-auto shrink-0" />}
+                </Link>
+                {hasMlBrief(lec.id) && (
+                  <Link
+                    href={briefHref}
+                    onClick={() => setOpen(false)}
+                    className={`mb-1 ml-10 flex items-center gap-2 rounded-lg px-3 py-2 text-xs transition-colors ${
+                      briefActive
+                        ? `${lec.bgLightClass} ${lec.textClass} font-semibold`
+                        : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    <Presentation size={13} className="shrink-0" />
+                    발표 간소화판
+                    {briefActive && <ChevronRight size={12} className="ml-auto shrink-0" />}
+                  </Link>
+                )}
+              </div>
             );
           })}
 

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Target } from "lucide-react";
+import { ChevronLeft, ChevronRight, Presentation, Target } from "lucide-react";
 import { mlLectures } from "@/lib/constants";
 import { getMlOutline } from "@/lib/mlLectureOutline";
+import { hasMlBrief } from "@/lib/mlBriefs";
 import LectureSummary from "@/components/mlShared/LectureSummary";
 import LecturePrereqBar from "@/components/mlShared/LecturePrereqBar";
 import { SourceFilterProvider, SourceFilterBar } from "@/components/mlShared/SourceFilter";
@@ -43,6 +44,16 @@ export default function MLLectureLayout({ lectureId, children }: Props) {
           {lectureId}강. {lec.title}
         </h1>
         <p className="mt-1 text-gray-500">{lec.subtitle}</p>
+        {hasMlBrief(lectureId) && (
+          <Link
+            href={`/ml/lecture/${lectureId}/brief`}
+            className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-white ${lec.bgClass}`}
+          >
+            <Presentation size={13} />
+            발표 간소화판 보기
+            <ChevronRight size={12} />
+          </Link>
+        )}
 
         {outline && (
           <div className="mt-4 border-t border-black/5 pt-4 dark:border-white/10">
