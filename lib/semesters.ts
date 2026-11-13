@@ -5,6 +5,7 @@
 
 export type SubjectSlug =
   | "ml"
+  | "dl"
   | "network"
   | "ai"
   | "java"
@@ -24,7 +25,8 @@ export interface SubjectEntry {
     | "Brain"
     | "Code2"
     | "Shield"
-    | "Layers";
+    | "Layers"
+    | "Waypoints";
   iconClass: string;
   accentClass: string;
   /** 기출분석 페이지 경로 — 없으면 undefined */
@@ -63,6 +65,18 @@ export const semesters: Semester[] = [
         accentClass:
           "border-cyan-200 bg-gradient-to-br from-cyan-50 to-white dark:border-cyan-900/50 dark:from-cyan-950/40 dark:to-gray-900",
         lectureRange: "1~15강",
+        isNew: true,
+      },
+      {
+        slug: "dl",
+        href: "/dl",
+        title: "딥러닝",
+        subtitle: "1~5강 인터랙티브 학습 · 강의록과 강의 내용 기반",
+        icon: "Waypoints",
+        iconClass: "text-teal-500",
+        accentClass:
+          "border-teal-200 bg-gradient-to-br from-teal-50 to-white dark:border-teal-900/50 dark:from-teal-950/40 dark:to-gray-900",
+        lectureRange: "1~5강",
         isNew: true,
       },
     ],

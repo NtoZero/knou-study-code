@@ -9,6 +9,7 @@ import {
   Radio,
   Shield,
   Sparkle,
+  Waypoints,
   ArrowRight,
   Sparkles,
   Target,
@@ -17,6 +18,7 @@ import { semesters, type SubjectEntry } from "@/lib/semesters";
 
 const iconMap = {
   Sparkle,
+  Waypoints,
   Radio,
   Brain,
   Code2,

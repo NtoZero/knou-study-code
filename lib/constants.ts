@@ -915,3 +915,57 @@ export const mlLectures = [
     bgLightClass: "bg-cyan-50 dark:bg-cyan-950",
   },
 ] as const;
+
+/** 딥러닝 1~5강 — 강의록과 강의 내용을 근거로 한 인터랙티브 학습 */
+export const dlLectures = [
+  {
+    id: 1,
+    title: "신경망의 개요",
+    subtitle: "인공 신경망과 딥러닝, 뉴런의 구조와 활성함수, 단층 퍼셉트론과 일반화 오류",
+    color: "dl1",
+    bgClass: "bg-teal-500",
+    textClass: "text-teal-500",
+    borderClass: "border-teal-500",
+    bgLightClass: "bg-teal-50 dark:bg-teal-950",
+  },
+  {
+    id: 2,
+    title: "다층 퍼셉트론과 역전파",
+    subtitle: "단층 퍼셉트론의 한계, 다층 퍼셉트론의 학습, 역전파 알고리즘, 모멘텀",
+    color: "dl2",
+    bgClass: "bg-indigo-500",
+    textClass: "text-indigo-500",
+    borderClass: "border-indigo-500",
+    bgLightClass: "bg-indigo-50 dark:bg-indigo-950",
+  },
+  {
+    id: 3,
+    title: "딥러닝 프레임워크",
+    subtitle: "텐서플로와 실행 모드, 텐서의 개념, 자동 미분, Keras로 구현하기",
+    color: "dl3",
+    bgClass: "bg-amber-500",
+    textClass: "text-amber-500",
+    borderClass: "border-amber-500",
+    bgLightClass: "bg-amber-50 dark:bg-amber-950",
+  },
+  {
+    id: 4,
+    title: "딥러닝의 학습 기술 (1)",
+    subtitle: "경사 하강법과 동적 학습률, 불안정한 경사와 과적합, 가중치 초기화",
+    color: "dl4",
+    bgClass: "bg-rose-500",
+    textClass: "text-rose-500",
+    borderClass: "border-rose-500",
+    bgLightClass: "bg-rose-50 dark:bg-rose-950",
+  },
+  {
+    id: 5,
+    title: "딥러닝의 학습 기술 (2)",
+    subtitle: "모멘텀·NAG·Adam, 조기 종료와 규제·드롭아웃, 배치 정규화, MNIST 인식",
+    color: "dl5",
+    bgClass: "bg-violet-500",
+    textClass: "text-violet-500",
+    borderClass: "border-violet-500",
+    bgLightClass: "bg-violet-50 dark:bg-violet-950",
+  },
+];
