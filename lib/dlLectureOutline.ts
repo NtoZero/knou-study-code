@@ -34,12 +34,23 @@ import { lecture3Outline } from "@/lib/dlOutlines/lecture3";
 import { lecture4Outline } from "@/lib/dlOutlines/lecture4";
 import { lecture5Outline } from "@/lib/dlOutlines/lecture5";
 
+import { lecture6Outline } from "@/lib/dlOutlines/lecture6";
+import { lecture7Outline } from "@/lib/dlOutlines/lecture7";
+import { lecture8Outline } from "@/lib/dlOutlines/lecture8";
+import { lecture9Outline } from "@/lib/dlOutlines/lecture9";
+import { lecture10Outline } from "@/lib/dlOutlines/lecture10";
+
 const outlines: Record<number, LectureOutline> = {
   1: lecture1Outline,
   2: lecture2Outline,
   3: lecture3Outline,
   4: lecture4Outline,
   5: lecture5Outline,
+  6: lecture6Outline,
+  7: lecture7Outline,
+  8: lecture8Outline,
+  9: lecture9Outline,
+  10: lecture10Outline,
 };
 
 export function getDlOutline(lectureId: number): LectureOutline | null {

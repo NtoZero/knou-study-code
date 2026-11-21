@@ -10,6 +10,11 @@ const lectureFocus: Record<number, string[]> = {
   3: ["텐서플로", "실행 모드", "텐서", "자동 미분", "Keras"],
   4: ["경사 하강법", "동적 학습률", "불안정한 경사", "과적합", "Glorot·He 초기화"],
   5: ["NAG", "Adagrad·RMSProp", "Adam", "드롭아웃", "배치 정규화"],
+  6: ["합성곱", "스트라이드", "패딩", "풀링"],
+  7: ["LeNet-5", "특징 맵", "손글씨 인식"],
+  8: ["AlexNet", "ReLU", "데이터 증강", "VGGNet"],
+  9: ["인셉션 모듈", "1×1 합성곱", "잔차 연결"],
+  10: ["잠재 벡터", "복원 오차", "생성기", "판별기"],
 };
 
 export default function DLHome() {
@@ -24,9 +29,17 @@ export default function DLHome() {
         </div>
         <h1 className="text-3xl font-bold">딥러닝 인터랙티브 학습</h1>
         <p className="mt-2 text-gray-500">
-          KNOU 딥러닝 1~5강의 강의록 내용을 그림·시뮬레이션·연습문제로 짚어 봅니다
+          1~10강의 개념을 그림으로 살펴보고, 계산과 복습 문제로 직접 확인해 보세요.
         </p>
       </div>
+
+      <section aria-labelledby="easy-lessons" className="mb-9 rounded-xl border border-teal-200 bg-teal-50 p-5 dark:border-teal-900 dark:bg-teal-950/40">
+        <h2 id="easy-lessons" className="font-bold">그림으로 시작하는 심층 합성곱 신경망</h2>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Link className="rounded-lg bg-white px-4 py-3 text-sm font-semibold text-teal-800 shadow-sm hover:underline dark:bg-gray-900 dark:text-teal-200" href="/dl/lecture/8/easy">8강 쉬운 설명 · 작은 필터를 겹치면 어디까지 보일까? →</Link>
+          <Link className="rounded-lg bg-white px-4 py-3 text-sm font-semibold text-teal-800 shadow-sm hover:underline dark:bg-gray-900 dark:text-teal-200" href="/dl/lecture/9/easy">9강 쉬운 설명 · 특징을 이어 붙이거나 더하면 무엇이 달라질까? →</Link>
+        </div>
+      </section>
 
       <div className="mb-4 flex items-center gap-2">
         <BookOpen size={18} className="text-gray-400" />

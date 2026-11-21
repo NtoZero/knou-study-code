@@ -916,7 +916,7 @@ export const mlLectures = [
   },
 ] as const;
 
-/** 딥러닝 1~5강 — 강의록과 강의 내용을 근거로 한 인터랙티브 학습 */
+/** 딥러닝 1~10강 — 강의록과 강의 내용을 근거로 한 인터랙티브 학습 */
 export const dlLectures = [
   {
     id: 1,
@@ -967,5 +967,55 @@ export const dlLectures = [
     textClass: "text-violet-500",
     borderClass: "border-violet-500",
     bgLightClass: "bg-violet-50 dark:bg-violet-950",
+  },
+  {
+    id: 6,
+    title: "합성곱 신경망(1)",
+    subtitle: "필터를 옮기며 특징 맵을 만들고 풀링으로 공간 크기 줄이기",
+    color: "dl6",
+    bgClass: "bg-cyan-600",
+    textClass: "text-cyan-700 dark:text-cyan-300",
+    borderClass: "border-cyan-600",
+    bgLightClass: "bg-cyan-50 dark:bg-cyan-950",
+  },
+  {
+    id: 7,
+    title: "합성곱 신경망(2)",
+    subtitle: "LeNet-5의 층별 특징 추출과 손글씨 분류 과정",
+    color: "dl7",
+    bgClass: "bg-orange-600",
+    textClass: "text-orange-700 dark:text-orange-300",
+    borderClass: "border-orange-600",
+    bgLightClass: "bg-orange-50 dark:bg-orange-950",
+  },
+  {
+    id: 8,
+    title: "심층 합성곱 신경망(1)",
+    subtitle: "AlexNet과 VGGNet의 필터, 활성함수, 데이터 증강",
+    color: "dl8",
+    bgClass: "bg-indigo-600",
+    textClass: "text-indigo-700 dark:text-indigo-300",
+    borderClass: "border-indigo-600",
+    bgLightClass: "bg-indigo-50 dark:bg-indigo-950",
+  },
+  {
+    id: 9,
+    title: "심층 합성곱 신경망(2)",
+    subtitle: "GoogLeNet의 인셉션 모듈과 ResNet의 잔차 연결",
+    color: "dl9",
+    bgClass: "bg-emerald-600",
+    textClass: "text-emerald-700 dark:text-emerald-300",
+    borderClass: "border-emerald-600",
+    bgLightClass: "bg-emerald-50 dark:bg-emerald-950",
+  },
+  {
+    id: 10,
+    title: "오토인코더와 적대적 생성 신경망",
+    subtitle: "손글씨 복원 오차와 생성·판별 네트워크의 교대 학습",
+    color: "dl10",
+    bgClass: "bg-rose-600",
+    textClass: "text-rose-700 dark:text-rose-300",
+    borderClass: "border-rose-600",
+    bgLightClass: "bg-rose-50 dark:bg-rose-950",
   },
 ];

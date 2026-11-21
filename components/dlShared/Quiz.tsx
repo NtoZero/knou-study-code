@@ -45,7 +45,7 @@ export default function Quiz({ items }: { items: QuizItem[] }) {
     <section id="quiz" className="scroll-mt-32">
       <SectionTitle
         title="복습 퀴즈"
-        subtitle={`정리하기 공식 연습문제 ${officialCount}문항과 변형 문제 ${QUIZZES.length - officialCount}문항`}
+        subtitle={[officialCount > 0 && `공식 연습문제 ${officialCount}문항`, QUIZZES.length > officialCount && `변형 문제 ${QUIZZES.length - officialCount}문항`].filter(Boolean).join(" · ")}
       />
 
       <div className="space-y-6">

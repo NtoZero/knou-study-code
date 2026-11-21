@@ -95,6 +95,13 @@ export default function DLNavigation() {
                   </span>
                   {active && <ChevronRight size={14} className="ml-auto shrink-0" />}
                 </Link>
+                {(lec.id === 8 || lec.id === 9) && (
+                  <Link href={`/dl/lecture/${lec.id}/easy`} onClick={() => setOpen(false)}
+                    aria-current={pathname === `/dl/lecture/${lec.id}/easy` ? "page" : undefined}
+                    className="ml-12 mb-2 block rounded px-2 py-1 text-xs font-medium text-teal-700 hover:underline aria-[current=page]:bg-teal-100 dark:text-teal-300 dark:aria-[current=page]:bg-teal-950">
+                    {lec.id}강 쉬운 설명
+                  </Link>
+                )}
               </div>
             );
           })}

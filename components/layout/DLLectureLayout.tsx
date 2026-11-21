@@ -88,7 +88,7 @@ export default function DLLectureLayout({ lectureId, children }: Props) {
       <div className="mt-16 flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-800">
         {prev ? (
           <Link
-            href={`/ml/lecture/${prev.id}`}
+            href={`/dl/lecture/${prev.id}`}
             className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-200"
           >
             <ChevronLeft size={16} />
@@ -99,7 +99,7 @@ export default function DLLectureLayout({ lectureId, children }: Props) {
         )}
         {next ? (
           <Link
-            href={`/ml/lecture/${next.id}`}
+            href={`/dl/lecture/${next.id}`}
             className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-200"
           >
             {next.id}강. {next.title}
