@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/dlShared/SourceFilter";
@@ -33,7 +34,7 @@ export default function VGGConfigurations() {
         <Card>
           <div className="mb-4 rounded-xl border border-violet-200 bg-violet-50/70 p-4 dark:border-violet-900 dark:bg-violet-950/30">
             <p className="text-sm font-bold text-violet-950 dark:text-violet-100">표의 층 수와 비교 짝을 먼저 읽어요</p>
-            <p className="mt-1 text-[13px] leading-6 text-violet-900 dark:text-violet-200">VGG 이름의 층 수는 가중치를 학습하는 합성곱층과 완전연결층을 합한 값이에요. 예를 들어 D는 블록별 합성곱 2+2+3+3+3=13층에 완전연결 3층을 더해 16층이에요. 풀링층과 LRN은 이 합계에 들어가지 않아요.</p>
+            <p className="mt-1 text-[13px] leading-6 text-violet-900 dark:text-violet-200">VGG 이름의 층 수는 <KeyPhrase>가중치를 학습하는 합성곱층과 완전연결층을 합한 값</KeyPhrase>이에요. 예를 들어 D는 블록별 합성곱 2+2+3+3+3=13층에 완전연결 3층을 더해 16층이에요. 풀링층과 LRN은 이 합계에 들어가지 않아요.</p>
             <div className="mt-3 overflow-x-auto rounded-lg bg-white/80 dark:bg-gray-900/60">
               <table className="w-full min-w-[600px] text-left text-[13px] leading-6">
                 <thead><tr className="border-b border-gray-200 text-gray-500 dark:border-gray-700"><th className="p-2">비교 짝</th><th className="p-2">같게 둔 조건</th><th className="p-2">바뀐 조건과 읽을 점</th></tr></thead>

@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/dlShared/SourceFilter";
@@ -51,7 +52,7 @@ export default function AlexNetArchitectureLab() {
           <p className="mb-4 text-sm leading-6">ImageNet의 이미지 분류 대회 ILSVRC에서는 2010~2011년 전통적인 컴퓨터 비전 기법이 우승했습니다. 2012년 AlexNet은 분류 오류율 16.4%로 우승하며 깊은 합성곱 신경망이 대규모 이미지 분류에서 어떤 성능을 낼 수 있는지 보여 주었습니다.</p>
           <div className="mb-5 rounded-xl border border-sky-200 bg-sky-50/70 p-4 dark:border-sky-900 dark:bg-sky-950/30">
             <p className="text-sm font-bold text-sky-950 dark:text-sky-100">출력 표를 직접 계산하기: C1 → P1 → C2</p>
-            <p className="mt-1 text-[13px] leading-6 text-sky-900 dark:text-sky-200">출력 모양 <b>가로×세로×특징 맵 수</b>를 읽어요. 필터 수가 출력 맵 수를 정하고, 필터의 가중치 수는 커널 크기와 입력 채널 수로 계산해요.</p>
+            <p className="mt-1 text-[13px] leading-6 text-sky-900 dark:text-sky-200">출력 모양 <b>가로×세로×특징 맵 수</b>를 읽어요. <KeyPhrase>필터 수가 출력 맵 수를 정하고</KeyPhrase>, 필터의 가중치 수는 커널 크기와 입력 채널 수로 계산해요.</p>
             <div className="mt-3 grid gap-3 lg:grid-cols-3">
               <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
                 <p className="text-xs font-bold text-gray-800 dark:text-gray-100">① C1 · 합성곱</p>

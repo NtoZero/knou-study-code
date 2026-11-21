@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import { RotateCcw } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
@@ -33,7 +34,7 @@ export default function GlobalAveragePoolingLab() {
         <Card className="mb-4 border-cyan-200 bg-cyan-50/40 dark:border-cyan-900 dark:bg-cyan-950/20">
           <CardTitle>특징 맵마다 평균 한 개를 만들고 분류기에 전달</CardTitle>
           <p className="text-[13px] leading-6 text-gray-700 dark:text-gray-300">
-            GAP는 여러 특징 맵을 서로 합치지 않습니다. 한 맵의 가로·세로 위치를 전부 평균해 스칼라 하나를 만들고, 이 과정을 채널마다 반복해 길이 C인 벡터를 냅니다. 위치별 배열은 사라지고 어떤 특징이 맵 전체에서 얼마나 나타났는지 평균으로 남습니다.
+            GAP는 여러 특징 맵을 서로 합치지 않습니다. <KeyPhrase>한 맵의 가로·세로 위치를 전부 평균해 스칼라 하나</KeyPhrase>를 만들고, 이 과정을 채널마다 반복해 길이 C인 벡터를 냅니다. 위치별 배열은 사라지고 어떤 특징이 맵 전체에서 얼마나 나타났는지 평균으로 남습니다.
           </p>
           <div className="mt-3 grid gap-3 md:grid-cols-[0.9fr_1.1fr]">
             <div className="rounded-lg border border-cyan-200 bg-white p-3 dark:border-cyan-900 dark:bg-gray-900">

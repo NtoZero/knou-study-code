@@ -1,5 +1,6 @@
 "use client";
 
+import { MarkedText } from "./KeyPhrase";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, XCircle, RotateCcw } from "lucide-react";
@@ -84,7 +85,7 @@ export default function Quiz({ items }: { items: QuizItem[] }) {
                   <div className="mb-4 rounded-lg border-l-4 border-teal-500 bg-teal-50 p-4 dark:bg-teal-950/35">
                     <p className="mb-2 text-sm font-bold">풀이 과정</p>
                     <ol className="list-decimal space-y-2 pl-5 text-sm leading-6 marker:font-semibold marker:text-teal-700 dark:marker:text-teal-300">
-                      {quiz.solution.map(step => <li key={step} className="pl-1">{step}</li>)}
+                      {quiz.solution.map(step => <li key={step} className="pl-1"><MarkedText text={step} /></li>)}
                     </ol>
                   </div>
                 )}

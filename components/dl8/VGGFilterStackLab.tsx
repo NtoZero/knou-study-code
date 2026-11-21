@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/dlShared/SourceFilter";
@@ -27,7 +28,7 @@ export default function VGGFilterStackLab() {
         <Card>
           <div className="mb-4 rounded-xl border border-violet-200 bg-violet-50/70 p-4 dark:border-violet-900 dark:bg-violet-950/30">
             <p className="text-sm font-bold text-violet-950 dark:text-violet-100">3×3을 세 번 쌓으면 출력은 어떻게 계산될까요?</p>
-            <p className="mt-1 text-[13px] leading-6 text-violet-900 dark:text-violet-200">입력 10×10, stride 1, 패딩 없음, 한 입력 채널·한 출력 채널로 계산해요. 출력 지도 크기는 커널이 움직일 수 있는 위치 수이고, 수용 영역은 마지막 지도에서 고른 한 점이 원래 입력에서 보는 범위예요.</p>
+            <p className="mt-1 text-[13px] leading-6 text-violet-900 dark:text-violet-200">입력 10×10, stride 1, 패딩 없음, 한 입력 채널·한 출력 채널로 계산해요. 출력 지도 크기는 커널이 움직일 수 있는 위치 수이고, 수용 영역은 마지막 지도에서 고른 <KeyPhrase>한 점이 원래 입력에서 보는 범위</KeyPhrase>예요.</p>
             <div className="mt-3 grid gap-3 md:grid-cols-3">
               <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
                 <p className="text-xs font-bold text-gray-800 dark:text-gray-100">① 층마다 지도 크기</p>

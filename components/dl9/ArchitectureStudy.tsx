@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Card, CardTitle, Tag } from "@/components/dlShared/ui";
@@ -58,7 +59,7 @@ export function ArchitectureContext() {
       <Sourced refs={{ slides: "9강 강의록 4–5쪽, 10쪽, 21쪽, 27쪽 · 모델 소개·GoogLeNet Stem·ResNet", lecture: "56:47–57:58 · 평범한 20층·56층 망의 오차 비교" }}>
         <Card>
           <p className="text-sm leading-6 text-gray-700 dark:text-gray-300">
-            합성곱 신경망의 깊이가 커지면서 두 질문이 생깁니다. 한 층에서 <strong>여러 크기의 특징</strong>을 함께 찾으려면 연산을 어떻게 줄일까요? 층을 계속 쌓아도 <strong>학습 오차가 나빠지는 현상</strong>은 어떻게 다룰까요? 두 모델은 서로 다른 질문에 답합니다.
+            합성곱 신경망의 깊이가 커지면서 두 질문이 생깁니다. 한 층에서 <KeyPhrase>여러 크기의 특징</KeyPhrase>을 함께 찾으려면 연산을 어떻게 줄일까요? 층을 계속 쌓아도 <KeyPhrase>학습 오차가 나빠지는 현상</KeyPhrase>은 어떻게 다룰까요? 두 모델은 서로 다른 질문에 답합니다.
           </p>
 
           <div className="mt-4 grid gap-2 sm:grid-cols-3" aria-label="ILSVRC 분류 오류율 흐름">
@@ -225,7 +226,7 @@ export function ResNetFamily() {
             <div>
               <CardTitle>구조표의 모델 깊이를 선택하세요</CardTitle>
               <p className="mb-3 max-w-3xl text-sm leading-6">VGG19와 평범한 34층 망은 층의 출력을 다음 층으로 차례로 넘깁니다. 34층 잔차망의 구조도에서는 두 합성곱층을 건너뛰어 덧셈 지점에 닿는 선이 추가됩니다. 같은 34층끼리 비교하면 깊이를 고정한 채 숏컷의 효과를 살펴볼 수 있습니다. 반면 숏컷 없는 20층과 56층의 오차 곡선은 깊이만 늘렸을 때 생긴 학습 문제를 보여 줍니다.</p>
-              <p className="text-[11px] leading-5 text-gray-500">18·34층은 두 개의 3×3 합성곱을 쓰고, 50층 이상은 1×1·3×3·1×1 병목 블록을 씁니다.</p>
+              <p className="text-[11px] leading-5 text-gray-500">18·34층은 두 개의 3×3 합성곱을 쓰고, 50층 이상은 <KeyPhrase>1×1·3×3·1×1 병목 블록</KeyPhrase>을 씁니다.</p>
             </div>
             <div className="flex flex-wrap gap-1.5" role="group" aria-label="ResNet 깊이">
               {depths.map((value) => (
@@ -326,7 +327,7 @@ export function TrainingFlow() {
             <CardTitle>첫 예측에 쓰이는 가중치와 편향은 어디서 올까?</CardTitle>
             <p>합성곱은 필터의 가중합에 편향을 더한 뒤 활성함수를 적용합니다. GoogLeNet 실습에서 <code>glorot_uniform</code>은 입력과 출력 규모에 맞춘 범위에서 서로 다른 초기 가중치를 뽑습니다. 모듈 함수의 기본 편향은 0이고, 3a처럼 호출할 때 <code>Constant(0.2)</code>를 전달한 모듈은 편향을 0.2로 시작합니다. 예를 들어 첫 가중합이 0.5이면 ReLU에 들어갈 값은 0.7입니다. 학습이 시작되면 가중치와 편향 모두 역전파로 갱신됩니다.</p>
             <h3 className="pt-2 font-bold">여덟 번째 에폭에서 무엇이 바뀔까?</h3>
-            <p>에폭은 학습 자료 전체를 한 번 사용하는 단위입니다. 이 실습에서는 학습 이미지 2,000장을 한 번씩 사용하면 한 에폭이 끝납니다. 학습률은 가중치를 갱신할 때 한 번에 얼마나 이동할지 조절합니다.</p>
+            <p>에폭은 <KeyPhrase>학습 자료 전체를 한 번 사용하는 단위</KeyPhrase>입니다. 이 실습에서는 학습 이미지 2,000장을 한 번씩 사용하면 한 에폭이 끝납니다. 학습률은 <KeyPhrase>가중치를 갱신할 때 한 번에 얼마나 이동할지</KeyPhrase> 조절합니다.</p>
             <p>GoogLeNet의 첫 학습률은 0.01입니다. 일곱 번째 에폭의 인덱스는 6이므로 (1 + 6) ÷ 8의 정수 몫은 0이고, 학습률은 0.01 × 0.96⁰ = 0.01입니다. 여덟 번째에는 몫이 1이 되어 0.01 × 0.96 = 0.0096으로 줄어듭니다.</p>
             <p>이 배율은 GoogLeNet의 SGD에 설정한 값입니다. ResNet34 실습의 Adam은 기울기와 기울기 제곱의 이동평균을 사용해 가중치별 갱신량을 조절합니다.</p>
           </div>

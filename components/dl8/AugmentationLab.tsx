@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/dlShared/SourceFilter";
@@ -41,7 +42,7 @@ export default function AugmentationLab() {
       />
       <Sourced refs={{ slides: "슬라이드 13–15 — 미러링·랜덤 크롭·PCA 색상 증강", lecture: "음성 전사 25:51–26:59 — 크롭과 PCA RGB 색상 변화" }}>
         <Card>
-          <p className="mb-4 text-sm leading-6"><strong>과적합</strong>은 훈련 사진을 잘 맞히면서 처음 보는 사진에서 오차가 커지는 현상입니다. 고양이의 밝기나 위치처럼 범주와 무관한 조건을 바꾸어도 정답을 맞히려면 여러 조건에서 학습해야 합니다. 좌우 반전은 방향을, 크롭은 보이는 범위를, PCA 색상 증강은 RGB 값의 조합을 바꿉니다. 대상을 알아볼 수 있는 변형에 원본과 같은 레이블을 붙입니다.</p>
+          <p className="mb-4 text-sm leading-6"><strong>과적합</strong>은 훈련 사진을 잘 맞히면서 처음 보는 사진에서 오차가 커지는 현상입니다. 고양이의 밝기나 위치처럼 범주와 무관한 조건을 바꾸어도 정답을 맞히려면 여러 조건에서 학습해야 합니다. 좌우 반전은 방향을, 크롭은 보이는 범위를, PCA 색상 증강은 RGB 값의 조합을 바꿉니다. <KeyPhrase>대상을 알아볼 수 있는 변형에 원본과 같은 레이블을 붙입니다</KeyPhrase>.</p>
           <div className="mb-3 flex flex-wrap gap-2">
             <Chip active={method === "mirror"} onClick={() => { setMethod("mirror"); setAnswer(null); }}>좌우 반전</Chip>
             <Chip active={method === "crop"} onClick={() => { setMethod("crop"); setAnswer(null); }}>임의 크롭</Chip>

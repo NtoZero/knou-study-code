@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowDown, ArrowRight, GitBranch, Gauge, Layers3 } from "lucide-react";
@@ -38,7 +39,7 @@ export default function InceptionLab() {
         <Card className="mb-4 border-cyan-200 bg-cyan-50/40 dark:border-cyan-900 dark:bg-cyan-950/20">
           <CardTitle>14×14×480 입력에서 1×1 차원 축소까지 계산하기</CardTitle>
           <p className="mb-3 text-[13px] leading-6 text-gray-700 dark:text-gray-300">
-            1×1 필터는 한 위치에서만 계산하지만 그 위치의 480개 채널을 모두 읽습니다. 채널 벡터와 필터 벡터의 내적 하나가 출력 채널 하나의 값이 되며, 16개 필터를 쓰면 각 위치마다 값 16개가 나옵니다.
+            1×1 필터는 한 위치에서만 계산하지만 그 위치의 480개 채널을 모두 읽습니다. <KeyPhrase>채널 벡터와 필터 벡터의 내적 하나가 출력 채널 하나의 값</KeyPhrase>이 되며, 16개 필터를 쓰면 각 위치마다 값 16개가 나옵니다.
           </p>
           <div className="grid gap-2 md:grid-cols-3">
             <div className="rounded-lg border border-white bg-white p-3 dark:border-gray-700 dark:bg-gray-900">

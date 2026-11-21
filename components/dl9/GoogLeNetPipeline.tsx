@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowDown, Split } from "lucide-react";
@@ -46,7 +47,7 @@ export default function GoogLeNetPipeline() {
         <Card className="mb-4 border-cyan-200 bg-cyan-50/40 dark:border-cyan-900 dark:bg-cyan-950/20">
           <CardTitle>구조표의 인셉션 3a 행 읽기</CardTitle>
           <p className="mt-1 text-[13px] leading-6 text-gray-700 dark:text-gray-300">
-            입력은 <span className="font-mono">28×28×192</span>이고, 네 갈래의 가로·세로는 그대로 둔 채 채널 축으로 결과를 붙입니다. 표의 숫자를 역할별로 읽으면 중간 채널 수와 최종 채널 수를 혼동하지 않을 수 있습니다.
+            입력은 <span className="font-mono">28×28×192</span>이고, 네 갈래의 <KeyPhrase>가로·세로는 그대로 둔 채 채널 축으로 결과를 붙입니다</KeyPhrase>. 표의 숫자를 역할별로 읽으면 중간 채널 수와 최종 채널 수를 혼동하지 않을 수 있습니다.
           </p>
           <div className="mt-3 overflow-x-auto rounded-lg border border-cyan-200 bg-white dark:border-cyan-900 dark:bg-gray-900">
             <table className="min-w-[720px] w-full border-collapse text-left text-[13px]">

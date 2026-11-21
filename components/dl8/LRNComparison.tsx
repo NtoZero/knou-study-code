@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/dlShared/SourceFilter";
@@ -41,8 +42,8 @@ export default function LRNComparison() {
       <Sourced refs={{ slides: "슬라이드 10–11, 21 — LRN·배치 정규화 비교와 구현", lecture: "음성 전사 20:33–21:02 — 깊은 층에서의 기울기 소실 언급" }}>
         <Card>
           <p className="mb-4 text-sm leading-6">
-            컨볼루션 출력에는 이미지 번호, 픽셀의 행과 열, 채널 번호가 있습니다. <strong>LRN</strong>은 이미지 한 장의 같은 픽셀을 고정하고 이웃 채널들의 반응을 봅니다.
-            <strong> 배치 정규화</strong>는 채널 하나를 고정하고 학습 배치의 여러 이미지와 공간 위치에서 평균과 분산을 구합니다. 그래서 다른 이미지를 배치에 넣으면 배치 정규화의 학습 결과값은 달라질 수 있지만, 같은 이미지에 적용한 LRN 값은 그대로입니다.
+            컨볼루션 출력에는 이미지 번호, 픽셀의 행과 열, 채널 번호가 있습니다. <strong>LRN</strong>은 이미지 한 장의 <KeyPhrase>같은 픽셀을 고정하고 이웃 채널들의 반응</KeyPhrase>을 봅니다.
+            <strong> 배치 정규화</strong>는 <KeyPhrase>채널 하나를 고정하고 학습 배치의 여러 이미지와 공간 위치에서 평균과 분산</KeyPhrase>을 구합니다. 그래서 다른 이미지를 배치에 넣으면 배치 정규화의 학습 결과값은 달라질 수 있지만, 같은 이미지에 적용한 LRN 값은 그대로입니다.
           </p>
           <div className="mb-3 flex flex-wrap gap-2">
             <Chip active={active === "lrn"} onClick={() => setActive("lrn")}>LRN</Chip>

@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/dlShared/SourceFilter";
@@ -73,8 +74,8 @@ export default function ImplementationPipeline() {
         <Card>
           <div className="mb-5 space-y-2 text-sm leading-6">
             <CardTitle>정답 범주가 3인 사진 한 장의 손실은 어떻게 구할까?</CardTitle>
-            <p>마지막 완전연결층은 CIFAR-10의 열 범주에 점수를 하나씩 냅니다. 소프트맥스는 각 점수의 지수값을 열 지수값의 합으로 나누어 합계가 1인 확률로 바꿉니다. AlexNet 실습은 정답 3을 원-핫 벡터 [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]으로 바꿉니다. VGG16 실습은 정수 3을 그대로 전달합니다. 두 표현 모두 0부터 세어 네 번째 범주를 가리킵니다.</p>
-            <p>교차 엔트로피는 정답 범주에 준 확률의 자연로그에 음수를 붙입니다. 예를 들어 그 확률이 0.2이면 손실은 −ln(0.2) ≈ 1.61이고, 0.8이면 약 0.22입니다. 두 실습의 손실함수 이름에 붙는 <code>sparse</code>는 정답을 정수로 건넨다는 뜻입니다.</p>
+            <p>마지막 완전연결층은 CIFAR-10의 열 범주에 점수를 하나씩 냅니다. 소프트맥스는 각 점수의 지수값을 열 지수값의 합으로 나누어 <KeyPhrase>합계가 1인 확률</KeyPhrase>로 바꿉니다. AlexNet 실습은 정답 3을 원-핫 벡터 [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]으로 바꿉니다. VGG16 실습은 정수 3을 그대로 전달합니다. 두 표현 모두 0부터 세어 네 번째 범주를 가리킵니다.</p>
+            <p>교차 엔트로피는 <KeyPhrase>정답 범주에 준 확률의 자연로그에 음수</KeyPhrase>를 붙입니다. 예를 들어 그 확률이 0.2이면 손실은 −ln(0.2) ≈ 1.61이고, 0.8이면 약 0.22입니다. 두 실습의 손실함수 이름에 붙는 <code>sparse</code>는 정답을 정수로 건넨다는 뜻입니다.</p>
             <p>정확도를 구할 때는 가장 높은 확률을 얻은 범주 번호와 정답 3이 일치하는지 셉니다. 이미 맞힌 사진에서도 정답 확률이 0.6에서 0.8로 오르면 정확도는 그대로이고 손실은 줄어듭니다.</p>
           </div>
           <div className="mb-3 flex flex-wrap gap-2">

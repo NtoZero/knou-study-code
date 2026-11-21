@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/dlShared/SourceFilter";
@@ -35,7 +36,7 @@ export default function DropoutMaskLab() {
         <Card>
           <CardTitle>훈련 마스크를 바꾸어 보기</CardTitle>
           <p className="mb-3 text-[13px] leading-6 text-gray-600 dark:text-gray-300">
-            드롭아웃 비율 p는 훈련 단계마다 각 대상 뉴런을 생략할 확률이에요. 여기 그린 은닉 뉴런 10개는 원리를 계산하기 위한 작은 예이며 AlexNet의 실제 뉴런 수는 아니에요.
+            드롭아웃 비율 p는 훈련 단계마다 <KeyPhrase>각 대상 뉴런을 생략할 확률</KeyPhrase>이에요. 여기 그린 은닉 뉴런 10개는 원리를 계산하기 위한 작은 예이며 AlexNet의 실제 뉴런 수는 아니에요.
           </p>
           <div className="mb-4 rounded-xl border border-violet-200 bg-violet-50/70 p-4 text-[13px] leading-6 text-violet-950 dark:border-violet-900 dark:bg-violet-950/30 dark:text-violet-100">
             <p className="font-bold">현재 비율로 기대 개수와 신호 크기를 계산해요</p>

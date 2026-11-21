@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ChevronDown, GitMerge, Minus, Plus } from "lucide-react";
@@ -35,7 +36,7 @@ export default function ResidualLearningLab() {
               <p className="mt-2 font-mono text-[13px] font-bold">기존 층: H(x)</p>
               <p className="mt-1 font-mono text-[13px] font-bold">잔차 블록: F(x)=H(x)−x</p>
               <p className="mt-1 font-mono text-[13px] font-bold">합산: H(x)=F(x)+x</p>
-              <p className="mt-2 text-[13px] leading-6 text-gray-700 dark:text-gray-300">주 경로는 입력에서 달라질 부분 F(x)를 학습하고, 숏컷은 입력 x를 덧셈 지점에 보냅니다.</p>
+              <p className="mt-2 text-[13px] leading-6 text-gray-700 dark:text-gray-300">주 경로는 <KeyPhrase>입력에서 달라질 부분 F(x)를 학습</KeyPhrase>하고, 숏컷은 <KeyPhrase>입력 x를 덧셈 지점에</KeyPhrase> 보냅니다.</p>
             </div>
             <div className="rounded-lg border border-violet-200 bg-white p-3 dark:border-violet-900 dark:bg-gray-900">
               <p className="text-[10px] font-bold text-violet-800 dark:text-violet-200">계산으로 입력 보존 확인</p>

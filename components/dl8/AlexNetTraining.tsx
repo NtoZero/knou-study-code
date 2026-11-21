@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/dlShared/SourceFilter";
@@ -22,7 +23,7 @@ export default function AlexNetTraining() {
               <p className="rounded-lg bg-teal-50 p-3 dark:bg-teal-950/40">ReLU 출력 <b className="block font-mono">{Math.max(0, input).toFixed(3)}</b></p>
               <p className="rounded-lg bg-violet-50 p-3 dark:bg-violet-950/40">tanh 출력 <b className="block font-mono">{Math.tanh(input).toFixed(3)}</b></p>
             </div>
-            <p className="text-sm leading-6">입력을 3에서 5로 옮겨 보세요. tanh의 출력은 1에 가까워져 변화가 작습니다. ReLU는 양수 구간에서 입력의 변화가 그대로 전달되고, 음수 입력에서는 출력이 0입니다.</p>
+            <p className="text-sm leading-6">입력을 3에서 5로 옮겨 보세요. tanh의 출력은 1에 가까워져 변화가 작습니다. ReLU는 <KeyPhrase>양수 구간에서 입력의 변화가 그대로 전달되고</KeyPhrase>, 음수 입력에서는 출력이 0입니다.</p>
             <p className="mt-2 text-sm leading-6">강의의 비교 실험에서 ReLU를 쓴 신경망은 같은 훈련 오류율 25%에 tanh보다 약 6배 빨리 도달했습니다. 그래프를 읽을 때는 같은 오류율에서 가로축의 에폭 수를 비교합니다.</p>
           </Card>
           <Card>

@@ -1,5 +1,6 @@
 "use client";
 
+import KeyPhrase from "@/components/dlShared/KeyPhrase";
 import { useMemo, useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/dlShared/SourceFilter";
@@ -52,7 +53,7 @@ export default function OverlappingPoolingLab() {
         <Card>
           <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900 dark:bg-amber-950/30">
             <p className="text-sm font-bold text-amber-950 dark:text-amber-100">먼저 두 창을 손으로 옮겨 봐요</p>
-            <p className="mt-1 text-[13px] leading-6 text-amber-900 dark:text-amber-200">최대 풀링은 현재 창의 값 중 최댓값 하나를 출력해요. 창이 한 번 이동하는 칸 수가 창 한 변보다 작으면, 이웃 창이 입력 칸을 다시 사용해요.</p>
+            <p className="mt-1 text-[13px] leading-6 text-amber-900 dark:text-amber-200">최대 풀링은 현재 창의 값 중 최댓값 하나를 출력해요. 창이 한 번 이동하는 칸 수가 창 한 변보다 작으면, <KeyPhrase>이웃 창이 입력 칸을 다시 사용</KeyPhrase>해요.</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
               <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
                 <p className="text-xs font-bold text-gray-800 dark:text-gray-100">간단한 수치 예 · 2×2 창 / stride 1</p>
