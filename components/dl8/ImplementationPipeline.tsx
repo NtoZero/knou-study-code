@@ -71,6 +71,12 @@ export default function ImplementationPipeline() {
       <SectionTitle title="CIFAR-10으로 모델 구현 흐름 따라가기" subtitle="모델과 단계를 선택해 데이터 준비부터 평가까지 살펴보세요." />
       <Sourced refs={{ slides: "슬라이드 19–23, 32–36 — AlexNet·VGGNet 구현", lecture: model === "vgg" ? "음성 전사 54:03–54:52 — VGG16D 입력 크기와 정수 레이블" : "음성 전사 14:41–14:55 — AlexNet의 분류 출력과 소프트맥스" }}>
         <Card>
+          <div className="mb-5 space-y-2 text-sm leading-6">
+            <CardTitle>정답 범주가 3인 사진 한 장의 손실은 어떻게 구할까?</CardTitle>
+            <p>마지막 완전연결층은 CIFAR-10의 열 범주에 점수를 하나씩 냅니다. 소프트맥스는 각 점수의 지수값을 열 지수값의 합으로 나누어 합계가 1인 확률로 바꿉니다. AlexNet 실습은 정답 3을 원-핫 벡터 [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]으로 바꿉니다. VGG16 실습은 정수 3을 그대로 전달합니다. 두 표현 모두 0부터 세어 네 번째 범주를 가리킵니다.</p>
+            <p>교차 엔트로피는 정답 범주에 준 확률의 자연로그에 음수를 붙입니다. 예를 들어 그 확률이 0.2이면 손실은 −ln(0.2) ≈ 1.61이고, 0.8이면 약 0.22입니다. 두 실습의 손실함수 이름에 붙는 <code>sparse</code>는 정답을 정수로 건넨다는 뜻입니다.</p>
+            <p>정확도를 구할 때는 가장 높은 확률을 얻은 범주 번호와 정답 3이 일치하는지 셉니다. 이미 맞힌 사진에서도 정답 확률이 0.6에서 0.8로 오르면 정확도는 그대로이고 손실은 줄어듭니다.</p>
+          </div>
           <div className="mb-3 flex flex-wrap gap-2">
             <Chip active={model === "alexnet"} onClick={() => { setModel("alexnet"); setStep("prepare"); }}>AlexNet 구현</Chip>
             <Chip active={model === "vgg"} onClick={() => { setModel("vgg"); setStep("prepare"); }}>VGG16 구현</Chip>
@@ -84,12 +90,11 @@ export default function ImplementationPipeline() {
               <pre className="overflow-x-auto rounded-lg bg-gray-900 p-3 text-[11px] leading-5 text-gray-100"><code>{current.code}</code></pre>
             </div>
             <div className="flex flex-col justify-between rounded-xl bg-gray-50 p-4 dark:bg-gray-800/60">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">이 단계에서 확인할 점</p>
-                <p className="mt-2 text-[13px] leading-6 text-gray-700 dark:text-gray-200">{current.note}</p>
-              </div>
-              <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[11px] leading-5 text-amber-900 dark:border-amber-900 dark:bg-amber-950/35 dark:text-amber-100">
-                두 실습 모두 이미지 한 장에 확률 10개를 낸다. 정답이 고양이(범주 3)라면 AlexNet 예제는 네 번째 칸만 1인 벡터를, VGG 예제는 정수 3을 손실함수에 전달한다.
+              <p className="text-sm leading-6 text-gray-700 dark:text-gray-200">{current.note}</p>
+              <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[13px] leading-6 text-amber-900 dark:border-amber-900 dark:bg-amber-950/35 dark:text-amber-100">
+                {model === "alexnet"
+                  ? "Flatten은 마지막 특징 맵을 한 줄로 펼칩니다. 이 코드에서는 C2의 보폭이 2여서 공간 크기가 27 → 14 → 6으로 줄고, 마지막 풀링 뒤에는 2×2×256 = 1,024개 값이 첫 Dense 층으로 들어갑니다."
+                  : "VGG16-D는 풀링 다섯 번으로 한 변을 224 → 112 → 56 → 28 → 14 → 7로 줄입니다. Flatten은 마지막 7×7×512를 25,088개 값으로 펼쳐 첫 Dense 층에 전달합니다. 펼치는 동안 가중치를 학습하지 않습니다."}
               </div>
             </div>
           </div>

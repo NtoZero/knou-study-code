@@ -17,6 +17,8 @@ export type QuizChoice = {
 export type QuizItem = {
   q: string;
   intro?: string;
+  /** 답안을 선택한 뒤 읽는 문항별 풀이 순서 */
+  solution?: string[];
   choices: QuizChoice[];
   /** 정답 보기의 번호(0부터) */
   answer: number;
@@ -77,6 +79,15 @@ export default function Quiz({ items }: { items: QuizItem[] }) {
                   </p>
                 )}
                 <h4 className="mb-4 text-sm font-bold text-gray-800 dark:text-gray-200">{quiz.q}</h4>
+
+                {done && quiz.solution && (
+                  <div className="mb-4 rounded-lg border-l-4 border-teal-500 bg-teal-50 p-4 dark:bg-teal-950/35">
+                    <p className="mb-2 text-sm font-bold">풀이 과정</p>
+                    <ol className="list-decimal space-y-2 pl-5 text-sm leading-6 marker:font-semibold marker:text-teal-700 dark:marker:text-teal-300">
+                      {quiz.solution.map(step => <li key={step} className="pl-1">{step}</li>)}
+                    </ol>
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   {quiz.choices.map((choice, ci) => {

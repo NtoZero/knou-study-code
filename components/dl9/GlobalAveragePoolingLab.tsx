@@ -7,8 +7,8 @@ import { Card, CardTitle, Tag } from "@/components/dlShared/ui";
 import { Sourced } from "@/components/dlShared/SourceFilter";
 
 const initialMaps = [
-  { name: "특징 맵 A", values: [1, 2, 3, 6] },
-  { name: "특징 맵 B", values: [4, 2, 0, 2] },
+  { name: "특징 맵 A", values: [2, 4, 6, 8] },
+  { name: "특징 맵 B", values: [1, 3, 6, 10] },
 ];
 
 export default function GlobalAveragePoolingLab() {
@@ -30,6 +30,27 @@ export default function GlobalAveragePoolingLab() {
         subtitle="칸을 눌러 값을 바꾸고, 각 특징 맵이 출력 벡터의 한 원소로 줄어드는 것을 확인"
       />
       <Sourced refs={{ slides: "9강 강의록 12–13쪽 · GoogLeNet 끝 부분과 전역 평균 풀링", lecture: "34:15–35:31 · GAP 도입과 완전연결층의 연산 부담" }}>
+        <Card className="mb-4 border-cyan-200 bg-cyan-50/40 dark:border-cyan-900 dark:bg-cyan-950/20">
+          <CardTitle>특징 맵마다 평균 한 개를 만들고 분류기에 전달</CardTitle>
+          <p className="text-[13px] leading-6 text-gray-700 dark:text-gray-300">
+            GAP는 여러 특징 맵을 서로 합치지 않습니다. 한 맵의 가로·세로 위치를 전부 평균해 스칼라 하나를 만들고, 이 과정을 채널마다 반복해 길이 C인 벡터를 냅니다. 위치별 배열은 사라지고 어떤 특징이 맵 전체에서 얼마나 나타났는지 평균으로 남습니다.
+          </p>
+          <div className="mt-3 grid gap-3 md:grid-cols-[0.9fr_1.1fr]">
+            <div className="rounded-lg border border-cyan-200 bg-white p-3 dark:border-cyan-900 dark:bg-gray-900">
+              <p className="text-[10px] font-bold text-cyan-800 dark:text-cyan-200">작은 특징 맵을 손으로 평균</p>
+              <p className="mt-2 font-mono text-[13px] leading-6">A = [1, 2; 3, 6] → (1+2+3+6)/4 = 3<br />B = [4, 2; 0, 2] → (4+2+0+2)/4 = 2</p>
+              <p className="mt-1 text-[13px] font-bold">출력 벡터 = [3, 2]</p>
+              <p className="mt-1 text-[13px] leading-6 text-gray-700 dark:text-gray-300">max pooling이면 각각 6과 4만 남으므로 평균과 결과가 다름.</p>
+            </div>
+            <div className="rounded-lg border border-cyan-200 bg-white p-3 dark:border-cyan-900 dark:bg-gray-900">
+              <p className="text-[10px] font-bold text-cyan-800 dark:text-cyan-200">분류층 가중치 수로 효과 확인</p>
+              <p className="mt-2 text-[13px] leading-6 text-gray-700 dark:text-gray-300">마지막 특징 맵이 7×7×1024이고 분류 출력이 1,000개라고 가정. 공간을 먼저 펴면 Dense 가중치는 50,176×1,000=50,176,000개. GAP 뒤에는 1,024×1,000=1,024,000개.</p>
+              <p className="mt-1 text-[13px] font-bold text-cyan-900 dark:text-cyan-100">GAP를 거치면 이 비교에서 가중치가 49분의 1</p>
+              <p className="mt-1 text-[10px] leading-4 text-gray-500">bias는 두 계산에서 제외. GAP는 GoogLeNet의 끝에서 채널별 평균 벡터를 분류층으로 전달.</p>
+            </div>
+          </div>
+        </Card>
+
         <Card>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>

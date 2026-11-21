@@ -16,7 +16,7 @@ export interface OutlineCheckpoint {
   /** 구분 기준 설명 */
   answer: string;
   /** 근거 위치 — 예: "2강 역전파 알고리즘 슬라이드" */
-  basis: string;
+  basis?: string;
   refs: SourceRef;
 }
 

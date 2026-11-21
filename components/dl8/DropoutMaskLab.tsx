@@ -34,9 +34,14 @@ export default function DropoutMaskLab() {
       <Sourced refs={{ slides: "슬라이드 16 — 드롭아웃의 개념 · 교재 4.5.3 — 학습·추론 단계" }}>
         <Card>
           <CardTitle>훈련 마스크를 바꾸어 보기</CardTitle>
-          <p className="mb-3 text-[12px] leading-5 text-gray-600 dark:text-gray-300">
-            드롭아웃은 학습 중 은닉층 노드의 일부를 무작위로 생략하는 규제 기술이에요. 아래 노드 수와 무작위 마스크는 개념 설명용이며 AlexNet의 실제 뉴런 수를 나타내지는 않아요.
+          <p className="mb-3 text-[13px] leading-6 text-gray-600 dark:text-gray-300">
+            드롭아웃 비율 p는 훈련 단계마다 각 대상 뉴런을 생략할 확률이에요. 여기 그린 은닉 뉴런 10개는 원리를 계산하기 위한 작은 예이며 AlexNet의 실제 뉴런 수는 아니에요.
           </p>
+          <div className="mb-4 rounded-xl border border-violet-200 bg-violet-50/70 p-4 text-[13px] leading-6 text-violet-950 dark:border-violet-900 dark:bg-violet-950/30 dark:text-violet-100">
+            <p className="font-bold">현재 비율로 기대 개수와 신호 크기를 계산해요</p>
+            <p className="mt-1">p={rate.toFixed(2)}이면 은닉 뉴런 10개 중 평균 <b>{(10 * rate).toFixed(1)}개</b>가 생략되고 <b>{(10 * (1 - rate)).toFixed(1)}개</b>가 남아요. 평균값이므로 지금 무작위 마스크에서 실제로 꺼진 개수와는 다를 수 있어요.</p>
+            <p className="mt-2">Keras는 훈련 중 살아남은 출력에 <span className="font-mono">1/(1−p)=1/(1−{rate.toFixed(2)})≈{(1 / (1 - rate)).toFixed(2)}</span>를 곱해 신호 크기를 보정해요. 추론 단계에서는 마스크를 씌우지 않고 모든 뉴런을 사용해요.</p>
+          </div>
           <div className="mb-3 flex flex-wrap gap-2">
             <Chip active={phase === "train"} onClick={() => setPhase("train")}>훈련 단계</Chip>
             <Chip active={phase === "infer"} onClick={() => setPhase("infer")}>추론 단계</Chip>

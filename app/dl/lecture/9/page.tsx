@@ -1,3 +1,5 @@
+import LectureConcepts from "@/components/dlShared/LectureConcepts";
+import { conceptGroups } from "@/components/dl9/concepts";
 import DLLectureLayout from "@/components/layout/DLLectureLayout";
 import { ArchitectureContext, ResNetFamily, TrainingFlow } from "@/components/dl9/ArchitectureStudy";
 import InceptionLab from "@/components/dl9/InceptionLab";
@@ -11,6 +13,7 @@ import { QUIZZES } from "@/components/dl9/quizItems";
 export default function DLLecture9() {
   return (
     <DLLectureLayout lectureId={9}>
+      <LectureConcepts groups={conceptGroups} firstLab="dl9-context" />
       <ArchitectureContext />
       <InceptionLab />
       <GoogLeNetPipeline />

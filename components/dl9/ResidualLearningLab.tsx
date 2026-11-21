@@ -24,6 +24,44 @@ export default function ResidualLearningLab() {
         subtitle="주 경로는 새로 배운 변화량을 만들고, 숏컷은 입력을 더하기 지점까지 전달"
       />
       <Sourced refs={{ slides: "9강 강의록 27–31쪽, 36–38쪽 · ResNet 깊이 비교·잔차 학습·구현", lecture: "56:47–57:58 · plain 20층·56층 오차 비교; 63:01–63:30 · 잔차 합과 입력 보존; 71:33–72:50 · ResidualUnit·스테이지 반복·GAP" }}>
+        <Card className="mb-4 border-violet-200 bg-violet-50/30 dark:border-violet-900 dark:bg-violet-950/15">
+          <CardTitle>56층의 오차가 더 높다면, 무엇을 바꿔야 할까?</CardTitle>
+          <p className="text-[13px] leading-6 text-gray-700 dark:text-gray-300">
+            숏컷 없는 plain 망의 비교에서는 56층 모델이 20층 모델보다 학습 오차와 테스트 오차 모두 높습니다. 학습 자료에도 더 잘 맞추지 못했으므로 테스트 오차만 벌어지는 단순 과적합으로 설명되지 않습니다. 층을 추가하는 것만으로는 충분하지 않아, ResNet은 원래 입력을 더하는 경로를 둡니다.
+          </p>
+          <div className="mt-3 grid gap-3 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="rounded-lg border border-violet-200 bg-white p-3 dark:border-violet-900 dark:bg-gray-900">
+              <p className="text-[10px] font-bold text-violet-800 dark:text-violet-200">목표 변환에서 잔차로 바꾸기</p>
+              <p className="mt-2 font-mono text-[13px] font-bold">기존 층: H(x)</p>
+              <p className="mt-1 font-mono text-[13px] font-bold">잔차 블록: F(x)=H(x)−x</p>
+              <p className="mt-1 font-mono text-[13px] font-bold">합산: H(x)=F(x)+x</p>
+              <p className="mt-2 text-[13px] leading-6 text-gray-700 dark:text-gray-300">주 경로는 입력에서 달라질 부분 F(x)를 학습하고, 숏컷은 입력 x를 덧셈 지점에 보냅니다.</p>
+            </div>
+            <div className="rounded-lg border border-violet-200 bg-white p-3 dark:border-violet-900 dark:bg-gray-900">
+              <p className="text-[10px] font-bold text-violet-800 dark:text-violet-200">계산으로 입력 보존 확인</p>
+              <p className="mt-2 font-mono text-[13px] leading-6">x=2, F(x)=3: z=F(x)+x=5 → ReLU(z)=5<br />x=2, F(x)=−4: z=−2 → ReLU(z)=0<br />x=2, F(x)=0: z=2 → ReLU(z)=2</p>
+              <p className="mt-1 text-[13px] leading-6 text-gray-700 dark:text-gray-300">더한 결과 z가 x인 경우에도 마지막 ReLU는 음수 입력을 0으로 바꿈. ‘입력이 그대로 전달’된다는 말은 덧셈 직전까지의 항등 경로를 뜻함.</p>
+            </div>
+          </div>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <div className="rounded-lg bg-white p-3 dark:bg-gray-900">
+              <p className="text-[10px] font-bold text-violet-800 dark:text-violet-200">항등 숏컷 · 모양이 같은 경우</p>
+              <p className="mt-1 text-[13px] leading-6">숏컷 입력: 56×56×64 → 그대로 add<br />주 경로: Conv3×3→BN→ReLU→Conv3×3→BN → 56×56×64</p>
+              <p className="mt-1 text-[13px] leading-6 text-gray-700 dark:text-gray-300">두 경로가 모두 56×56×64이므로 입력 변환 없이 원소별로 더할 수 있음.</p>
+            </div>
+            <div className="rounded-lg bg-white p-3 dark:bg-gray-900">
+              <p className="text-[10px] font-bold text-violet-800 dark:text-violet-200">투영 숏컷 · 공간·채널이 바뀌는 경우</p>
+              <p className="mt-1 text-[13px] leading-6">주 경로: Conv3×3, stride 2 → 28×28×128<br />숏컷: Conv1×1, stride 2 → 28×28×128</p>
+              <p className="mt-1 text-[13px] leading-6 text-gray-700 dark:text-gray-300">입력 56×56×64에서 두 경로의 출력을 28×28×128로 맞춤. 모양이 다르면 원소별 덧셈을 할 수 없음.</p>
+            </div>
+          </div>
+          <div className="mt-3 rounded-lg border border-violet-200 bg-white p-3 dark:border-violet-900 dark:bg-gray-900">
+            <p className="text-[10px] font-bold text-violet-800 dark:text-violet-200">기울기 경로도 한 번 계산</p>
+            <p className="mt-1 text-[13px] leading-6 text-gray-700 dark:text-gray-300">ReLU가 켜져 있다고 하고 L=½y², x=2, F(x)=3, F′(x)=0.1이면 y=5, dy/dx=F′(x)+1=1.1, dL/dx=5×1.1=5.5. 이 중 +1은 숏컷을 지나는 직접 항으로, 기울기가 주 경로를 통과하는 항만으로 정해지지 않음을 보여 줌.</p>
+            <p className="mt-1 text-[9px] leading-4 text-gray-500">숫자는 합·기울기 경로를 풀어 쓴 예시. ReLU가 꺼지거나 투영 숏컷의 모양을 바꾸면 기울기 조건도 달라짐.</p>
+          </div>
+        </Card>
+
         <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[1.1fr_0.9fr]">
           <Card className="min-w-0">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">

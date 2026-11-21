@@ -14,7 +14,7 @@ type Stage = {
 };
 
 const STAGES: Stage[] = [
-  { name: "입력", kind: "input", output: "227×227×3", operation: "RGB 이미지", purpose: "컬러 이미지를 모델에 넣는다. 논문 표기는 224×224로 소개되지만, 강의록은 실제 입력 크기로 227×227을 적는다." },
+  { name: "입력", kind: "input", output: "227×227×3", operation: "RGB 이미지", purpose: "컬러 이미지를 모델에 넣는다. 논문에는 224×224로 표기됐지만 실제 AlexNet 입력 크기는 227×227이다." },
   { name: "C1", kind: "conv", output: "55×55×96", operation: "11×11 · stride 4 · ReLU", purpose: "큰 필터와 큰 stride로 입력의 넓은 영역에서 초기 특징을 찾는다." },
   { name: "P1", kind: "pool", output: "27×27×96", operation: "3×3 최대 풀링 · stride 2", purpose: "특징 맵의 공간 크기를 줄인다. 창 크기보다 stride가 작아 창이 서로 겹친다." },
   { name: "C2", kind: "conv", output: "27×27×256", operation: "5×5 · stride 1 · padding 2 · ReLU", purpose: "256개의 특징 맵을 만든다. 표의 패딩 2로 가로·세로 크기를 유지한다." },
@@ -49,6 +49,28 @@ export default function AlexNetArchitectureLab() {
       <Sourced refs={{ slides: "슬라이드 4–7 — AlexNet 구조·세부 내용", lecture: "음성 전사 07:03–07:29, 14:41–14:55 — GPU·입력 크기·출력" }}>
         <Card>
           <p className="mb-4 text-sm leading-6">ImageNet의 이미지 분류 대회 ILSVRC에서는 2010~2011년 전통적인 컴퓨터 비전 기법이 우승했습니다. 2012년 AlexNet은 분류 오류율 16.4%로 우승하며 깊은 합성곱 신경망이 대규모 이미지 분류에서 어떤 성능을 낼 수 있는지 보여 주었습니다.</p>
+          <div className="mb-5 rounded-xl border border-sky-200 bg-sky-50/70 p-4 dark:border-sky-900 dark:bg-sky-950/30">
+            <p className="text-sm font-bold text-sky-950 dark:text-sky-100">출력 표를 직접 계산하기: C1 → P1 → C2</p>
+            <p className="mt-1 text-[13px] leading-6 text-sky-900 dark:text-sky-200">출력 모양 <b>가로×세로×특징 맵 수</b>를 읽어요. 필터 수가 출력 맵 수를 정하고, 필터의 가중치 수는 커널 크기와 입력 채널 수로 계산해요.</p>
+            <div className="mt-3 grid gap-3 lg:grid-cols-3">
+              <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-100">① C1 · 합성곱</p>
+                <p className="mt-2 font-mono text-[13px] leading-6 text-gray-700 dark:text-gray-200">(227−11)÷4+1=55<br />11×11×3=363개/필터<br />363×96=34,848개 가중치</p>
+                <p className="mt-2 text-[13px] leading-6 text-gray-600 dark:text-gray-300">필터 96개가 55×55 지도 96장을 만듭니다. 가중치 수는 편향을 빼고 센 값이며, 출력 모양은 55×55×96입니다.</p>
+              </div>
+              <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-100">② P1 · 최대 풀링</p>
+                <p className="mt-2 font-mono text-[13px] leading-6 text-gray-700 dark:text-gray-200">(55−3)÷2+1=27<br />3×3 창 · stride 2<br />지도 수는 96장 그대로</p>
+                <p className="mt-2 text-[13px] leading-6 text-gray-600 dark:text-gray-300">풀링은 각 지도를 따로 훑으며 창 안의 최댓값을 남깁니다. 가로·세로는 27로 줄지만 채널 수와 학습 가중치는 늘지 않아 출력은 27×27×96입니다.</p>
+              </div>
+              <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-100">③ C2 · 두 GPU 그룹</p>
+                <p className="mt-2 font-mono text-[13px] leading-6 text-gray-700 dark:text-gray-200">(27+2×2−5)÷1+1=27<br />2×128×5×5×48=307,200<br />출력 지도: 128×2=256장</p>
+                <p className="mt-2 text-[13px] leading-6 text-gray-600 dark:text-gray-300">GPU마다 C1의 지도 48장을 받아 128개 필터를 적용합니다. 패딩 2가 공간 크기를 27로 유지하고, 두 그룹의 출력 지도를 합쳐 27×27×256이 됩니다. 가중치 수 역시 편향을 제외합니다.</p>
+              </div>
+            </div>
+            <p className="mt-3 rounded-lg border border-sky-200 px-3 py-2 text-[13px] leading-6 text-sky-900 dark:border-sky-800 dark:text-sky-200">예를 들어 C1의 96은 출력 특징 맵 96장이고, C1의 가중치 34,848개는 각 11×11×3 필터의 계수를 모두 더한 수예요. 두 숫자는 서로 다른 것을 세므로 혼동하지 마세요.</p>
+          </div>
           <div className="mb-4 grid gap-2 sm:grid-cols-3">
             <div className="rounded-lg bg-sky-50 p-3 dark:bg-sky-950/35">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">합성곱층</p>
@@ -105,7 +127,7 @@ export default function AlexNetArchitectureLab() {
           </div>
 
           <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-[12px] leading-5 text-amber-900 dark:bg-amber-950/35 dark:text-amber-100">
-            구조 표의 원래 AlexNet은 1,000개 범주를 출력해요. 강의 구현 예시는 CIFAR-10을 사용하므로 마지막 Dense 층의 출력 수가 <b>10</b>으로 바뀌어요.
+            원래 AlexNet은 1,000개 범주를 출력해요. CIFAR-10은 범주가 10개이므로 이 데이터셋에 맞춘 모델은 마지막 Dense 층의 출력 수도 <b>10</b>으로 둬요.
           </p>
         </Card>
       </Sourced>

@@ -15,15 +15,38 @@ export default function VGGFilterStackLab() {
 
   const outputSides = Array.from({ length: layers }, (_, i) => INPUT - 2 * (i + 1));
   const multiplications = outputSides.reduce((sum, side) => sum + side ** 2 * 9, 0);
-
+  const singleFilterSide = INPUT - receptive + 1;
+  const singleFilterMultiplications = singleFilterSide ** 2 * receptive ** 2;
   return (
     <section id="vgg-filters" className="scroll-mt-32">
       <SectionTitle
         title="왜 3×3 필터를 여러 번 쌓을까?"
-        subtitle="10×10 입력에서 출력 한 점이 바라보는 범위와 가중치 수를 단계별로 비교해요."
+        subtitle="10×10 예로 출력 지도와 한 출력이 참조하는 입력 범위, 필터 수를 구분해요."
       />
       <Sourced refs={{ slides: "슬라이드 28–29 — 7×7과 세 번의 3×3 비교", lecture: "음성 전사 42:53–43:48 — 깊은 층의 비선형성·특징 학습" }}>
         <Card>
+          <div className="mb-4 rounded-xl border border-violet-200 bg-violet-50/70 p-4 dark:border-violet-900 dark:bg-violet-950/30">
+            <p className="text-sm font-bold text-violet-950 dark:text-violet-100">3×3을 세 번 쌓으면 출력은 어떻게 계산될까요?</p>
+            <p className="mt-1 text-[13px] leading-6 text-violet-900 dark:text-violet-200">입력 10×10, stride 1, 패딩 없음, 한 입력 채널·한 출력 채널로 계산해요. 출력 지도 크기는 커널이 움직일 수 있는 위치 수이고, 수용 영역은 마지막 지도에서 고른 한 점이 원래 입력에서 보는 범위예요.</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-3">
+              <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-100">① 층마다 지도 크기</p>
+                <p className="mt-2 font-mono text-[13px] leading-6 text-gray-700 dark:text-gray-200">10×10 → 8×8 → 6×6 → 4×4<br />(10−3)+1=8<br />(8−3)+1=6<br />(6−3)+1=4</p>
+                <p className="mt-2 text-[13px] leading-6 text-gray-600 dark:text-gray-300">세 층의 출력 지도는 8×8, 6×6, 4×4예요. 마지막 지도 자체의 크기 4×4가 수용 영역 크기를 뜻하지는 않아요.</p>
+              </div>
+              <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-100">② 마지막 출력 한 점 역추적</p>
+                <p className="mt-2 font-mono text-[13px] leading-6 text-gray-700 dark:text-gray-200">마지막 3×3 → 이전 층 5×5<br />그 앞 3×3 → 원래 입력 7×7</p>
+                <p className="mt-2 text-[13px] leading-6 text-gray-600 dark:text-gray-300">마지막 특징 맵의 한 점은 원래 입력의 7×7 이웃에 의존해요. 이는 한 점의 수용 영역이지, 마지막 특징 맵의 가로·세로 크기가 아니에요.</p>
+              </div>
+              <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-100">③ 계수와 곱셈 횟수</p>
+                <p className="mt-2 font-mono text-[13px] leading-6 text-gray-700 dark:text-gray-200">가중치: 3×(3×3)=27<br />곱셈: 8²×9+6²×9+4²×9<br />=1,044회</p>
+                <p className="mt-2 text-[13px] leading-6 text-gray-600 dark:text-gray-300">한 번의 7×7 필터는 가중치 49개, 4²×49=784회예요. 작은 필터는 가중치가 적어도 출력 위치가 많으면 총 곱셈은 더 클 수 있어요.</p>
+              </div>
+            </div>
+            <p className="mt-3 rounded-lg border border-violet-200 px-3 py-2 text-[13px] leading-6 text-violet-900 dark:border-violet-800 dark:text-violet-200">세 번의 3×3 합성곱은 층마다 ReLU를 통과해 비선형 변환을 세 번 적용해요. 실제 VGG에서는 입력·출력 채널도 곱셈에 들어가므로, 27 대 49라는 계수 비교만으로 모든 조건에서 연산이 줄어든다고 결론 내리면 안 돼요.</p>
+          </div>
           <div className="mb-3 flex flex-wrap gap-2">
             {[1, 2, 3].map((count) => <Chip key={count} active={layers === count} onClick={() => setLayers(count)}>{count}층 쌓기</Chip>)}
           </div>
@@ -62,10 +85,11 @@ export default function VGGFilterStackLab() {
             </div>
           </div>
           <details className="mt-4 rounded-lg border border-violet-200 p-3 text-sm dark:border-violet-900">
-            <summary className="cursor-pointer font-semibold">검산 · 가중치 27개와 곱셈 27회는 어떻게 다를까?</summary>
-            <p className="mt-3 leading-6">필터 하나는 출력의 모든 위치에서 같은 가중치를 다시 씁니다. 위의 단일 채널·패딩 없음 조건에서 3×3 합성곱의 곱셈 횟수는 층마다 출력 칸 수에 9를 곱해 더합니다.</p>
-            <p className="my-2 font-mono">{outputSides.map(side => side + "²×9").join(" + ")} = {num(multiplications)}회</p>
-            <p className="leading-6">세 층을 선택하면 가중치는 27개이고 곱셈은 1,044회입니다. 한 번의 7×7 합성곱은 가중치 49개, 곱셈 4²×49 = 784회입니다. 초기 층의 출력 지도가 더 크기 때문입니다. 반대로 같은 가로·세로 크기를 유지하는 조건이라면 모든 층의 출력 칸 수가 같아 칸당 27회와 49회를 비교할 수 있습니다. 이 검산은 편향과 활성함수 계산을 제외합니다.</p>
+            <summary className="cursor-pointer font-semibold">선택한 {layers}층과 한 번의 {receptive}×{receptive} 필터 계산 비교</summary>
+            <p className="mt-3 leading-6">한 필터의 가중치는 모든 출력 위치에서 재사용되지만, 각 출력 위치에서 그 가중치를 다시 곱하고 더합니다. 따라서 층 수를 바꾸면 각 층의 출력 지도 크기를 계산한 뒤 위치별 곱셈을 더해야 합니다.</p>
+            <p className="my-2 font-mono">3×3 반복: {outputSides.map(side => side + "²×9").join(" + ")} = {num(multiplications)}회</p>
+            <p className="my-2 font-mono">한 번의 {receptive}×{receptive}: {singleFilterSide}²×{receptive}² = {num(singleFilterMultiplications)}회</p>
+            <p className="leading-6">예를 들어 두 층은 출력 지도가 8×8과 6×6이므로 8²×9+6²×9=900회, 세 층은 8×8·6×6·4×4를 더해 1,044회입니다. 필터의 가중치 수와 총 곱셈 횟수는 다르며, 실제 다중 채널 합성곱에는 입력 채널과 출력 채널도 반영합니다.</p>
           </details>
         </Card>
       </Sourced>

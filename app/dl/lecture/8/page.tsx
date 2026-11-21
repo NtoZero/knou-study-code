@@ -1,3 +1,5 @@
+import LectureConcepts from "@/components/dlShared/LectureConcepts";
+import { conceptGroups } from "@/components/dl8/concepts";
 import DLLectureLayout from "@/components/layout/DLLectureLayout";
 import LectureCheckpoints from "@/components/dlShared/LectureCheckpoints";
 import Quiz from "@/components/dlShared/Quiz";
@@ -16,6 +18,7 @@ import { QUIZZES } from "@/components/dl8/quizItems";
 export default function DLLecture8() {
   return (
     <DLLectureLayout lectureId={8}>
+      <LectureConcepts groups={conceptGroups} firstLab="alexnet-architecture" />
       <AlexNetArchitectureLab />
       <AlexNetTraining />
       <LRNComparison />

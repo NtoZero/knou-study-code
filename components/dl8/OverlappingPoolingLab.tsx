@@ -50,6 +50,22 @@ export default function OverlappingPoolingLab() {
       />
       <Sourced refs={{ slides: "슬라이드 7, 12 — AlexNet 풀링 설정과 겹침 예시", lecture: "음성 전사 33:29–33:48 — 창 크기와 stride를 이용한 오버래핑 설명" }}>
         <Card>
+          <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900 dark:bg-amber-950/30">
+            <p className="text-sm font-bold text-amber-950 dark:text-amber-100">먼저 두 창을 손으로 옮겨 봐요</p>
+            <p className="mt-1 text-[13px] leading-6 text-amber-900 dark:text-amber-200">최대 풀링은 현재 창의 값 중 최댓값 하나를 출력해요. 창이 한 번 이동하는 칸 수가 창 한 변보다 작으면, 이웃 창이 입력 칸을 다시 사용해요.</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-100">간단한 수치 예 · 2×2 창 / stride 1</p>
+                <p className="mt-2 font-mono text-[13px] leading-6 text-gray-700 dark:text-gray-200">첫 창: max(1, 3, 4, 1)=4<br />오른쪽 창: max(3, 5, 1, 4)=5</p>
+                <p className="mt-2 text-[13px] leading-6 text-gray-600 dark:text-gray-300">첫 창은 1–2열, 다음은 2–3열을 보므로 2열을 공유해요. 공유된 값도 각 창에서 따로 최댓값 후보가 됩니다.</p>
+              </div>
+              <div className="rounded-lg bg-white/80 p-3 dark:bg-gray-900/60">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-100">AlexNet 표 · 3×3 창 / stride 2</p>
+                <p className="mt-2 font-mono text-[13px] leading-6 text-gray-700 dark:text-gray-200">첫 창(1–3열): 최댓값 9<br />오른쪽 창(3–5열): 최댓값 8<br />6×6 입력 → ⌊(6−3)/2⌋+1=2</p>
+                <p className="mt-2 text-[13px] leading-6 text-gray-600 dark:text-gray-300">첫 창과 오른쪽 창은 3열을 공유해요. 가로·세로 모두 두 위치이므로 이 6×6 예의 출력은 2×2이고, 값은 각 3×3 창의 최댓값이에요.</p>
+              </div>
+            </div>
+          </div>
           <div className="mb-3 flex flex-wrap gap-2">
             <Chip active={scene === "figure"} onClick={() => { setScene("figure"); setSelected(0); }}>
               그림 예시 · 2×2 / stride 1
@@ -113,7 +129,7 @@ export default function OverlappingPoolingLab() {
           </div>
 
           <p className="mt-3 text-[11px] leading-5 text-gray-500">
-            강의록의 그림은 2×2 창·stride 1 예시이고, AlexNet 세부 표의 설정은 3×3 창·stride 2예요. 두 경우 모두 창 크기보다 stride가 작아 이웃 창끼리 겹쳐요.
+            창이 겹친다고 해도 같은 계산을 재사용해 결과를 복사하는 뜻은 아니에요. 공유 입력칸이 다시 비교되며, 각 새 창에서 최댓값을 다시 구해요.
           </p>
         </Card>
       </Sourced>

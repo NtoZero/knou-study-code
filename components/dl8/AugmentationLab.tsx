@@ -41,6 +41,7 @@ export default function AugmentationLab() {
       />
       <Sourced refs={{ slides: "슬라이드 13–15 — 미러링·랜덤 크롭·PCA 색상 증강", lecture: "음성 전사 25:51–26:59 — 크롭과 PCA RGB 색상 변화" }}>
         <Card>
+          <p className="mb-4 text-sm leading-6"><strong>과적합</strong>은 훈련 사진을 잘 맞히면서 처음 보는 사진에서 오차가 커지는 현상입니다. 고양이의 밝기나 위치처럼 범주와 무관한 조건을 바꾸어도 정답을 맞히려면 여러 조건에서 학습해야 합니다. 좌우 반전은 방향을, 크롭은 보이는 범위를, PCA 색상 증강은 RGB 값의 조합을 바꿉니다. 대상을 알아볼 수 있는 변형에 원본과 같은 레이블을 붙입니다.</p>
           <div className="mb-3 flex flex-wrap gap-2">
             <Chip active={method === "mirror"} onClick={() => { setMethod("mirror"); setAnswer(null); }}>좌우 반전</Chip>
             <Chip active={method === "crop"} onClick={() => { setMethod("crop"); setAnswer(null); }}>임의 크롭</Chip>
@@ -58,7 +59,7 @@ export default function AugmentationLab() {
                 <div className="h-40"><CatSketch mirror /></div>
               </div>
               <p className="sm:col-span-2 rounded-lg bg-teal-50 px-3 py-2 text-[12px] leading-5 text-teal-900 dark:bg-teal-950/35 dark:text-teal-100">
-                그림을 좌우로 뒤집어도 여기서는 고양이라는 범주가 유지돼요. 강의록은 미러링으로 이미지 양을 2배로 늘리는 예를 보여 줘요.
+                고양이가 오른쪽을 보다가 왼쪽을 보게 되어도 정답은 고양이예요. 원본 100장에 각 사진의 좌우 반전본을 한 장씩 더하면, 같은 범주 이름으로 훈련할 이미지가 200장이 돼요.
               </p>
             </div>
           )}
@@ -79,7 +80,7 @@ export default function AugmentationLab() {
                 <CardTitle>잘라낸 예시 · 고양이</CardTitle>
                 <div className="h-40"><CatSketch view={CROP_VIEWS[crop]} /></div>
                 <p className="mt-2 text-[12px] leading-5 text-gray-600 dark:text-gray-300">
-                  256×256 이미지에서 227×227 영역을 임의로 잘라 학습 이미지로 만들어요. 대상의 특징이 보이는 범위에서 위치를 바꾸면 같은 이미지로부터 다른 입력을 얻을 수 있어요.
+                  256×256 이미지에서 227×227 영역을 한 픽셀씩 옮겨 고르면, 가로 시작점은 0부터 29까지 30개예요. 세로도 30개이므로 가능한 창은 900개이고 반전본까지 세면 1,800개예요. AlexNet의 증강 규모로 제시된 2,048배는 별도 보고값이어서 이 그림의 치수만으로는 재현되지 않아요.
                 </p>
               </div>
             </div>
@@ -98,7 +99,7 @@ export default function AugmentationLab() {
               <label className="sm:col-span-2 block rounded-lg bg-gray-50 p-3 text-[12px] text-gray-700 dark:bg-gray-800/60 dark:text-gray-200">
                 색 변화 예시 <span className="ml-2 font-mono text-violet-700 dark:text-violet-300">{hue}°</span>
                 <input aria-label="색상 변화 조절" type="range" min="0" max="180" step="6" value={hue} onChange={(e) => setHue(Number(e.target.value))} className="mt-2 w-full accent-violet-600" />
-                <span className="mt-1 block text-[11px] leading-5 text-gray-500">주성분 분석(PCA)은 학습 이미지의 RGB 값이 함께 크게 변하는 방향을 찾습니다. 그 방향으로 색을 조금 옮기면 같은 고양이를 서로 다른 조명에서 본 듯한 학습 예가 생겨요. 이 막대는 색 변화의 예시이며 PCA를 계산하는 장치는 아니에요.</span>
+                <span className="mt-1 block text-[11px] leading-5 text-gray-500">PCA는 학습 사진의 RGB 공분산에서 색 채널들이 함께 크게 변하는 방향을 찾습니다. 그 방향들을 따라 작은 무작위 변화량을 만들어 한 사진의 모든 픽셀에 같은 RGB 이동량을 더해요. 예를 들어 이동량이 (+3, +2, +1)이면 (100, 80, 60)은 (103, 82, 61)이 됩니다. 물체의 윤곽은 같은 자리에 남고 조명 조건은 달라집니다. 이 막대는 색 변화의 예시이며 PCA를 계산하는 장치는 아니에요.</span>
               </label>
             </div>
           )}

@@ -14,13 +14,13 @@ const focusCards: Record<ArchitectureFocus, { title: string; question: string; d
     title: "GoogLeNet · 넓이를 효율적으로",
     question: "서로 다른 크기의 특징을 함께 살피면서 계산량을 어떻게 줄일까?",
     design: "2014년 GoogLeNet은 1×1·3×3·5×5 합성곱과 최대 풀링 경로를 병렬로 두는 인셉션 모듈을 사용. 큰 합성곱 앞에서 1×1 합성곱으로 특징 맵 수를 줄여 연산을 절약.",
-    result: "22개 층의 모델로 ILSVRC-2014 우승. 강의록은 대회 분류 오류율을 6.7%로 제시.",
+    result: "22개 층의 모델로 ILSVRC-2014 우승. 대회 분류 오류율 6.7%.",
   },
   resnet: {
     title: "ResNet · 깊은 망을 학습 가능하게",
     question: "층을 더 쌓았는데도 학습 오차가 커지는 문제를 어떻게 줄일까?",
     design: "2015년 ResNet은 입력에서 출력으로 이어지는 숏컷 연결을 더해 잔차 F(x)를 학습. 20층·56층 비교에서 깊이만 늘린 평범한 망의 학습·테스트 오차가 더 나빠질 수 있음을 확인하고 잔차 학습을 제안.",
-    result: "152개 층의 ResNet이 ILSVRC-2015에서 우승. 강의록은 대회 분류 오류율을 3.57%로 제시.",
+    result: "152개 층의 ResNet이 ILSVRC-2015에서 우승. 대회 분류 오류율 3.57%.",
   },
 };
 
@@ -65,7 +65,7 @@ export function ArchitectureContext() {
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/60">
               <p className="text-[10px] font-bold text-gray-500">2012 · AlexNet</p>
               <p className="mt-1 text-xl font-extrabold text-sky-800 dark:text-sky-200">약 16%</p>
-              <p className="text-[10px] leading-4 text-gray-500">강의록 그래프의 분류 오류율</p>
+              <p className="text-[10px] leading-4 text-gray-500">ILSVRC 분류 오류율</p>
             </div>
             <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-3 dark:border-cyan-900 dark:bg-cyan-950/30">
               <p className="text-[10px] font-bold text-cyan-800 dark:text-cyan-200">2014 · GoogLeNet</p>
@@ -103,14 +103,14 @@ export function ArchitectureContext() {
               <p className="mt-3 border-t border-cyan-200 pt-3 text-xs leading-5 text-gray-600 dark:border-cyan-900 dark:text-gray-400">{active.result}</p>
               {focus === "googlenet" && <div className="mt-3 space-y-2 border-t border-cyan-200 pt-3 dark:border-cyan-900">
                 <div>
-                  <p className="text-[10px] font-bold">구조 개념도 · 강의록 10쪽, 교재 6장 181쪽</p>
+                  <p className="text-[10px] font-bold">GoogLeNet 원형의 입력부</p>
                   <p className="mt-1 font-mono text-[9px] leading-5 text-gray-700 dark:text-gray-300">7×7 conv → max pool → LRN → 1×1 conv → 3×3 conv → LRN → max pool</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold">CIFAR-10 실습 코드 · 강의록 21쪽</p>
+                  <p className="text-[10px] font-bold">CIFAR-10 실습 모델의 입력부</p>
                   <p className="mt-1 font-mono text-[9px] leading-5 text-gray-700 dark:text-gray-300">7×7 conv → max pool → 3×3 conv(192) → max pool</p>
                 </div>
-                <p className="text-[10px] leading-4 text-gray-600 dark:text-gray-400">실습 코드에서는 개념도에 있는 LRN과 1×1 합성곱을 생략합니다. GoogLeNet의 구조 설명과 이 강의의 간결한 구현을 구분해 읽으세요.</p>
+                <p className="text-[10px] leading-4 text-gray-600 dark:text-gray-400">실습 코드에서는 개념도에 있는 LRN과 1×1 합성곱을 생략합니다.</p>
               </div>}
             </div>
           </div>
@@ -154,9 +154,9 @@ export function ArchitectureContext() {
                 </>}
               </div>
             </div>
-            <p className="mt-3 text-[10px] leading-4 text-gray-500">VGG C 비교는 8강 강의록 25–26쪽, 인셉션의 1×1·연결은 9강 강의록 7–9쪽, ResNet의 숏컷 투영과 덧셈은 9강 강의록 30–31쪽·36쪽을 바탕으로 정리했습니다.</p>
+
           </div>
-          <p className="mt-4 text-[10px] leading-4 text-gray-500">오류율은 강의록의 ILSVRC 비교 그림과 모델 소개에 적힌 값이며, 각 실습 코드의 CIFAR-10 정확도와는 다른 수치입니다. 교재 6장 177쪽·191쪽에서도 각 모델의 대회와 핵심 구조를 설명합니다.</p>
+          <p className="mt-4 text-[10px] leading-4 text-gray-500">대회 그래프는 ImageNet에서 측정한 분류 오류율입니다. CIFAR-10 실습 정확도와는 평가 이미지와 범주의 수가 다릅니다.</p>
         </Card>
       </Sourced>
     </section>
@@ -218,11 +218,12 @@ export function ResNetFamily() {
         title="ResNet 계열: 18층부터 152층까지"
         subtitle="모델 깊이에서 블록 계열과 반복 횟수를 비교하고, stage를 선택해 공간 크기와 채널 수를 읽습니다."
       />
-      <Sourced refs={{ slides: "9강 강의록 27쪽, 33쪽 · 18/34/50/101/152층 구조표와 ResNet34", lecture: "71:33–72:20 · 잔차 유닛의 반복과 필터 수 변경" }}>
+      <Sourced refs={{ slides: "9강 강의록 27–29쪽, 33쪽 · 평범한 망·잔차망 비교와 모델별 구조표", lecture: "71:33–72:20 · 잔차 유닛의 반복과 필터 수 변경" }}>
         <Card>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <CardTitle>구조표의 모델 깊이를 선택하세요</CardTitle>
+              <p className="mb-3 max-w-3xl text-sm leading-6">VGG19와 평범한 34층 망은 층의 출력을 다음 층으로 차례로 넘깁니다. 34층 잔차망의 구조도에서는 두 합성곱층을 건너뛰어 덧셈 지점에 닿는 선이 추가됩니다. 같은 34층끼리 비교하면 깊이를 고정한 채 숏컷의 효과를 살펴볼 수 있습니다. 반면 숏컷 없는 20층과 56층의 오차 곡선은 깊이만 늘렸을 때 생긴 학습 문제를 보여 줍니다.</p>
               <p className="text-[11px] leading-5 text-gray-500">18·34층은 두 개의 3×3 합성곱을 쓰고, 50층 이상은 1×1·3×3·1×1 병목 블록을 씁니다.</p>
             </div>
             <div className="flex flex-wrap gap-1.5" role="group" aria-label="ResNet 깊이">
@@ -283,14 +284,14 @@ export function ResNetFamily() {
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <p className="rounded-lg border-l-4 border-violet-400 bg-violet-50 p-3 text-[11px] leading-5 text-violet-950 dark:bg-violet-950/35 dark:text-violet-100">특징 맵의 가로·세로가 절반으로 줄어드는 stage 전환에서는 필터 수가 두 배가 됩니다. 잔차 덧셈을 하려면 주 경로와 숏컷의 공간 크기·채널 수가 같아야 하므로, 구현에서는 보폭 2의 1×1 합성곱으로 숏컷 쪽도 맞춥니다.</p>
-            <p className="rounded-lg bg-gray-50 p-3 text-[11px] leading-5 text-gray-600 dark:bg-gray-800/70 dark:text-gray-300">교재의 구조표는 ImageNet용 1,000개 분류 출력으로 끝납니다. 이어지는 ResNet34 CIFAR-10 실습은 마지막 Dense 출력을 10개 클래스로 바꾸며, 이 페이지의 다음 학습 흐름에서 두 설정을 구분합니다.</p>
+            <p className="rounded-lg bg-gray-50 p-3 text-[11px] leading-5 text-gray-600 dark:bg-gray-800/70 dark:text-gray-300">ImageNet용 모델의 마지막 완전연결층은 1,000개 범주의 점수를 출력합니다. CIFAR-10용 ResNet34는 범주가 열 개이므로 같은 자리에 출력 유닛 열 개를 둡니다.</p>
           </div>
           <div className="mt-3 rounded-lg border border-violet-200 bg-violet-50/60 p-3 dark:border-violet-900 dark:bg-violet-950/25">
             <p className="text-xs font-bold text-violet-900 dark:text-violet-100">가중치를 가진 층 수로 모델 이름 검산</p>
             <p className="mt-1 font-mono text-xs font-bold text-violet-900 dark:text-violet-100">1 stem conv + {layersPerBlock} × ({repeats.conv2_x} + {repeats.conv3_x} + {repeats.conv4_x} + {repeats.conv5_x}) residual-stage convs + 1 fc = {1 + stageConvolutionCount + 1}</p>
             <p className="mt-1 text-[10px] leading-4 text-gray-600 dark:text-gray-400">기본 블록은 가중치 층 2개, 병목 블록은 3개입니다. 시작 합성곱과 마지막 분류 완전연결층을 더하면 선택한 모델 깊이와 일치합니다.</p>
           </div>
-          <p className="mt-3 text-[10px] leading-4 text-gray-500">교재 6장 192–193쪽은 다섯 깊이의 stage 반복 수, 출력 크기, 채널 흐름을 표 6-5로 비교합니다. 강의록 33쪽의 표와 ResNet34 구조 그림도 함께 확인합니다.</p>
+
         </Card>
       </Sourced>
     </section>
@@ -319,6 +320,14 @@ export function TrainingFlow() {
       />
       <Sourced refs={{ slides: "9강 강의록 16–25쪽, 34–38쪽 · 데이터 전처리·학습·평가 코드", lecture: "44:20–44:47 · GoogLeNet 학습률을 8회 간격으로 조정" }}>
         <Card>
+          <div className="mb-5 space-y-2 text-sm leading-6">
+            <CardTitle>첫 예측에 쓰이는 가중치와 편향은 어디서 올까?</CardTitle>
+            <p>합성곱은 필터의 가중합에 편향을 더한 뒤 활성함수를 적용합니다. GoogLeNet 실습에서 <code>glorot_uniform</code>은 입력과 출력 규모에 맞춘 범위에서 서로 다른 초기 가중치를 뽑습니다. 모듈 함수의 기본 편향은 0이고, 3a처럼 호출할 때 <code>Constant(0.2)</code>를 전달한 모듈은 편향을 0.2로 시작합니다. 예를 들어 첫 가중합이 0.5이면 ReLU에 들어갈 값은 0.7입니다. 학습이 시작되면 가중치와 편향 모두 역전파로 갱신됩니다.</p>
+            <h3 className="pt-2 font-bold">여덟 번째 에폭에서 무엇이 바뀔까?</h3>
+            <p>에폭은 학습 자료 전체를 한 번 사용하는 단위입니다. 이 실습에서는 학습 이미지 2,000장을 한 번씩 사용하면 한 에폭이 끝납니다. 학습률은 가중치를 갱신할 때 한 번에 얼마나 이동할지 조절합니다.</p>
+            <p>GoogLeNet의 첫 학습률은 0.01입니다. 일곱 번째 에폭의 인덱스는 6이므로 (1 + 6) ÷ 8의 정수 몫은 0이고, 학습률은 0.01 × 0.96⁰ = 0.01입니다. 여덟 번째에는 몫이 1이 되어 0.01 × 0.96 = 0.0096으로 줄어듭니다.</p>
+            <p>이 배율은 GoogLeNet의 SGD에 설정한 값입니다. ResNet34 실습의 Adam은 기울기와 기울기 제곱의 이동평균을 사용해 가중치별 갱신량을 조절합니다.</p>
+          </div>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <CardTitle>실습을 선택하세요</CardTitle>
             <div className="flex gap-2" role="group" aria-label="모델 학습 흐름">
@@ -346,7 +355,9 @@ export function TrainingFlow() {
               {step === 1 && <div className="mt-2 space-y-2 text-xs leading-5 text-gray-700 dark:text-gray-300"><p>{labelFlow}</p><div className="rounded-lg bg-gray-50 p-3 font-mono text-[10px] leading-5 dark:bg-gray-800/70">{model === "googlenet" ? "y_train → to_categorical(y_train, 10)\n[y_train, y_train, y_train] → output, aux_1, aux_2" : "y_train: 0…9 정수 레이블\nDense(10, softmax) → sparse categorical loss"}</div></div>}
               {step === 2 && model === "googlenet" && <div className="mt-2 space-y-2 text-xs leading-5 text-gray-700 dark:text-gray-300"><p>주 분류 출력과 보조 분류기 두 곳에서 각각 categorical crossentropy를 계산합니다. 손실 가중치는 <strong>주 출력 1, 보조 출력 각각 0.3</strong>입니다.</p><p>SGD 최적화의 초기 학습률은 0.01, 모멘텀은 0.9이며, 10회(epoch) 학습합니다.</p></div>}
               {step === 2 && model === "resnet" && <div className="mt-2 space-y-2 text-xs leading-5 text-gray-700 dark:text-gray-300"><p>ResNet34 실습은 10개 소프트맥스 출력과 sparse categorical crossentropy를 사용합니다. 최적화 알고리즘은 Adam이며 10회(epoch) 학습합니다.</p><p>이 코드는 CIFAR-10의 정수 레이블을 그대로 사용해 GoogLeNet 실습의 원-핫 레이블·세 출력 구성과 다릅니다.</p></div>}
-              {step === 3 && <div className="mt-2 space-y-2 text-xs leading-5 text-gray-700 dark:text-gray-300"><p>두 실습 모두 x_test와 y_test로 모델을 평가하고 출력에서 정확도를 확인합니다.</p><p>강의 코드에서는 이 500장을 학습 중 validation_data로도 전달한 뒤 최종 evaluate에 다시 사용합니다. 실습 코드의 학습 흐름을 읽을 때 검증 데이터와 최종 평가 데이터가 분리되어 있지 않다는 점도 확인하세요.</p>{model === "googlenet" && <div className="rounded-lg border-l-4 border-amber-400 bg-amber-50 p-3 text-[10px] leading-5 text-amber-950 dark:bg-amber-950/30 dark:text-amber-100"><p><strong>다중 출력의 정확도 읽기:</strong> 강의록 코드의 <code>score[1]</code>은 손실과 세 출력의 지표가 함께 반환되는 목록에서 주 출력 정확도를 가리킨다고 단정하기 어렵습니다. 반환 순서는 compile된 손실·지표 구성에 따라 달라질 수 있습니다.</p><pre className="mt-2 overflow-x-auto rounded bg-white p-2 font-mono text-[9px] text-gray-800 dark:bg-gray-900 dark:text-gray-100">scores = model.evaluate(x_test, [y_test] * 3, return_dict=True)\nprint(scores.keys())  # 출력 이름과 지표 이름 확인\nmain_accuracy = scores["output_accuracy"]</pre><p className="mt-2">이 실습 모델의 주 출력 이름은 <code>output</code>입니다. 이름이 붙은 평가 결과에서 그 출력의 정확도를 선택하면 보조 분류기 지표와 구분할 수 있습니다.</p></div>}</div>}
+              {step === 3 && <div className="mt-2 space-y-2 text-xs leading-5 text-gray-700 dark:text-gray-300"><p>두 실습 모두 x_test와 y_test로 모델을 평가하고 출력에서 정확도를 확인합니다.</p><p>강의 코드에서는 이 500장을 학습 중 validation_data로도 전달한 뒤 최종 evaluate에 다시 사용합니다. 실습 코드의 학습 흐름을 읽을 때 검증 데이터와 최종 평가 데이터가 분리되어 있지 않다는 점도 확인하세요.</p>{model === "googlenet" && <div className="rounded-lg border-l-4 border-amber-400 bg-amber-50 p-3 text-[10px] leading-5 text-amber-950 dark:bg-amber-950/30 dark:text-amber-100"><p><strong>다중 출력의 정확도 읽기:</strong> 강의록 코드의 <code>score[1]</code>은 손실과 세 출력의 지표가 함께 반환되는 목록에서 주 출력 정확도를 가리킨다고 단정하기 어렵습니다. 반환 순서는 compile된 손실·지표 구성에 따라 달라질 수 있습니다.</p><pre className="mt-2 overflow-x-auto rounded bg-white p-2 font-mono text-[9px] text-gray-800 dark:bg-gray-900 dark:text-gray-100">{`scores = model.evaluate(x_test, [y_test] * 3, return_dict=True)
+print(scores.keys())  # 출력 이름과 지표 이름 확인
+main_accuracy = scores["output_accuracy"]`}</pre><p className="mt-2">이 실습 모델의 주 출력 이름은 <code>output</code>입니다. 이름이 붙은 평가 결과에서 그 출력의 정확도를 선택하면 보조 분류기 지표와 구분할 수 있습니다.</p></div>}</div>}
             </div>
 
             <div className="rounded-xl border border-cyan-200 bg-cyan-50/60 p-4 dark:border-cyan-900 dark:bg-cyan-950/25">
@@ -365,7 +376,7 @@ export function TrainingFlow() {
             </div>
           </div>
 
-          <p className="mt-4 text-[10px] leading-4 text-gray-500">두 학습 코드가 사용하는 최적화 방법·레이블 표현·출력 수가 다르므로, 실습 결과를 모델 구조 하나의 차이로만 해석하지 않습니다. 교재 6장 184–189쪽과 194–197쪽의 구현 코드, 강의록 17–25쪽·35–38쪽을 기준으로 비교합니다.</p>
+          <p className="mt-4 text-[10px] leading-4 text-gray-500">두 학습 코드가 사용하는 최적화 방법·레이블 표현·출력 수가 다르므로, 실습 결과를 모델 구조 하나의 차이로만 해석하지 않습니다.</p>
         </Card>
       </Sourced>
     </section>

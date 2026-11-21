@@ -61,9 +61,11 @@ export default function LectureCheckpoints({ lectureId, accentText }: Props) {
                       <p className="text-[13px] leading-6 text-gray-700 dark:text-gray-200">
                         {cp.answer}
                       </p>
-                      <p className="mt-2 text-[11px] text-gray-400">
-                        근거: {cp.refs ? cp.basis : `강의록 ${lectureId}강 ${cp.basis}`}
-                      </p>
+                      {cp.basis && (
+                        <p className="mt-2 text-[11px] text-gray-400">
+                          근거: {cp.refs ? cp.basis : `강의록 ${lectureId}강 ${cp.basis}`}
+                        </p>
+                      )}
                     </div>
                   </motion.div>
                 )}

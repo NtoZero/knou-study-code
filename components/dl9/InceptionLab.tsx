@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowDown, ArrowRight, GitBranch, Gauge, Layers3 } from "lucide-react";
 import SectionTitle from "@/components/common/SectionTitle";
-import { Card, CardTitle, Formula, Slider, Tag } from "@/components/dlShared/ui";
+import { Card, CardTitle, Slider, Tag } from "@/components/dlShared/ui";
 import { Sourced } from "@/components/dlShared/SourceFilter";
 
 type ModuleMode = "plain" | "reduced";
@@ -23,7 +23,7 @@ const branches = [
 
 export default function InceptionLab() {
   const [mode, setMode] = useState<ModuleMode>("reduced");
-  const [middleChannels, setMiddleChannels] = useState(16);
+  const [middleChannels, setMiddleChannels] = useState(24);
   const [showShape, setShowShape] = useState(true);
   const cost = reducedOps(middleChannels);
 
@@ -35,6 +35,36 @@ export default function InceptionLab() {
       />
 
       <Sourced refs={{ slides: "9강 강의록 7–9쪽 · 인셉션 모듈과 1×1 차원 축소", lecture: "27:13–27:33 · 1×1 합성곱으로 480개 채널을 16개로 줄이는 예" }}>
+        <Card className="mb-4 border-cyan-200 bg-cyan-50/40 dark:border-cyan-900 dark:bg-cyan-950/20">
+          <CardTitle>14×14×480 입력에서 1×1 차원 축소까지 계산하기</CardTitle>
+          <p className="mb-3 text-[13px] leading-6 text-gray-700 dark:text-gray-300">
+            1×1 필터는 한 위치에서만 계산하지만 그 위치의 480개 채널을 모두 읽습니다. 채널 벡터와 필터 벡터의 내적 하나가 출력 채널 하나의 값이 되며, 16개 필터를 쓰면 각 위치마다 값 16개가 나옵니다.
+          </p>
+          <div className="grid gap-2 md:grid-cols-3">
+            <div className="rounded-lg border border-white bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+              <p className="text-[10px] font-bold text-cyan-800 dark:text-cyan-200">1 · 한 위치의 채널 내적</p>
+              <p className="mt-2 font-mono text-[13px] font-bold">[2, 1, −1] · [1, 2, −1]</p>
+              <p className="mt-1 text-[13px]">= 2×1 + 1×2 + (−1)×(−1) = <strong>5</strong></p>
+              <p className="mt-1 text-[10px] leading-4 text-gray-500">480채널 대신 3채널만 적은 같은 연산의 작은 예.</p>
+            </div>
+            <div className="rounded-lg border border-white bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+              <p className="text-[10px] font-bold text-cyan-800 dark:text-cyan-200">2 · 각 위치에서 16개 값을 생성</p>
+              <p className="mt-2 font-mono text-[13px] font-bold">14×14×480 → 1×1 conv, 16 filters → 14×14×16</p>
+              <p className="mt-1 text-[13px] leading-6">H와 W는 유지되고, 3×3·5×5 합성곱이 읽을 입력 채널만 480개에서 16개로 줄어듭니다.</p>
+            </div>
+            <div className="rounded-lg border border-white bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+              <p className="text-[10px] font-bold text-cyan-800 dark:text-cyan-200">3 · 이어지는 5×5 합성곱</p>
+              <p className="mt-2 font-mono text-[13px] leading-6">1×1 축소: 196×480×16 = 1,505,280<br />5×5 처리: 196×48×25×16 = 3,763,200</p>
+              <p className="mt-1 text-[13px] font-bold">합계 5,268,480 ≈ 5.3M회</p>
+            </div>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-cyan-200 bg-white px-3 py-2 text-[13px] dark:border-cyan-900 dark:bg-gray-900">
+            <p className="font-mono">바로 5×5: 196×48×25×480 = 112,896,000 ≈ 112.9M회</p>
+            <p className="font-bold text-cyan-800 dark:text-cyan-200">1×1 축소 경로가 약 21.4배 적은 곱셈</p>
+          </div>
+          <p className="mt-2 text-[10px] leading-4 text-gray-500">두 경로의 공간 위치 수는 196으로 같고, 줄어든 입력 채널 수가 이후 5×5 필터마다 반복되는 곱셈을 크게 줄입니다. 계산은 필터 곱셈만 세며 bias와 활성함수는 제외.</p>
+        </Card>
+
         <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.8fr]">
           <Card className="min-w-0">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -142,9 +172,6 @@ export default function InceptionLab() {
               <Tag tone="teal">H×W는 유지</Tag>
               <Tag>채널 480 → {middleChannels} → 48</Tag>
             </div>
-            <Formula className="mt-4" note="교재·강의 예시는 곱셈 수 기준으로 비교">
-              16채널일 때 {compact(reducedOps(16))}M ≈ 강의 예시의 5.3M
-            </Formula>
             <p className="mt-3 text-[10px] leading-5 text-gray-500">
               필터 수를 지나치게 줄이면 표현 능력이 달라질 수 있으므로, 여기서는 계산량 변화만 비교합니다.
             </p>
