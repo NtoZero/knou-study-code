@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Presentation, Megaphone, Filter, RotateCcw } from "lucide-react";
+import { Presentation, ClipboardList, Megaphone, Filter, RotateCcw } from "lucide-react";
 import {
   kindsOf,
   sourceMeta,
@@ -20,6 +20,7 @@ import {
 
 const icons: Record<SourceKind, typeof Presentation> = {
   slides: Presentation,
+  exercise: ClipboardList,
   lecture: Megaphone,
 };
 

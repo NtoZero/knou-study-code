@@ -3,12 +3,11 @@
  *
  * slides  — 강의록 슬라이드에 있는 내용
  * lecture — 강의에서 따로 힘주어 짚은 지점
- *
- * 이 과목은 강의록과 강의 내용만을 근거로 삼는다.
+ * exercise — U-KNOU 학습창의 공식 연습문제
  */
-export type SourceKind = "slides" | "lecture";
+export type SourceKind = "slides" | "lecture" | "exercise";
 
-export const sourceOrder: SourceKind[] = ["slides", "lecture"];
+export const sourceOrder: SourceKind[] = ["slides", "lecture", "exercise"];
 
 export interface SourceMeta {
   label: string;
@@ -27,6 +26,12 @@ export const sourceMeta: Record<SourceKind, SourceMeta> = {
       "border-emerald-500 bg-emerald-500 text-white dark:border-emerald-400 dark:bg-emerald-500",
     dot: "bg-emerald-500",
   },
+  exercise: {
+    label: "공식 연습문제",
+    tone: "border-teal-200 bg-teal-50 text-teal-800 dark:border-teal-900 dark:bg-teal-950/50 dark:text-teal-200",
+    activeTone: "border-teal-700 bg-teal-700 text-white",
+    dot: "bg-teal-700",
+  },
   lecture: {
     label: "강의 강조",
     tone: "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/50 dark:text-rose-200",
@@ -41,6 +46,7 @@ export interface SourceRef {
   slides?: string;
   /** 강의에서 강조한 내용 한 줄 */
   lecture?: string;
+  exercise?: string;
 }
 
 export function kindsOf(ref: SourceRef): SourceKind[] {
