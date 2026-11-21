@@ -110,7 +110,7 @@ export function ArchitectureContext() {
                   <p className="text-[10px] font-bold">CIFAR-10 실습 모델의 입력부</p>
                   <p className="mt-1 font-mono text-[9px] leading-5 text-gray-700 dark:text-gray-300">7×7 conv → max pool → 3×3 conv(192) → max pool</p>
                 </div>
-                <p className="text-[10px] leading-4 text-gray-600 dark:text-gray-400">실습 코드에서는 개념도에 있는 LRN과 1×1 합성곱을 생략합니다.</p>
+                <p className="text-[10px] leading-4 text-gray-600 dark:text-gray-400">실습 코드에서는 개념도에 있는 LRN과 1×1 합성곱을 생략합니다. <a className="underline underline-offset-2" href="/dl/lecture/8#lrn">LRN과 배치 정규화의 계산 비교</a></p>
               </div>}
             </div>
           </div>
@@ -167,6 +167,7 @@ type ResNetDepth = 18 | 34 | 50 | 101 | 152;
 type StageId = "conv2_x" | "conv3_x" | "conv4_x" | "conv5_x";
 
 const depths: ResNetDepth[] = [18, 34, 50, 101, 152];
+const billionsOfFlops: Record<ResNetDepth, number> = { 18: 1.8, 34: 3.6, 50: 3.8, 101: 7.6, 152: 11.3 };
 const stageIds: StageId[] = ["conv2_x", "conv3_x", "conv4_x", "conv5_x"];
 const stageSizes: Record<StageId, string> = {
   conv2_x: "56×56",
@@ -289,6 +290,7 @@ export function ResNetFamily() {
           <div className="mt-3 rounded-lg border border-violet-200 bg-violet-50/60 p-3 dark:border-violet-900 dark:bg-violet-950/25">
             <p className="text-xs font-bold text-violet-900 dark:text-violet-100">가중치를 가진 층 수로 모델 이름 검산</p>
             <p className="mt-1 font-mono text-xs font-bold text-violet-900 dark:text-violet-100">1 stem conv + {layersPerBlock} × ({repeats.conv2_x} + {repeats.conv3_x} + {repeats.conv4_x} + {repeats.conv5_x}) residual-stage convs + 1 fc = {1 + stageConvolutionCount + 1}</p>
+            <p className="mt-3 text-sm leading-6"><strong>ResNet{depth}의 연산량은 약 {billionsOfFlops[depth]} × 10⁹ FLOPs입니다.</strong> 이 값은 224×224 입력 한 장을 순전파할 때 필요한 부동소수점 연산 수입니다. 34층의 3.6에 비해 50층은 3.8로 약 6% 늘어납니다. 병목 블록이 3×3 합성곱 안쪽의 채널 수를 줄이므로, 층 수가 늘어난 비율만큼 연산량이 늘지는 않습니다.</p>
             <p className="mt-1 text-[10px] leading-4 text-gray-600 dark:text-gray-400">기본 블록은 가중치 층 2개, 병목 블록은 3개입니다. 시작 합성곱과 마지막 분류 완전연결층을 더하면 선택한 모델 깊이와 일치합니다.</p>
           </div>
 
