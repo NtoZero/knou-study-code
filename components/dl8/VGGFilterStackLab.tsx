@@ -3,7 +3,7 @@
 import { useState } from "react";
 import SectionTitle from "@/components/common/SectionTitle";
 import { Sourced } from "@/components/dlShared/SourceFilter";
-import { Card, CardTitle, Chip } from "@/components/dlShared/ui";
+import { Card, CardTitle, Chip, num } from "@/components/dlShared/ui";
 
 const INPUT = 10;
 
@@ -12,6 +12,9 @@ export default function VGGFilterStackLab() {
   const receptive = 2 * layers + 1;
   const padding = Math.floor((INPUT - receptive) / 2);
   const center = padding + Math.floor(receptive / 2);
+
+  const outputSides = Array.from({ length: layers }, (_, i) => INPUT - 2 * (i + 1));
+  const multiplications = outputSides.reduce((sum, side) => sum + side ** 2 * 9, 0);
 
   return (
     <section id="vgg-filters" className="scroll-mt-32">
@@ -44,9 +47,9 @@ export default function VGGFilterStackLab() {
             <div className="space-y-3">
               <div className="rounded-xl border border-violet-200 bg-violet-50/70 p-4 dark:border-violet-900 dark:bg-violet-950/30">
                 <p className="text-xs font-bold text-violet-900 dark:text-violet-100">{layers}개의 3×3 필터</p>
-                <p className="mt-2 font-mono text-lg font-bold text-gray-900 dark:text-white">10×10 → {Array.from({ length: layers }, (_, i) => INPUT - 2 * (i + 1)).join(" → ")} </p>
+                <p className="mt-2 font-mono text-lg font-bold text-gray-900 dark:text-white">10×10 → {outputSides.map(side => side + "×" + side).join(" → ")} </p>
                 <p className="mt-2 text-[12px] leading-5 text-gray-700 dark:text-gray-200">stride 1, 패딩 없음으로 가정하면 출력 한 점의 수용 영역은 <b>{receptive}×{receptive}</b>예요. 한 층을 더 쌓을 때마다 한 변이 2씩 커져요.</p>
-                <p className="mt-1 font-mono text-[12px] text-violet-800 dark:text-violet-200">가중치: 3×3×{layers} = {9 * layers}개 · 중간 ReLU {layers}회</p>
+                <p className="mt-1 font-mono text-[12px] text-violet-800 dark:text-violet-200">가중치: 3×3×{layers} = {9 * layers}개 · 층마다 ReLU · 총 {layers}회</p>
               </div>
               <div className="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
                 <p className="text-xs font-bold text-gray-800 dark:text-gray-100">한 번의 7×7 필터와 비교</p>
@@ -58,6 +61,12 @@ export default function VGGFilterStackLab() {
               </div>
             </div>
           </div>
+          <details className="mt-4 rounded-lg border border-violet-200 p-3 text-sm dark:border-violet-900">
+            <summary className="cursor-pointer font-semibold">검산 · 가중치 27개와 곱셈 27회는 어떻게 다를까?</summary>
+            <p className="mt-3 leading-6">필터 하나는 출력의 모든 위치에서 같은 가중치를 다시 씁니다. 위의 단일 채널·패딩 없음 조건에서 3×3 합성곱의 곱셈 횟수는 층마다 출력 칸 수에 9를 곱해 더합니다.</p>
+            <p className="my-2 font-mono">{outputSides.map(side => side + "²×9").join(" + ")} = {num(multiplications)}회</p>
+            <p className="leading-6">세 층을 선택하면 가중치는 27개이고 곱셈은 1,044회입니다. 한 번의 7×7 합성곱은 가중치 49개, 곱셈 4²×49 = 784회입니다. 초기 층의 출력 지도가 더 크기 때문입니다. 반대로 같은 가로·세로 크기를 유지하는 조건이라면 모든 층의 출력 칸 수가 같아 칸당 27회와 49회를 비교할 수 있습니다. 이 검산은 편향과 활성함수 계산을 제외합니다.</p>
+          </details>
         </Card>
       </Sourced>
     </section>

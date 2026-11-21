@@ -24,8 +24,8 @@ export default function ResidualLearningLab() {
         subtitle="주 경로는 새로 배운 변화량을 만들고, 숏컷은 입력을 더하기 지점까지 전달"
       />
       <Sourced refs={{ slides: "9강 강의록 27–31쪽, 36–38쪽 · ResNet 깊이 비교·잔차 학습·구현", lecture: "56:47–57:58 · plain 20층·56층 오차 비교; 63:01–63:30 · 잔차 합과 입력 보존; 71:33–72:50 · ResidualUnit·스테이지 반복·GAP" }}>
-        <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-          <Card>
+        <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+          <Card className="min-w-0">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <CardTitle>숏컷의 값을 바꿔 보세요</CardTitle>
@@ -78,7 +78,7 @@ export default function ResidualLearningLab() {
                 </div>
               </div>
               <div className="mt-3 rounded-lg bg-white px-3 py-2 text-xs leading-5 text-gray-600 dark:bg-gray-900 dark:text-gray-300">
-                {residual === 0 ? shape === "same" ? "F(x)=0이면 덧셈 전 입력 x가 그대로 보존됩니다. 마지막 ReLU 뒤에는 max(0, x)가 출력됩니다." : "F(x)=0이면 덧셈 전 투영된 입력 P(x)가 그대로 보존됩니다. 마지막 ReLU 뒤에는 max(0, P(x))가 출력됩니다." : shape === "same" ? residual > 0 ? "주 경로가 양의 변화를 보태고, 숏컷은 기존 입력을 그대로 보존합니다." : "주 경로가 입력의 일부를 낮추는 변화를 배우지만, 숏컷이 입력 정보를 더해 줍니다." : residual > 0 ? "주 경로가 양의 변화를 보태고, 숏컷은 P(x)로 크기를 맞춘 입력을 더합니다." : "주 경로가 변화를 배우고, 숏컷은 P(x)로 공간 크기와 채널 수를 맞춰 입력 정보를 이어 줍니다."}
+                {residual === 0 ? shape === "same" ? "F(x)=0이면 덧셈 결과는 x입니다. 마지막 ReLU 뒤에는 max(0, x)가 출력됩니다." : "F(x)=0이면 덧셈 결과는 투영된 입력 P(x)입니다. 마지막 ReLU 뒤에는 max(0, P(x))가 출력됩니다." : shape === "same" ? residual > 0 ? "주 경로가 양의 변화를 보태고, 숏컷은 기존 입력을 그대로 보존합니다." : "주 경로가 입력의 일부를 낮추는 변화를 배우지만, 숏컷이 입력 정보를 더해 줍니다." : residual > 0 ? "주 경로가 양의 변화를 보태고, 숏컷은 P(x)로 크기를 맞춘 입력을 더합니다." : "주 경로가 변화를 배우고, 숏컷은 P(x)로 공간 크기와 채널 수를 맞춰 입력 정보를 이어 줍니다."}
               </div>
             </div>
 
@@ -142,7 +142,7 @@ export default function ResidualLearningLab() {
             </div>
           </Card>
 
-          <Card className="h-fit">
+          <Card className="h-fit min-w-0">
             <div className="mb-3 flex items-center gap-2"><Minus size={16} className="text-rose-600 dark:text-rose-300" /><CardTitle>왜 잔차를 학습할까?</CardTitle></div>
             <p className="text-sm leading-6 text-gray-700 dark:text-gray-300">
               기존 층은 입력 <span className="font-mono">x</span>에서 목표 변환 <span className="font-mono">H(x)</span>를 바로 학습합니다. 잔차 학습은 숏컷으로 <span className="font-mono">x</span>를 더하고, 주 경로가 그 차이인 <span className="font-mono">F(x)=H(x)−x</span>를 학습하도록 바꿉니다.
@@ -154,7 +154,7 @@ export default function ResidualLearningLab() {
             <div className="mt-4 flex flex-wrap gap-2"><Tag tone="teal">ResNet = 잔차 학습</Tag><Tag>숏컷 연결</Tag></div>
             <div className="mt-4 rounded-lg border border-gray-200 p-3 dark:border-gray-700">
               <p className="text-xs font-bold">깊이와 학습 오차</p>
-              <p className="mt-1 text-[11px] leading-5 text-gray-600 dark:text-gray-400">강의의 비교 그림은 숏컷 없는 56층 망이 20층 망보다 학습 오차와 테스트 오차가 더 높을 수 있음을 보여 줍니다. 층을 늘리기만 하면 성능이 항상 좋아지는 것은 아닙니다.</p>
+              <p className="mt-1 text-[11px] leading-5 text-gray-600 dark:text-gray-400">강의의 비교 그림은 숏컷 없는 56층 망이 20층 망보다 학습 오차와 테스트 오차 모두 더 높을 수 있음을 보여 줍니다. 학습 오차부터 높으므로 이 차이를 단순히 과적합으로만 해석할 수는 없습니다. 층을 늘리기만 하면 성능이 항상 좋아지는 것은 아닙니다.</p>
             </div>
           </Card>
         </div>

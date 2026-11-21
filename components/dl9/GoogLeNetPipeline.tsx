@@ -56,7 +56,7 @@ export default function GoogLeNetPipeline() {
                 onClick={() => setAuxiliary((value) => !value)}
                 className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition ${auxiliary ? "bg-rose-600 text-white" : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"}`}
               >
-                <Split size={14} /> {auxiliary ? "보조 분류기 켜짐" : "보조 분류기 꺼짐"}
+                <Split size={14} /> {auxiliary ? "보조 가지 표시" : "보조 가지 숨김"}
               </button>
             </div>
 
@@ -94,12 +94,21 @@ export default function GoogLeNetPipeline() {
                 <p className="text-xs font-bold text-cyan-800 dark:text-cyan-200">{active.title}</p>
                 <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-gray-300">{active.detail}</p>
                 {selected === "middle" && auxiliary && (
-                  <div className="mt-3 rounded-lg border-l-4 border-rose-400 bg-rose-50 p-3 text-xs leading-5 text-rose-900 dark:bg-rose-950/30 dark:text-rose-100">
-                    보조 분류기의 손실은 최종 손실에 가중치 0.3으로 더해집니다. 강의 실습 코드에서는 주 출력과 두 보조 출력을 함께 학습 대상으로 둡니다.
+                  <div className="mt-3 space-y-3 rounded-lg border-l-4 border-rose-400 bg-rose-50 p-3 text-xs leading-5 text-rose-900 dark:bg-rose-950/30 dark:text-rose-100">
+                    <p>두 보조 분류기는 각자 10개 클래스의 중간 예측을 냅니다. 실습 코드의 보조 손실은 각각 최종 손실에 가중치 0.3으로 더해지며, 주 출력과 함께 학습 대상으로 둡니다.</p>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {["첫 번째 · inception 4a 뒤", "두 번째 · inception 4d 뒤"].map((name) => (
+                        <div key={name} className="rounded-lg border border-rose-200 bg-white/80 p-2 dark:border-rose-900 dark:bg-gray-900/70">
+                          <p className="text-[10px] font-bold">{name}</p>
+                          <p className="mt-1 text-[10px] leading-5">평균 풀링 5×5 · 보폭 3 → 1×1 합성곱 128 → Flatten → Dense 1024 · ReLU → Dense 10 · softmax</p>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-[10px] leading-4">이 중간 분류 손실이 역전파 신호를 중간 층에도 전달해 깊은 망의 학습을 돕습니다. 실습 코드의 모델 출력은 `[output, aux_output_1, aux_output_2]` 세 헤드이며, 마지막 분류층 이름은 `output`입니다.</p>
                   </div>
                 )}
                 {selected === "middle" && !auxiliary && (
-                  <p className="mt-3 text-xs leading-5 text-gray-500">보조 가지를 끈 상태입니다. 실제 강의 모델에는 중간 분류기가 두 곳에 배치됩니다.</p>
+                  <p className="mt-3 text-xs leading-5 text-gray-500">보조 가지를 화면에서 숨긴 상태입니다. 실제 강의 모델에는 중간 분류기가 두 곳에 배치됩니다.</p>
                 )}
               </motion.div>
             </AnimatePresence>

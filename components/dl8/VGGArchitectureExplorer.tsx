@@ -26,6 +26,7 @@ export default function VGGArchitectureExplorer() {
       />
       <Sourced refs={{ slides: "슬라이드 25–27, 31, 34–35 — VGGNet 구성과 구현", lecture: "음성 전사 42:53–43:48 — 층이 깊어질 때 비선형성과 특징 학습 설명" }}>
         <Card>
+          <p className="mb-4 text-sm leading-6">AlexNet은 처음에 11×11 필터로 넓은 영역을 한 번에 봤습니다. VGG16(D)는 3×3 필터로 좁은 영역을 보고 그 출력을 다음 층에 넘깁니다. 블록 안에서는 가로·세로가 유지되고, 블록 끝의 풀링을 지날 때 한 변이 절반이 됩니다. 뒤의 필터 실험에서는 이처럼 작은 필터가 쌓일수록 어디까지 볼 수 있는지 확인합니다.</p>
           <div className="mb-4 grid gap-3 md:grid-cols-[1fr_1fr]">
             <div className="rounded-xl border border-violet-200 bg-violet-50/70 p-4 dark:border-violet-900 dark:bg-violet-950/30">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">입력 크기</p>

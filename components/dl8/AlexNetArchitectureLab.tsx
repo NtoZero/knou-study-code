@@ -48,6 +48,7 @@ export default function AlexNetArchitectureLab() {
 
       <Sourced refs={{ slides: "슬라이드 4–7 — AlexNet 구조·세부 내용", lecture: "음성 전사 07:03–07:29, 14:41–14:55 — GPU·입력 크기·출력" }}>
         <Card>
+          <p className="mb-4 text-sm leading-6">ImageNet의 이미지 분류 대회 ILSVRC에서는 2010~2011년 전통적인 컴퓨터 비전 기법이 우승했습니다. 2012년 AlexNet은 분류 오류율 16.4%로 우승하며 깊은 합성곱 신경망이 대규모 이미지 분류에서 어떤 성능을 낼 수 있는지 보여 주었습니다.</p>
           <div className="mb-4 grid gap-2 sm:grid-cols-3">
             <div className="rounded-lg bg-sky-50 p-3 dark:bg-sky-950/35">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">합성곱층</p>

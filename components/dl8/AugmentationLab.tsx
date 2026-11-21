@@ -98,7 +98,7 @@ export default function AugmentationLab() {
               <label className="sm:col-span-2 block rounded-lg bg-gray-50 p-3 text-[12px] text-gray-700 dark:bg-gray-800/60 dark:text-gray-200">
                 색 변화 예시 <span className="ml-2 font-mono text-violet-700 dark:text-violet-300">{hue}°</span>
                 <input aria-label="색상 변화 조절" type="range" min="0" max="180" step="6" value={hue} onChange={(e) => setHue(Number(e.target.value))} className="mt-2 w-full accent-violet-600" />
-                <span className="mt-1 block text-[11px] leading-5 text-gray-500">강의에서 설명한 PCA 색상 증강은 채널별 분산을 이용해 RGB 값을 옮기고 바꾸는 방식이에요. 이 조절 막대는 색 변화의 직관을 보여 주는 그림이에요.</span>
+                <span className="mt-1 block text-[11px] leading-5 text-gray-500">주성분 분석(PCA)은 학습 이미지의 RGB 값이 함께 크게 변하는 방향을 찾습니다. 그 방향으로 색을 조금 옮기면 같은 고양이를 서로 다른 조명에서 본 듯한 학습 예가 생겨요. 이 막대는 색 변화의 예시이며 PCA를 계산하는 장치는 아니에요.</span>
               </label>
             </div>
           )}

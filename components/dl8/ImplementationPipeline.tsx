@@ -18,13 +18,13 @@ const COPY: Record<Model, Record<Step, { title: string; code: string; note: stri
   alexnet: {
     prepare: {
       title: "CIFAR-10 이미지·레이블 준비",
-      code: "(x_train, y_train), (x_test, y_test) = cifar10.load_data()\nx_train = x_train.astype('float32') / 255.0\ny_train = to_categorical(y_train, 10)",
+      code: "(x_train, y_train), (x_test, y_test) = cifar10.load_data()\nx_train = x_train.astype('float32') / 255.0\nx_test = x_test.astype('float32') / 255.0\ny_train = to_categorical(y_train, 10)\ny_test = to_categorical(y_test, 10)",
       note: "픽셀을 0~1 범위로 정규화하고, 10개 범주의 정수 레이블을 원-핫 벡터로 바꾼다.",
     },
     build: {
       title: "227×227 입력과 층 구성",
       code: "layers.Resizing(227, 227)\nConv2D(96, (11, 11), strides=(4, 4), activation='relu')\n...\nDense(4096, activation='relu')\nDropout(0.5)\nDense(10, activation='softmax')",
-      note: "강의 구현 예시는 CIFAR-10을 분류하므로 마지막 층은 10개 출력이다. AlexNet의 설명용 표는 1,000개 범주를 출력한다. 구현 코드에는 BatchNormalization 층도 보인다.",
+      note: "강의 구현 예시는 CIFAR-10을 분류하므로 마지막 층은 10개 출력이다. AlexNet의 설명용 표는 1,000개 범주를 출력한다. 실습은 LRN 대신 배치 정규화를 쓰고, 두 번째 합성곱의 보폭도 달라진다. 원형은 보폭 1로 27×27을 유지하지만 실습의 보폭 2와 same 패딩은 14×14를 출력한다.",
     },
     train: {
       title: "손실·최적화기·학습 횟수 설정",
@@ -40,7 +40,7 @@ const COPY: Record<Model, Record<Step, { title: string; code: string; note: stri
   vgg: {
     prepare: {
       title: "CIFAR-10을 VGG 입력 크기로 조정",
-      code: "(x_train, y_train), (x_test, y_test) = cifar10.load_data()\nx_train = resize_images(x_train, (224, 224))\nx_train = x_train.astype('float32') / 255.0",
+      code: "(x_train, y_train), (x_test, y_test) = cifar10.load_data()\nx_train, y_train = x_train[:2000], y_train[:2000]\nx_test, y_test = x_test[:500], y_test[:500]\nx_train = np.array([cv2.resize(img, (224, 224)) for img in x_train], dtype='float32') / 255.0\nx_test = np.array([cv2.resize(img, (224, 224)) for img in x_test], dtype='float32') / 255.0",
       note: "강의 실습은 학습 이미지 2,000장과 테스트 이미지 500장을 사용하고, 224×224×3 크기로 조정한다.",
     },
     build: {
@@ -78,7 +78,7 @@ export default function ImplementationPipeline() {
           <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {STEPS.map((item) => <button key={item.id} type="button" onClick={() => setStep(item.id)} aria-pressed={step === item.id} className={`rounded-lg border px-2 py-2 text-xs font-semibold ${step === item.id ? "border-teal-500 bg-teal-50 text-teal-800 dark:bg-teal-950/40 dark:text-teal-200" : "border-gray-200 text-gray-500 dark:border-gray-700"}`}>{item.label}</button>)}
           </div>
-          <div className="grid gap-3 md:grid-cols-[1fr_1fr]">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div className="rounded-xl border border-gray-200 p-4 dark:border-gray-700">
               <CardTitle>{current.title}</CardTitle>
               <pre className="overflow-x-auto rounded-lg bg-gray-900 p-3 text-[11px] leading-5 text-gray-100"><code>{current.code}</code></pre>
@@ -89,7 +89,7 @@ export default function ImplementationPipeline() {
                 <p className="mt-2 text-[13px] leading-6 text-gray-700 dark:text-gray-200">{current.note}</p>
               </div>
               <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[11px] leading-5 text-amber-900 dark:border-amber-900 dark:bg-amber-950/35 dark:text-amber-100">
-                입력은 CIFAR-10의 RGB 이미지예요. AlexNet 원래 구조의 1,000개 출력과 강의 실습의 10개 출력은 데이터셋 범주 수에 따라 구분해야 해요.
+                두 실습 모두 이미지 한 장에 확률 10개를 낸다. 정답이 고양이(범주 3)라면 AlexNet 예제는 네 번째 칸만 1인 벡터를, VGG 예제는 정수 3을 손실함수에 전달한다.
               </div>
             </div>
           </div>

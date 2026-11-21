@@ -35,8 +35,8 @@ export default function InceptionLab() {
       />
 
       <Sourced refs={{ slides: "9강 강의록 7–9쪽 · 인셉션 모듈과 1×1 차원 축소", lecture: "27:13–27:33 · 1×1 합성곱으로 480개 채널을 16개로 줄이는 예" }}>
-        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-          <Card>
+        <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <Card className="min-w-0">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <CardTitle>갈래 구조를 바꿔 보세요</CardTitle>
               <div className="flex gap-2" role="group" aria-label="인셉션 모듈 형식">
@@ -117,7 +117,7 @@ export default function InceptionLab() {
             </AnimatePresence>
           </Card>
 
-          <Card className="border-cyan-200 dark:border-cyan-900">
+          <Card className="min-w-0 border-cyan-200 dark:border-cyan-900">
             <div className="mb-3 flex items-center gap-2">
               <Gauge size={17} className="text-cyan-700 dark:text-cyan-300" />
               <CardTitle>5×5 갈래의 연산량 비교</CardTitle>

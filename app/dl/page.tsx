@@ -33,14 +33,6 @@ export default function DLHome() {
         </p>
       </div>
 
-      <section aria-labelledby="easy-lessons" className="mb-9 rounded-xl border border-teal-200 bg-teal-50 p-5 dark:border-teal-900 dark:bg-teal-950/40">
-        <h2 id="easy-lessons" className="font-bold">그림으로 시작하는 심층 합성곱 신경망</h2>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <Link className="rounded-lg bg-white px-4 py-3 text-sm font-semibold text-teal-800 shadow-sm hover:underline dark:bg-gray-900 dark:text-teal-200" href="/dl/lecture/8/easy">8강 쉬운 설명 · 작은 필터를 겹치면 어디까지 보일까? →</Link>
-          <Link className="rounded-lg bg-white px-4 py-3 text-sm font-semibold text-teal-800 shadow-sm hover:underline dark:bg-gray-900 dark:text-teal-200" href="/dl/lecture/9/easy">9강 쉬운 설명 · 특징을 이어 붙이거나 더하면 무엇이 달라질까? →</Link>
-        </div>
-      </section>
-
       <div className="mb-4 flex items-center gap-2">
         <BookOpen size={18} className="text-gray-400" />
         <h2 className="text-lg font-bold">강의별 학습</h2>

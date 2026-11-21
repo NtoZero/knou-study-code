@@ -71,7 +71,7 @@ export const semesters: Semester[] = [
         slug: "dl",
         href: "/dl",
         title: "딥러닝",
-        subtitle: "강의별 시각화와 복습 퀴즈 · 8·9강 쉬운 설명",
+        subtitle: "강의별 시각화와 복습 퀴즈",
         icon: "Waypoints",
         iconClass: "text-teal-500",
         accentClass:
