@@ -150,7 +150,7 @@ export default function GoogLeNetPipeline() {
               <motion.div key={active.id + String(auxiliary)} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
                 <p className="text-xs font-bold text-cyan-800 dark:text-cyan-200">{active.title}</p>
                 <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-gray-300">{active.detail}</p>
-                {selected === "middle" && auxiliary && <p className="mt-3 rounded-lg border-l-4 border-rose-400 bg-rose-50 p-3 text-[13px] leading-6 text-rose-900 dark:bg-rose-950/30 dark:text-rose-100">강조된 두 보조 가지의 위치를 바꿔 보세요. 손실 계산과 각 깊이에 도달하는 기울기는 위 풀이에서 확인할 수 있습니다.</p>}
+                {selected === "middle" && auxiliary && <p className="mt-3 rounded-lg border-l-4 border-rose-400 bg-rose-50 p-3 text-[13px] leading-6 text-rose-900 dark:bg-rose-950/30 dark:text-rose-100">4a와 4d에서 분류용 경로가 갈라집니다. 4a에서 예측을 마친 뒤에도 그 특징 맵은 주 경로의 다음 인셉션 모듈로 전달됩니다.</p>}
                 {selected === "middle" && !auxiliary && (
                   <p className="mt-3 text-xs leading-5 text-gray-500">보조 가지를 화면에서 숨긴 상태입니다. 실제 강의 모델에는 중간 분류기가 두 곳에 배치됩니다.</p>
                 )}
