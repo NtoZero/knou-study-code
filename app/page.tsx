@@ -109,6 +109,11 @@ export default function Home() {
         학기별 강의 시각화부터 출석과제 딥스터디와 기출 풀이까지
       </p>
 
+      <Link href="/exam-prep" className="mb-10 flex min-h-12 flex-wrap items-center justify-between gap-2 border-y border-teal-700 py-3 font-semibold text-teal-800 hover:underline dark:text-teal-300">
+        <span>시험 대비</span>
+        <span className="text-sm font-normal">머신러닝·딥러닝 기말 학습과 과목별 기출 풀이 →</span>
+      </Link>
+
       {/* ── 학기별 과목 ───────────────────────────── */}
       {semesters.map((sem) => (
         <section key={sem.id} className="mb-14">

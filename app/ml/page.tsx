@@ -2,6 +2,7 @@ import Link from "next/link";
 import { mlLectures } from "@/lib/constants";
 import { getMlOutline } from "@/lib/mlLectureOutline";
 import CourseStructure from "@/components/mlShared/CourseStructure";
+import WorkbookEntry from "@/components/examPrep/WorkbookEntry";
 import { ArrowRight, Sparkle, BookOpen, Layers } from "lucide-react";
 
 const lectureFocus: Record<number, string[]> = {
@@ -38,6 +39,9 @@ export default function MLHome() {
         </p>
       </div>
 
+      <section aria-label="기말시험 대비" className="mb-7">
+        <WorkbookEntry course="ml" onCoursePage />
+      </section>
       <CourseStructure />
 
       <Link

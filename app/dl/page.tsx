@@ -1,4 +1,5 @@
 import Link from "next/link";
+import WorkbookEntry from "@/components/examPrep/WorkbookEntry";
 import { dlLectures } from "@/lib/constants";
 import { getDlOutline } from "@/lib/dlLectureOutline";
 import { ArrowRight, BookOpen, Brain } from "lucide-react";
@@ -33,6 +34,9 @@ export default function DLHome() {
         </p>
       </div>
 
+      <section aria-label="기말시험 대비" className="mb-7">
+        <WorkbookEntry course="dl" onCoursePage />
+      </section>
       <div className="mb-4 flex items-center gap-2">
         <BookOpen size={18} className="text-gray-400" />
         <h2 className="text-lg font-bold">강의별 학습</h2>
